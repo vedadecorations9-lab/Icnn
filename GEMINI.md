@@ -10,6 +10,7 @@
      - `high-end-visual-design` (soft-skill)
      - `frontend-api-integration-patterns` (for Convex and data queries)
      - `ui-slop-score`
+     - `unslop`
 
 2. **Design & Editorial Principles**:
    - **No Generic AI Defaults**: Never default to centering all layout elements or wrapping cards inside cards. Use asymmetrical balance, rigid grids, and left-aligned editorial hierarchy.
