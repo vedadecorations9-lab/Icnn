@@ -1,4 +1,4 @@
-# Project Guidelines: Veda Decorations
+# Project Guidelines: Icon Party Hire
 
 ## Autonomous Skill Activation & High-End Design Standards
 
@@ -8,16 +8,23 @@
      - `web-design-engineer`
      - `gpt-taste`
      - `high-end-visual-design` (soft-skill)
-     - `frontend-api-integration-patterns` (for Convex and data queries)
+     - `frontend-api-integration-patterns`
      - `ui-slop-score`
      - `unslop`
 
-2. **Design & Editorial Principles**:
-   - **No Generic AI Defaults**: Never default to centering all layout elements or wrapping cards inside cards. Use asymmetrical balance, rigid grids, and left-aligned editorial hierarchy.
-   - **Contextual Data**: All mock data, metrics, and labels must be 100% relevant to the project domain (Veda Decorations Brisbane e-commerce: brass urlis, lanterns, Pooja decor, AusPost courier dispatches, AUD pricing). Never use generic banking or placeholder data.
-   - **Commanding Typography**: Base font sizes must be comfortable (root 17px). Headings must be prominent, high-contrast, and editorial (serif Playfair Display for heritage luxury, Outfit / Plus Jakarta Sans for clean dashboards/body).
-   - **Contrast & Visibility**: Headings inside dark/night containers (lookbook, newsletter, footer, hero banner) must always render in pure white (`#FFFFFF`) or high-contrast gold (`#E8C364`).
-   - **Single-Line Navigation**: Navbar links and multi-word action tags must enforce `white-space: nowrap` and fluid scaling so words never break into awkward two-line stacks.
+2. **Brand & Editorial Principles: Icon Party Hire**:
+   - **Domain & Identity**: Brisbane's leading event and party equipment rental company.
+   - **Key Offerings**: Commercial 6x3m gazebos, 3D silk flower walls, ripple wave backdrop arches, cocktail bar tables, Tiffany event chairs, fluted cake plinths, commercial chafing dishes/tea urns, and special effects (cold sparks & low fog).
+   - **Color Theme**: Follows the official circular logo:
+     - Vibrant Icon Glamour Magenta / Fuchsia (`#D81B60`, `#E03E8A`, `#C2185B`)
+     - Metallic Rose-Gold & Copper Sheen (`#D48B70`, `#E8A28E`, `#B3644D`, `#F7D1BA`)
+     - Star Sparkle Gold Accents (`#F59E0B`, `#FBBF24`)
+     - Deep Nocturnal Plum / Midnight Blackberry (`#1B061A`, `#240A23`, `#351133`) for luxury night containers (lookbook, footer, hero accents)
+     - Cashmere Rose / Pearlescent Blush Light Backgrounds (`#FDF7FA`, `#FFFFFF`)
+   - **Home Page vs. Dedicated Items Page**:
+     - The **Home Page** showcases **CATEGORIES** with high-resolution imagery and direct links to items.
+     - The **Dedicated Items / Catalog Page** displays the individual hire items with filtering, search, quick view, and hire booking add-to-bag.
+   - **Pricing & Logistics**:
+     - All pricing in **AUD ($)** with daily/weekend hire terminology, security bonds, and Brisbane delivery/setup dispatches.
+     - Zero references to previous decor/Veda brand elements.
 
-3. **Pre-Flight Verification**:
-   - Before completing any UI task, run a visual/syntax pre-flight check for contrast, responsive viewports, and clean CSS compilation.

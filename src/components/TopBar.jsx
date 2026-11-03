@@ -2,17 +2,17 @@ import React from 'react';
 
 export default function TopBar() {
   return (
-    <aside className="top-bar" aria-label="Brisbane Studio Announcements">
+    <aside className="top-bar" aria-label="Icon Party Hire Brisbane Announcements">
       <div className="top-bar-inner">
         <div className="top-bar-left hide-mobile">
           <span className="top-bar-dot"></span>
-          <span>Brisbane Flagship Studio & Showroom · Fortitude Valley, QLD 4006</span>
+          <span>Murrumba Downs, Brisbane 4503 · Ph: 0439 592 472</span>
         </div>
         <div className="top-bar-center">
-          <span>Complimentary Express Delivery in Greater Brisbane on Orders Over $99</span>
+          <span>Weekend party hire and dispatch across Greater Brisbane, Gold Coast, and Sunshine Coast</span>
         </div>
         <div className="top-bar-right hide-mobile">
-          <span>Fast Australia-Wide Dispatch via Australia Post</span>
+          <span>Call: 0439 592 472 · Commercial Gazebos, Backdrops & FX</span>
         </div>
       </div>
     </aside>

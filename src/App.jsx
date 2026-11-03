@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { PRODUCTS, CURRENCIES } from './data/products';
-import TopBar from './components/TopBar';
+import { PRODUCTS, CURRENCIES, CATEGORIES } from './data/products';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import CategoryBar from './components/CategoryBar';
+import CategoriesShowcase from './components/CategoriesShowcase';
+import HowItWorks from './components/HowItWorks';
 import ProductGrid from './components/ProductGrid';
 import BentoPromos from './components/BentoPromos';
-import Lookbook from './components/Lookbook';
-import Reviews from './components/Reviews';
-import Newsletter from './components/Newsletter';
+import TrustStrip from './components/TrustStrip';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import WishlistDrawer from './components/WishlistDrawer';
@@ -23,26 +21,29 @@ import Toast from './components/Toast';
 import { Agentation } from 'agentation';
 
 export default function App() {
+  // Navigation View: 'home' (Categories on Home) vs 'catalog' (Dedicated Separate Items Page)
+  const [currentView, setCurrentView] = useState('home');
+
   // --- Persistent State (Default to AUD for Brisbane, QLD) ---
   const [currency, setCurrencyState] = useState(() => {
-    return localStorage.getItem('veda_currency') || 'AUD';
+    return localStorage.getItem('icon_currency') || 'AUD';
   });
 
   const [products, setProducts] = useState(PRODUCTS);
 
   const [cart, setCart] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('veda_cart')) || [{ productId: 'veda-01', qty: 1 }];
+      return JSON.parse(localStorage.getItem('icon_cart')) || [{ productId: 'icon-01', qty: 1 }];
     } catch {
-      return [{ productId: 'veda-01', qty: 1 }];
+      return [{ productId: 'icon-01', qty: 1 }];
     }
   });
 
   const [wishlist, setWishlist] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('veda_wishlist')) || ['veda-02', 'veda-03'];
+      return JSON.parse(localStorage.getItem('icon_wishlist')) || ['icon-03', 'icon-17'];
     } catch {
-      return ['veda-02', 'veda-03'];
+      return ['icon-03', 'icon-17'];
     }
   });
 
@@ -60,17 +61,17 @@ export default function App() {
 
   // Save changes to localStorage
   useEffect(() => {
-    localStorage.setItem('veda_cart', JSON.stringify(cart));
+    localStorage.setItem('icon_cart', JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
-    localStorage.setItem('veda_wishlist', JSON.stringify(wishlist));
+    localStorage.setItem('icon_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
   const setCurrency = (code) => {
     if (CURRENCIES[code]) {
       setCurrencyState(code);
-      localStorage.setItem('veda_currency', code);
+      localStorage.setItem('icon_currency', code);
       addToast(`Currency updated to ${code} (${CURRENCIES[code].symbol})`, 'gold');
     }
   };
@@ -84,10 +85,11 @@ export default function App() {
     }, 3500);
   };
 
-  // Price Formatter
-  const formatPrice = (amountINR) => {
+  // Price Formatter in AUD / Currency
+  const formatPrice = (amount) => {
     const curr = CURRENCIES[currency] || CURRENCIES.AUD;
-    const converted = Math.round(amountINR * curr.rate);
+    const base = typeof amount === 'number' ? amount : 0;
+    const converted = Math.round(base * curr.rate);
     return `${curr.symbol}${converted.toLocaleString()}`;
   };
 
@@ -103,7 +105,7 @@ export default function App() {
       return [...prev, { productId, qty }];
     });
     const prod = products.find(p => p.id === productId);
-    addToast(`Added "${prod?.name || 'Item'}" to your bag`, 'success');
+    addToast(`Added "${prod?.name || 'Equipment'}" to your hire bag`, 'success');
   };
 
   const handleUpdateCartQty = (productId, delta) => {
@@ -122,12 +124,12 @@ export default function App() {
 
   const handleRemoveFromCart = (productId) => {
     setCart(prev => prev.filter(item => item.productId !== productId));
-    addToast('Item removed from bag', 'info');
+    addToast('Item removed from hire bag', 'info');
   };
 
   const handleCompleteOrder = () => {
     setCart([]);
-    addToast('Order confirmed! Dispatched from Brisbane studio tomorrow.', 'success');
+    addToast('Booking confirmed! Brisbane logistics dispatch scheduled.', 'success');
   };
 
   // Wishlist Operations
@@ -135,20 +137,23 @@ export default function App() {
     const prod = products.find(p => p.id === productId);
     if (wishlist.includes(productId)) {
       setWishlist(prev => prev.filter(id => id !== productId));
-      addToast(`Removed from Wishlist`, 'info');
+      addToast(`Removed from saved equipment`, 'info');
     } else {
       setWishlist(prev => [...prev, productId]);
-      addToast(`Saved "${prod?.name || 'Item'}" to Wishlist`, 'gold');
+      addToast(`Saved "${prod?.name || 'Equipment'}" to Wishlist`, 'gold');
     }
   };
 
-  // Category Selection
-  const handleSelectCategory = (catKey) => {
-    setActiveCategory(catKey);
-    const el = document.getElementById('top-picks-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  // Navigation handlers
+  const handleNavigateHome = () => {
+    setCurrentView('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavigateCatalog = (categoryKey = 'all') => {
+    setActiveCategory(categoryKey);
+    setCurrentView('catalog');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Admin Operations
@@ -160,16 +165,16 @@ export default function App() {
     setProducts(prev =>
       prev.map(p => (p.id === id ? { ...p, stock: newStock } : p))
     );
-    addToast('Product stock updated in Brisbane warehouse', 'gold');
+    addToast('Equipment inventory updated in Brisbane warehouse', 'gold');
   };
 
   const quickViewProduct = quickViewId ? products.find(p => p.id === quickViewId) : null;
   const totalCartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
-  // If Admin Panel is Open, render full Admin HQ View
+  // If Admin Panel is Open, render full Admin Operations Portal
   if (isAdminOpen) {
     return (
-      <div className="veda-admin-app">
+      <div className="icon-admin-app">
         <AdminPanel
           onClose={() => setIsAdminOpen(false)}
           products={products}
@@ -183,18 +188,19 @@ export default function App() {
   }
 
   return (
-    <div className="veda-app">
-      {/* 1. Top Announcement Bar */}
-      <TopBar />
-
+    <div className="icon-app" data-glisse-backdrop>
+      
       {/* 2. Unified Luxury Editorial Header */}
       <Header
+        currentView={currentView}
         currency={currency}
         setCurrency={setCurrency}
         formatPrice={formatPrice}
         products={products}
         activeCategory={activeCategory}
-        onSelectCategory={handleSelectCategory}
+        onSelectCategory={setActiveCategory}
+        onNavigateHome={handleNavigateHome}
+        onNavigateCatalog={handleNavigateCatalog}
         onOpenCategories={() => setIsCategoriesOpen(true)}
         onOpenQuickView={(id) => setQuickViewId(id)}
         cartCount={totalCartCount}
@@ -207,65 +213,76 @@ export default function App() {
       />
 
       <main>
-        {/* 3. Full-Size Hero Banner (Edge-to-Edge with High Text Visibility) */}
-        <Hero
-          onShopNow={() => handleSelectCategory('all')}
-          onShopLook={() => {
-            const el = document.getElementById('lookbook-section');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }}
-        />
+        {currentView === 'home' ? (
+          /* =================================================================
+             HOME PAGE: SHOWCASES ONLY CATEGORIES (LEADING TO ITEMS)
+             ================================================================= */
+          <>
+            {/* Hero Banner with High Contrast Editorial Content */}
+            <Hero
+              onExploreCategories={() => {
+                const el = document.getElementById('categories-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              onViewCatalog={() => handleNavigateCatalog('all')}
+            />
 
-        {/* 4. Circular Category Quick Browse */}
-        <CategoryBar
-          activeCategory={activeCategory}
-          onSelectCategory={handleSelectCategory}
-        />
 
-        {/* 5. Top Picks For You Product Grid */}
-        <ProductGrid
-          products={products}
-          activeCategory={activeCategory}
-          onSelectCategory={handleSelectCategory}
-          formatPrice={formatPrice}
-          wishlist={wishlist}
-          onToggleWishlist={handleToggleWishlist}
-          onAddToCart={handleAddToCart}
-          onOpenQuickView={(id) => setQuickViewId(id)}
-        />
 
-        {/* 6. 3-Column Promo Bento Banners */}
-        <BentoPromos
-          onSelectCategory={handleSelectCategory}
-          onShopLook={() => {
-            const el = document.getElementById('lookbook-section');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }}
-        />
+            {/* Core Home Showcase: Rich Category Cards leading to Items */}
+            <CategoriesShowcase
+              onExploreCategory={(catId) => handleNavigateCatalog(catId)}
+              onViewAllItems={() => handleNavigateCatalog('all')}
+            />
 
-        {/* 7. Interactive Room Lookbook */}
-        <Lookbook
-          onOpenQuickView={(id) => setQuickViewId(id)}
-          onAddToCart={handleAddToCart}
-          formatPrice={formatPrice}
-        />
+            {/* How It Works: 3-Step Simple Process */}
+            <HowItWorks
+              onExploreCatalog={() => handleNavigateCatalog('all')}
+            />
 
-        {/* 8. Newsletter */}
-        <Newsletter onToast={addToast} />
+            {/* 3-Column Promo Bento Banners */}
+            <BentoPromos
+              onSelectCategory={(catId) => handleNavigateCatalog(catId)}
+            />
+
+            {/* Service & Equipment Guarantees Strip */}
+            <TrustStrip />
+
+
+
+          </>
+        ) : (
+          /* =================================================================
+             DEDICATED SEPARATE ITEMS PAGE: ALL HIRE PRODUCTS & FILTERING
+             ================================================================= */
+          <ProductGrid
+            products={products}
+            activeCategory={activeCategory}
+            onSelectCategory={setActiveCategory}
+            onBackToHome={handleNavigateHome}
+            formatPrice={formatPrice}
+            wishlist={wishlist}
+            onToggleWishlist={handleToggleWishlist}
+            onAddToCart={handleAddToCart}
+            onOpenQuickView={(id) => setQuickViewId(id)}
+          />
+        )}
       </main>
 
-      {/* 12. Footer */}
+      {/* Footer */}
       <Footer
         currency={currency}
         setCurrency={setCurrency}
-        onSelectCategory={handleSelectCategory}
+        onSelectCategory={(catId) => handleNavigateCatalog(catId)}
         onOpenTrackOrder={() => setIsTrackOrderOpen(true)}
       />
 
-      {/* 13. Mobile Bottom Navigation Bar (For phone compatibility) */}
+      {/* Mobile Bottom Navigation Bar */}
       <MobileBottomBar
         cartCount={totalCartCount}
         wishlistCount={wishlist.length}
+        onNavigateHome={handleNavigateHome}
+        onNavigateCatalog={handleNavigateCatalog}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenWishlist={() => setIsWishlistOpen(true)}
         onOpenCategories={() => setIsCategoriesOpen(true)}
@@ -301,7 +318,10 @@ export default function App() {
       <CategoriesDrawer
         isOpen={isCategoriesOpen}
         onClose={() => setIsCategoriesOpen(false)}
-        onSelectCategory={handleSelectCategory}
+        onSelectCategory={(catId) => {
+          setIsCategoriesOpen(false);
+          handleNavigateCatalog(catId);
+        }}
       />
 
       <QuickViewModal

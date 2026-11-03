@@ -10,7 +10,7 @@ export default function ReviewModal({ isOpen, onClose, onToast }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onToast('Thank you! Your verified artisan review has been published.', 'success');
+    onToast('Thank you! Your event hire review has been submitted.', 'success');
     onClose();
   };
 
@@ -18,20 +18,23 @@ export default function ReviewModal({ isOpen, onClose, onToast }) {
     <>
       <div className="modal-backdrop active" onClick={onClose} />
       <div className="center-modal active" role="dialog" aria-modal="true">
-        <button className="modal-close-corner-btn" onClick={onClose}>✕</button>
+        <button className="modal-close-corner-btn" onClick={onClose} aria-label="Close modal">✕</button>
         <div style={{ padding: '36px' }}>
-          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', marginBottom: '6px' }}>Share Your Decor Experience</h3>
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '20px' }}>Help fellow decor lovers discover authentic heritage treasures.</p>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', marginBottom: '6px', color: 'var(--color-primary)' }}>Share your event hire experience</h3>
+          <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '20px' }}>Help Brisbane event hosts and brides discover pristine celebration rentals.</p>
 
           <form onSubmit={handleSubmit}>
             <div className="form-field">
-              <label className="form-label">Your Rating</label>
+              <label className="form-label">Your rating</label>
               <div className="star-rating-picker" id="star-picker">
                 {[1, 2, 3, 4, 5].map(num => (
                   <span
                     key={num}
                     className={num <= stars ? 'active' : ''}
                     onClick={() => setStars(num)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${num} star`}
                   >
                     ★
                   </span>
@@ -41,22 +44,22 @@ export default function ReviewModal({ isOpen, onClose, onToast }) {
 
             <div className="form-grid-2">
               <div className="form-field">
-                <label className="form-label">Your Name</label>
+                <label className="form-label">Your name</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. Shalini Roy"
+                  placeholder="e.g. Sarah Jenkins"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
               </div>
               <div className="form-field">
-                <label className="form-label">Your City</label>
+                <label className="form-label">Event suburb or city</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. Pune, MH"
+                  placeholder="e.g. New Farm, Brisbane QLD"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   required
@@ -65,32 +68,36 @@ export default function ReviewModal({ isOpen, onClose, onToast }) {
             </div>
 
             <div className="form-field">
-              <label className="form-label">Product Reviewed</label>
+              <label className="form-label">Equipment hired</label>
               <select className="form-input" style={{ cursor: 'pointer' }}>
-                <option>Mayura Lotus Royal Brass Urli</option>
-                <option>Jaipur Architectural Jali Lantern</option>
-                <option>Udaipur Pichwai Lotus Fresco Plate</option>
-                <option>Ashtalakshmi Sacred Pooja Thali Set</option>
-                <option>Makrana Fluted Marble Catchall Bowl</option>
-                <option>Sandalwood & Saffron Soy Urli Candle</option>
+                <option>Icon 6x3m Commercial Pop-Up Gazebo</option>
+                <option>Luxe 3D Silk Flower Wall (2.4m × 2.4m)</option>
+                <option>Modern Pastel Pink Ripple Arch Trio</option>
+                <option>Sky Blue Ripple Wave Arch Backdrop</option>
+                <option>Foldable Silver Cocktail Bar Tables</option>
+                <option>White Tiffany Event Chairs & Cushions</option>
+                <option>Architectural Fluted Cylinder Plinths</option>
+                <option>Indoor/Outdoor Cold Spark Pyrotechnic Pair</option>
+                <option>Low Fog "Dancing on Clouds" Machine</option>
               </select>
             </div>
 
             <div className="form-field">
-              <label className="form-label">Review Experience</label>
+              <label className="form-label">Your event feedback</label>
               <textarea
                 className="form-input"
-                rows="4"
-                placeholder="How did this piece enhance your home sanctuary?"
+                rows="3"
+                placeholder="Tell us about the delivery, setup, and equipment condition during your celebration..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 required
               />
             </div>
 
-            <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-              Publish Verified Review ✨
-            </button>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
+              <button type="submit" className="btn-primary" style={{ flex: 2, justifyContent: 'center' }}>Submit review</button>
+            </div>
           </form>
         </div>
       </div>

@@ -3,23 +3,16 @@ import React from 'react';
 export default function MobileBottomBar({
   cartCount,
   wishlistCount,
+  onNavigateHome,
+  onNavigateCatalog,
   onOpenCart,
   onOpenWishlist,
   onOpenCategories,
   onOpenAdmin
 }) {
-  const scrollToHome = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const scrollToShop = () => {
-    const el = document.getElementById('top-picks-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <nav className="mobile-bottom-bar" aria-label="Mobile Navigation">
-      <button className="mobile-bottom-item" onClick={scrollToHome}>
+      <button className="mobile-bottom-item" onClick={onNavigateHome}>
         <div className="bottom-icon-wrap">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -41,14 +34,14 @@ export default function MobileBottomBar({
         <span>Categories</span>
       </button>
 
-      <button className="mobile-bottom-item" onClick={scrollToShop}>
+      <button className="mobile-bottom-item" onClick={() => onNavigateCatalog?.('all')}>
         <div className="bottom-icon-wrap">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </div>
-        <span>Shop</span>
+        <span>Catalog</span>
       </button>
 
       <button className="mobile-bottom-item" onClick={onOpenWishlist}>
@@ -80,7 +73,7 @@ export default function MobileBottomBar({
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
         </div>
-        <span>Admin</span>
+        <span>Ops HQ</span>
       </button>
     </nav>
   );

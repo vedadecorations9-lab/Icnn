@@ -40,24 +40,27 @@ export default function AdminPanel({
     if (!newProdName.trim()) return;
 
     const newProduct = {
-      id: `veda-${Date.now().toString().slice(-4)}`,
+      id: `icon-${Date.now().toString().slice(-4)}`,
       name: newProdName,
       category: newProdCategory,
       categoryLabel: newProdCategory.toUpperCase(),
+      priceAUD: newProdPrice,
       priceINR: Math.round(newProdPrice / 0.0185),
-      originalINR: Math.round((newProdPrice * 1.25) / 0.0185),
+      originalAUD: Math.round(newProdPrice * 1.25),
       discount: '-20%',
       rating: 5.0,
       reviewsCount: 1,
-      badge: 'New Arrival',
+      badge: 'New Hire Arrival',
       badgeType: 'badge-gold',
-      image: '/assets/images/product-urli.jpg',
-      description: newProdDesc || 'Handcrafted luxury decor piece curated for Brisbane homes.',
-      origin: 'Artisan Crafted · Brisbane QLD Warehouse',
-      material: '100% Solid Brass / Teakwood',
-      dimensions: '12" Dia | Weight: 2.2 kg',
+      image: '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
+      description: newProdDesc || 'Commercial grade party hire equipment maintained in Brisbane warehouse.',
+      origin: 'Icon Logistics Hub · Murrumba Downs QLD',
+      material: 'Commercial Heavy-Duty Specification',
+      dimensions: 'Standard Event Spec',
+      hirePeriod: 'Weekend Event Hire (Fri–Mon)',
+      bondAUD: 50,
       stock: parseInt(newProdStock, 10) || 10,
-      sku: `VD-AU-${Math.floor(100 + Math.random() * 900)}`
+      sku: `IPH-AU-${Math.floor(100 + Math.random() * 900)}`
     };
 
     onAddProduct(newProduct);
@@ -78,112 +81,112 @@ export default function AdminPanel({
     (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  // VEDA Decorations Real Store Orders & Activity
+  // ICON Party Hire Real Bookings & Activity
   const STORE_TRANSACTIONS = [
     {
       id: 'tx-01',
       date: 'Today, 10:15 AM',
       customer: 'Sarah Jenkins',
-      item: 'Mayura Lotus Royal Brass Urli (14")',
+      item: 'Commercial 6x3m Gazebo + Pink Ripple Arches',
       payment: 'Stripe AU',
-      category: 'Brass Urli',
-      catColor: '#8B5CF6',
-      amount: '$89.00 AUD',
+      category: 'Marquees & Gazebos',
+      catColor: '#D81B60',
+      amount: '$190.00 AUD',
       status: 'Delivered',
       location: 'New Farm, Brisbane QLD',
-      carrier: 'AusPost Express (AP-QLD-88912)'
+      carrier: 'Icon Delivery Van 1 (IPH-DEL-88912)'
     },
     {
       id: 'tx-02',
       date: 'Today, 09:30 AM',
-      customer: 'Priya Narayanan',
-      item: 'Ashtalakshmi Sacred Pooja Thali + Diyas',
+      customer: 'Marcus & Jessica Vance',
+      item: 'Luxe 3D Silk Flower Wall + Low Fog Machine',
       payment: 'Afterpay AU',
-      category: 'Pooja Decor',
-      catColor: '#EC4899',
-      amount: '$165.00 AUD',
+      category: 'Backdrops & Arches',
+      catColor: '#E03E8A',
+      amount: '$330.00 AUD',
       status: 'Dispatched',
-      location: 'Sunnybank Hills, Brisbane QLD',
-      carrier: 'StarTrack Express (ST-BRIS-44910)'
+      location: 'Paddington, Brisbane QLD',
+      carrier: 'Icon Setup Crew A (IPH-DEL-77401)'
     },
     {
       id: 'tx-03',
       date: 'Yesterday, 04:12 PM',
       customer: 'Liam O\'Connor',
-      item: 'Jaipur Architectural Jali Lanterns (Pair)',
+      item: 'Foldable Silver Cocktail High-Top Tables (x6)',
       payment: 'Apple Pay',
-      category: 'Ambient Lamps',
+      category: 'Tables & Furniture',
       catColor: '#F59E0B',
-      amount: '$146.00 AUD',
+      amount: '$108.00 AUD',
       status: 'Processing',
-      location: 'Surfers Paradise, Gold Coast QLD',
-      carrier: 'AusPost Express (Pending Pickup)'
+      location: 'Broadbeach, Gold Coast QLD',
+      carrier: 'Self-Pickup Murrumba Downs Hub'
     },
     {
       id: 'tx-04',
       date: 'Yesterday, 01:25 PM',
       customer: 'Chloe Sutherland',
-      item: 'Udaipur Pichwai Lotus Fresco Plate (18")',
+      item: 'White Tiffany Event Chairs (x24) + Cushions',
       payment: 'Visa Debit',
-      category: 'Pichwai Art',
-      catColor: '#10B981',
-      amount: '$140.00 AUD',
+      category: 'Chairs & Linens',
+      catColor: '#D48B70',
+      amount: '$132.00 AUD',
       status: 'Delivered',
-      location: 'Paddington, Brisbane QLD',
-      carrier: 'Local Brisbane Van (VD-LOCAL-09)'
+      location: 'Hamilton, Brisbane QLD',
+      carrier: 'Icon Delivery Van 2 (Gold Coast)'
     },
     {
       id: 'tx-05',
       date: '25 Oct, 11:05 AM',
       customer: 'David & Ananya Miller',
-      item: 'Sahasrara 108-Wick Brass Deepam Tower',
+      item: 'Fluted White Plinths (Trio) + Cold Spark Pair',
       payment: 'Mastercard',
-      category: 'Ambient Lamps',
+      category: 'Special Effects & FX',
       catColor: '#F59E0B',
-      amount: '$170.00 AUD',
+      amount: '$175.00 AUD',
       status: 'Processing',
       location: 'Southport, Gold Coast QLD',
-      carrier: 'AusPost Express (Pending Pickup)'
+      carrier: 'Icon Tail-Lift Truck'
     },
     {
       id: 'tx-06',
       date: '24 Oct, 03:40 PM',
       customer: 'Aarav Patel',
-      item: 'Makrana Fluted Carved Marble Catchall',
+      item: 'Chafing Dishes Twin Set + 28L Hot Water Urn',
       payment: 'Zip Pay AU',
-      category: 'Marble Decor',
+      category: 'Catering Equipment',
       catColor: '#06B6D4',
-      amount: '$95.00 AUD',
+      amount: '$65.00 AUD',
       status: 'Dispatched',
-      location: 'Fortitude Valley, Brisbane QLD',
+      location: 'Murrumba Downs, Brisbane QLD',
       carrier: 'Click & Collect (Showroom Pickup)'
     },
     {
       id: 'tx-07',
       date: '24 Oct, 01:10 PM',
       customer: 'Sunita Rao',
-      item: 'Sandalwood Soy Urli Candles (x2) + Toran',
+      item: 'Pink Pearl Beverage Dispensers + Gold Cake Trio',
       payment: 'Stripe AU',
-      category: 'Scented Wax',
+      category: 'Plinths & Catering',
       catColor: '#F97316',
-      amount: '$125.00 AUD',
+      amount: '$63.00 AUD',
       status: 'Delivered',
       location: 'Indooroopilly, Brisbane QLD',
-      carrier: 'AusPost Express (AP-QLD-87612)'
+      carrier: 'Icon Delivery Van 1 (IPH-DEL-87612)'
     }
   ];
 
   const TAB_TITLES = {
-    overview: 'Store Overview & Daily Performance',
-    orders: 'Customer Orders & AusPost Fulfillment',
-    inventory: 'Artisanal Inventory & Warehouse SKUs',
-    showroom: 'Brisbane Showroom & Studio Logistics',
-    analytics: 'Decor Category Sales & Volume Analytics'
+    overview: 'Event Hire Operations & Fleet Performance',
+    orders: 'Event Bookings & Brisbane Fleet Delivery',
+    inventory: 'Equipment Inventory, Bonds & Warehouse SKUs',
+    showroom: 'Brisbane Warehouse Hub & Consultation Studio',
+    analytics: 'Equipment Category Utilization & Revenue Analytics'
   };
 
   return (
-    <div className="veda-admin-screen" role="dialog" aria-modal="true" aria-label="Veda Decorations Store Admin">
-      
+    <div className="icon-admin-screen" role="dialog" aria-modal="true" aria-label="Icon Party Hire Operations Admin">
+
       {/* Mobile Backdrop for Sidebar */}
       {isSidebarOpen && (
         <div className="sidebar-backdrop show-mobile" onClick={() => setIsSidebarOpen(false)} />
@@ -193,14 +196,14 @@ export default function AdminPanel({
          1. DEDICATED LEFT SIDEBAR (Linear / Shopify Admin Standard)
          ===================================================================== */}
       <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`} aria-label="Admin Navigation Sidebar">
-        
+
         {/* Sidebar Brand Header */}
         <div className="sidebar-brand-box">
           <div className="sidebar-brand-lockup" onClick={() => setActiveTab('overview')}>
-            <img src="/assets/images/logo.png" alt="Veda Decorations" className="sidebar-brand-avatar" />
+            <img src="/assets/images/icon_logo.png" alt="Icon Party Hire" className="sidebar-brand-avatar" />
             <div className="sidebar-brand-info">
-              <span className="sidebar-brand-title">VEDA DECOR</span>
-              <span className="sidebar-brand-tag">BRISBANE HQ</span>
+              <span className="sidebar-brand-title">ICON PARTY HIRE</span>
+              <span className="sidebar-brand-tag">OPERATIONS HQ</span>
             </div>
           </div>
           <button
@@ -216,14 +219,14 @@ export default function AdminPanel({
         <div className="sidebar-showroom-pill">
           <span className="studio-live-dot"></span>
           <div className="studio-pill-text">
-            <span className="studio-name">Fortitude Valley Studio</span>
+            <span className="studio-name">Murrumba Downs Hub</span>
             <span className="studio-state">Brisbane, QLD · Active</span>
           </div>
         </div>
 
         {/* Navigation Menu Groups */}
         <nav className="sidebar-nav-groups" aria-label="Admin Sections">
-          
+
           <div className="nav-group-section">
             <span className="nav-group-title">STORE OPERATIONS</span>
             <ul className="nav-group-list">
@@ -368,7 +371,7 @@ export default function AdminPanel({
               <span className="user-role">Studio Director · Brisbane</span>
             </div>
           </div>
-          
+
           <button
             className="sidebar-exit-storefront-btn"
             onClick={onClose}
@@ -389,7 +392,7 @@ export default function AdminPanel({
          2. MAIN VIEWPORT (Spacious, Left-Aligned Executive Dashboard)
          ===================================================================== */}
       <main className="admin-main-viewport">
-        
+
         {/* Top Header Bar */}
         <header className="admin-viewport-header">
           <div className="viewport-header-left">
@@ -405,27 +408,27 @@ export default function AdminPanel({
                 <line x1="3" y1="18" x2="21" y2="18"></line>
               </svg>
             </button>
-            
+
             <div className="header-breadcrumbs">
-              <span className="crumb-root">Veda Studio HQ</span>
+              <span className="crumb-root">Icon Operations HQ</span>
               <span className="crumb-sep">/</span>
               <h1 className="crumb-current">{TAB_TITLES[activeTab]}</h1>
             </div>
           </div>
 
           <div className="viewport-header-right">
-            
+
             {/* Quick Live Status */}
             <div className="header-live-badge hide-mobile">
               <span className="status-dot-pulse"></span>
-              <span>Fortitude Valley Studio Open · AU Orders Live</span>
+              <span>Murrumba Downs Hub Active · Weekend Fleet Live</span>
             </div>
 
             {/* Notification Bell */}
             <button
               className="admin-header-icon-btn"
-              title="Store Alerts"
-              onClick={() => onToast?.('All 18 dispatch parcels scanned by AusPost', 'info')}
+              title="Hire Alerts"
+              onClick={() => onToast?.('All 16 event setups loaded onto Icon fleet vans', 'info')}
               aria-label="Notifications"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -437,64 +440,64 @@ export default function AdminPanel({
 
             {/* + Add Masterpiece Button */}
             <button className="btn-emerald-pill" onClick={() => setIsAddModalOpen(true)}>
-              + Add Decor SKU
+              + Add Equipment SKU
             </button>
 
             {/* Exit to Public Store */}
             <button className="btn-subtle-pill hide-mobile" onClick={onClose}>
-              Storefront ↗
+              Public Storefront ↗
             </button>
           </div>
         </header>
 
         {/* Viewport Content Container */}
         <div className="admin-viewport-scroll">
-          
+
           {/* ===================================================================
              TAB 1: STORE OVERVIEW (Full Width Executive Layout)
              =================================================================== */}
           {activeTab === 'overview' && (
             <div className="admin-tab-pane">
-              
+
               {/* ROW 1: TWO ASYMMETRIC HERO CARDS */}
-              <div className="veda-hero-grid">
-                
+              <div className="icon-hero-grid">
+
                 {/* Left Card: Gross Store Revenue & Orders */}
-                <div className="veda-card veda-hero-treasury-card">
+                <div className="icon-card icon-hero-treasury-card">
                   <div className="card-top-subrow">
-                    <span className="card-meta-tag">VEDA DECORATIONS · BRISBANE FLAGSHIP & ONLINE STORE</span>
+                    <span className="card-meta-tag">ICON PARTY HIRE · BRISBANE WAREHOUSE & FLEET LOGISTICS</span>
                     <span className="card-meta-tag">OCTOBER 2026 OVERVIEW</span>
                   </div>
 
                   <div className="treasury-main-row">
                     <div className="treasury-title-wrap">
-                      <h2 className="treasury-account-heading">Monthly Gross Decor Sales</h2>
+                      <h2 className="treasury-account-heading">Monthly Gross Equipment Hire</h2>
                       <div className="treasury-num-row">
-                        <span className="treasury-acc-number">418 Orders Processed · $164.50 Average Basket Value</span>
+                        <span className="treasury-acc-number">284 Weekend Events Serviced · $171.50 Average Booking Value</span>
                       </div>
                     </div>
 
                     <div className="treasury-balance-display">
-                      <span className="treasury-amount">$68,789.50 AUD</span>
-                      <span className="treasury-growth-tag">+18.4% MoM</span>
+                      <span className="treasury-amount">$48,780.00 AUD</span>
+                      <span className="treasury-growth-tag">+24.6% MoM</span>
                     </div>
                   </div>
 
                   <div className="treasury-actions-row">
                     <button className="btn-emerald-pill" onClick={() => setIsAddModalOpen(true)}>
-                      + Add New Decor SKU
+                      + Add Equipment SKU
                     </button>
-                    <button className="btn-subtle-pill" onClick={() => onToast?.('Exporting October store orders CSV...', 'info')}>
-                      Export Orders CSV
+                    <button className="btn-subtle-pill" onClick={() => onToast?.('Exporting October event bookings CSV...', 'info')}>
+                      Export Bookings CSV
                     </button>
-                    <button className="btn-subtle-pill" onClick={() => onToast?.('Generating AusPost dispatch manifest...', 'info')}>
-                      Daily Shipping Manifest
+                    <button className="btn-subtle-pill" onClick={() => onToast?.('Generating Icon Van Fleet run sheet...', 'info')}>
+                      Daily Fleet Run Sheet
                     </button>
                   </div>
                 </div>
 
-                {/* Right Card: Australia Post Express Dispatch (Emerald Logistics Card) */}
-                <div className="veda-card veda-hero-courier-card">
+                {/* Right Card: Icon Van Fleet Dispatch */}
+                <div className="icon-card icon-hero-courier-card">
                   <div className="courier-dots-row">
                     <span className="courier-dot active"></span>
                     <span className="courier-dot"></span>
@@ -502,16 +505,16 @@ export default function AdminPanel({
 
                   <div className="courier-content-flex">
                     <div className="courier-text-wrap">
-                      <div className="courier-tag-badge">TODAY'S FULFILLMENT & DISPATCH</div>
-                      <h3 className="courier-title">AusPost Courier Pickup: 3:30 PM</h3>
+                      <div className="courier-tag-badge">TODAY'S EVENT DISPATCH & SETUP</div>
+                      <h3 className="courier-title">Icon Van Fleet Runs: 8:00 AM & 1:00 PM</h3>
                       <p className="courier-desc">
-                        18 handcrafted decor orders packed & staged in Fortitude Valley dispatch bay. 12 parcels tagged for Greater Brisbane Express.
+                        16 event setups staged in Murrumba Downs dispatch bays. 3 vans routed across Greater Brisbane & Gold Coast.
                       </p>
                       <button
                         className="btn-white-pill"
-                        onClick={() => onToast?.('Printed 18 AusPost shipping labels & packing slips', 'success')}
+                        onClick={() => onToast?.('Printed 16 Delivery Run Sheets & Equipment Checklists', 'success')}
                       >
-                        Print Packing Slips & Labels
+                        Print Run Sheets & Manifests
                       </button>
                     </div>
 
@@ -534,14 +537,14 @@ export default function AdminPanel({
               </div>
 
               {/* ROW 2: 4 EQUAL STORE METRIC CARDS */}
-              <div className="veda-stats-row">
-                
-                {/* Stat 1: Today's Revenue */}
-                <div className="veda-card veda-stat-card">
+              <div className="icon-stats-row">
+
+                {/* Stat 1: Weekend Hire Revenue */}
+                <div className="icon-card icon-stat-card">
                   <div className="stat-card-header">
                     <div>
-                      <div className="stat-card-title">Today's Store Sales</div>
-                      <div className="stat-card-meta">26 online customer orders</div>
+                      <div className="stat-card-title">Weekend Hire Revenue</div>
+                      <div className="stat-card-meta">38 active party bookings</div>
                     </div>
                     <div className="stat-icon-pill icon-gold">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -551,17 +554,17 @@ export default function AdminPanel({
                     </div>
                   </div>
                   <div className="stat-card-footer">
-                    <div className="stat-big-num">$4,820.00 AUD</div>
-                    <div className="stat-trend positive">↑ +18.4% vs yesterday</div>
+                    <div className="stat-big-num">$8,420.00 AUD</div>
+                    <div className="stat-trend positive">↑ +21.4% vs last weekend</div>
                   </div>
                 </div>
 
-                {/* Stat 2: Active Dispatches */}
-                <div className="veda-card veda-stat-card">
+                {/* Stat 2: Active Van Dispatches */}
+                <div className="icon-card icon-stat-card">
                   <div className="stat-card-header">
                     <div>
-                      <div className="stat-card-title">AusPost Dispatches</div>
-                      <div className="stat-card-meta">Express & StarTrack QLD</div>
+                      <div className="stat-card-title">Van Fleet Dispatches</div>
+                      <div className="stat-card-meta">Brisbane, Gold Coast & Bay</div>
                     </div>
                     <div className="stat-icon-pill icon-emerald">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -572,17 +575,17 @@ export default function AdminPanel({
                     </div>
                   </div>
                   <div className="stat-card-footer">
-                    <div className="stat-big-num">28 Parcels</div>
-                    <div className="stat-trend positive">99.2% on-time QLD dispatch</div>
+                    <div className="stat-big-num">16 Setups</div>
+                    <div className="stat-trend positive">100% on-schedule dispatch</div>
                   </div>
                 </div>
 
-                {/* Stat 3: Stock Alert */}
-                <div className="veda-card veda-stat-card">
+                {/* Stat 3: Equipment Availability Alert */}
+                <div className="icon-card icon-stat-card">
                   <div className="stat-card-header">
                     <div>
-                      <div className="stat-card-title">Low Stock Alert</div>
-                      <div className="stat-card-meta">Urli & Deepam running low</div>
+                      <div className="stat-card-title">Equipment Capacity Alert</div>
+                      <div className="stat-card-meta">6x3 Gazebos & Flower Walls</div>
                     </div>
                     <div className="stat-icon-pill icon-rose">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -593,17 +596,17 @@ export default function AdminPanel({
                     </div>
                   </div>
                   <div className="stat-card-footer">
-                    <div className="stat-big-num">4 SKUs Alert</div>
-                    <div className="stat-trend warning">Reorder batches placed</div>
+                    <div className="stat-big-num">94% Booked</div>
+                    <div className="stat-trend warning">Near peak weekend cap</div>
                   </div>
                 </div>
 
-                {/* Stat 4: Brisbane Studio Showroom */}
-                <div className="veda-card veda-stat-card">
+                {/* Stat 4: Refundable Security Bonds */}
+                <div className="icon-card icon-stat-card">
                   <div className="stat-card-header">
                     <div>
-                      <div className="stat-card-title">Brisbane Studio POS</div>
-                      <div className="stat-card-meta">James St, Fortitude Valley</div>
+                      <div className="stat-card-title">Refundable Bonds Held</div>
+                      <div className="stat-card-meta">Held securely via Stripe AU</div>
                     </div>
                     <div className="stat-icon-pill icon-blue">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -619,7 +622,7 @@ export default function AdminPanel({
                     </div>
                   </div>
                   <div className="stat-card-footer">
-                    <div className="stat-big-num">$2,680.50 AUD</div>
+                    <div className="stat-big-num">$4,250.00 AUD</div>
                     <div className="stat-trend neutral">14 Studio pickups today</div>
                   </div>
                 </div>
@@ -627,10 +630,10 @@ export default function AdminPanel({
               </div>
 
               {/* ROW 3: LATEST ORDERS & CATEGORY DONUT CHART */}
-              <div className="veda-analytics-grid">
-                
+              <div className="icon-analytics-grid">
+
                 {/* Left Card: Latest Customer Orders */}
-                <div className="veda-card veda-card-orders-table">
+                <div className="icon-card icon-card-orders-table">
                   <div className="section-head-bar">
                     <div>
                       <h3 className="section-head-title">Recent Customer Orders & Dispatches</h3>
@@ -664,7 +667,7 @@ export default function AdminPanel({
                           onClick={() => setExpandedOrderId(expandedOrderId === tx.id ? null : tx.id)}
                         >
                           <span className="order-date-col">{tx.date.split(',')[0]}</span>
-                          
+
                           <div className="order-cust-col">
                             <span className="order-cust-name">{tx.customer}</span>
                             <span className="order-cust-item">{tx.item}</span>
@@ -712,7 +715,7 @@ export default function AdminPanel({
                 </div>
 
                 {/* Right Card: Category Breakdown (Strictly Bounded Donut Chart) */}
-                <div className="veda-card veda-card-donut-breakdown">
+                <div className="icon-card icon-card-donut-breakdown">
                   <div className="section-head-bar">
                     <div>
                       <h3 className="section-head-title">Sales by Decor Craftsmanship</h3>
@@ -891,8 +894,8 @@ export default function AdminPanel({
                 </div>
               </div>
 
-              <div className="veda-card veda-full-table-card">
-                <table className="veda-modern-table">
+              <div className="icon-card icon-full-table-card">
+                <table className="icon-modern-table">
                   <thead>
                     <tr>
                       <th>Order Reference</th>
@@ -963,8 +966,8 @@ export default function AdminPanel({
                 </div>
               </div>
 
-              <div className="veda-card veda-full-table-card">
-                <table className="veda-modern-table">
+              <div className="icon-card icon-full-table-card">
+                <table className="icon-modern-table">
                   <thead>
                     <tr>
                       <th>Product</th>
@@ -1029,30 +1032,34 @@ export default function AdminPanel({
           )}
 
           {/* ===================================================================
-             TAB 4: BRISBANE SHOWROOM & LOGISTICS
+             TAB 4: BRISBANE WAREHOUSE & FLEET LOGISTICS
              =================================================================== */}
           {activeTab === 'showroom' && (
             <div className="admin-tab-pane">
               <div className="subpane-header-row">
                 <div>
-                  <h2 className="subpane-title">Brisbane Showroom & Studio Logistics</h2>
-                  <p className="subpane-desc">Showroom visitor concierges, Click & Collect orders, and daily courier collections.</p>
+                  <h2 className="subpane-title">Brisbane Warehouse Hub & Consultation Studio</h2>
+                  <p className="subpane-desc">Client event consultations, warehouse self-pickups, and daily delivery fleet schedules.</p>
                 </div>
               </div>
 
               <div className="showroom-boxes-grid">
-                <div className="veda-card showroom-info-card">
-                  <h3 className="card-box-title">Fortitude Valley Showroom Studio</h3>
+                <div className="icon-card showroom-info-card">
+                  <h3 className="card-box-title">Murrumba Downs Hub</h3>
                   <div className="spec-row">
-                    <span className="label">Location</span>
-                    <span className="val">{BRISBANE_STORE_INFO.address}, Fortitude Valley QLD 4006</span>
+                    <span className="label">Studio Location</span>
+                    <span className="val">{BRISBANE_STORE_INFO.address}, Murrumba Downs QLD 4503</span>
+                  </div>
+                  <div className="spec-row">
+                    <span className="label">Distribution Hub</span>
+                    <span className="val">{BRISBANE_STORE_INFO.warehouseHub}</span>
                   </div>
                   <div className="spec-row">
                     <span className="label">Visiting Hours</span>
-                    <span className="val">{BRISBANE_STORE_INFO.hours}</span>
+                    <span className="val">{BRISBANE_STORE_INFO.showroomHours}</span>
                   </div>
                   <div className="spec-row">
-                    <span className="label">Concierge Phone</span>
+                    <span className="label">Dispatch Hotline</span>
                     <span className="val">{BRISBANE_STORE_INFO.phone}</span>
                   </div>
                   <div className="spec-row">
@@ -1061,23 +1068,23 @@ export default function AdminPanel({
                   </div>
                 </div>
 
-                <div className="veda-card showroom-info-card">
-                  <h3 className="card-box-title">Courier Logistics & Australia Post Dispatches</h3>
+                <div className="icon-card showroom-info-card">
+                  <h3 className="card-box-title">Event Fleet Logistics & Van Dispatches</h3>
                   <div className="spec-row">
-                    <span className="label">Daily AusPost Pickup</span>
-                    <span className="val">Every business day at 3:30 PM AEST</span>
+                    <span className="label">Morning Van Run</span>
+                    <span className="val">Every business day & weekend at 8:00 AM AEST</span>
                   </div>
                   <div className="spec-row">
-                    <span className="label">StarTrack Express</span>
-                    <span className="val">Same-day dispatch for orders before 1:00 PM</span>
+                    <span className="label">Afternoon Run</span>
+                    <span className="val">Same-day afternoon delivery by 1:00 PM</span>
                   </div>
                   <div className="spec-row">
-                    <span className="label">Free Shipping Limit</span>
-                    <span className="val">$150.00 AUD (Australia-Wide)</span>
+                    <span className="label">Delivery Coverage</span>
+                    <span className="val">Greater Brisbane, Gold Coast & Sunshine Coast</span>
                   </div>
                   <div className="spec-row">
-                    <span className="label">Transit Insurance</span>
-                    <span className="val">100% covered for transit breakage or damage</span>
+                    <span className="label">Public Liability</span>
+                    <span className="val">100% insured for park & venue party setups</span>
                   </div>
                 </div>
               </div>
@@ -1091,22 +1098,22 @@ export default function AdminPanel({
             <div className="admin-tab-pane">
               <div className="subpane-header-row">
                 <div>
-                  <h2 className="subpane-title">Category Revenue & Sales Trends</h2>
-                  <p className="subpane-desc">Breakdown of gross sales across Brass Urlis, Pooja Decor, Lanterns, Pichwai Art, and Marble.</p>
+                  <h2 className="subpane-title">Category Revenue & Hire Volume Trends</h2>
+                  <p className="subpane-desc">Breakdown of gross hires across Gazebos, Backdrops, Tables, Chairs, Plinths, Catering & Special FX.</p>
                 </div>
               </div>
 
               <div className="showroom-boxes-grid">
-                <div className="veda-card showroom-info-card">
-                  <span className="card-meta-tag">TOTAL STORE SALES (LAST 90 DAYS)</span>
-                  <div className="treasury-amount" style={{ margin: '10px 0 16px 0' }}>$108,750.80 AUD</div>
-                  <div className="stat-trend positive">↑ +14.8% growth vs previous quarter</div>
+                <div className="icon-card showroom-info-card">
+                  <span className="card-meta-tag">TOTAL HIRE VOLUME (LAST 90 DAYS)</span>
+                  <div className="treasury-amount" style={{ margin: '10px 0 16px 0' }}>$118,450.00 AUD</div>
+                  <div className="stat-trend positive">↑ +22.4% booking growth vs previous quarter</div>
                 </div>
 
-                <div className="veda-card showroom-info-card">
-                  <span className="card-meta-tag">TOP PERFORMING CRAFTSMANSHIP</span>
-                  <div className="treasury-amount" style={{ margin: '10px 0 16px 0' }}>Moradabad Brass Urlis</div>
-                  <div className="stat-trend positive">Accounting for 38% of total Queensland customer volume</div>
+                <div className="icon-card showroom-info-card">
+                  <span className="card-meta-tag">TOP PERFORMING EQUIPMENT</span>
+                  <div className="treasury-amount" style={{ margin: '10px 0 16px 0' }}>6x3m Commercial Pop-Up Gazebos</div>
+                  <div className="stat-trend positive">Accounting for 34% of total Queensland weekend hire bookings</div>
                 </div>
               </div>
             </div>

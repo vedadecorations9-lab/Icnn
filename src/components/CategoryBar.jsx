@@ -2,65 +2,59 @@ import React from 'react';
 
 const CATEGORIES = [
   { 
-    key: 'urli', 
-    label: 'Brass Urli', 
-    image: '/assets/images/product-urli.jpg',
-    alt: 'Handcrafted Brass Urli with Floating Petals'
-  },
-  { 
-    key: 'pooja', 
-    label: 'Pooja Decor', 
-    image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=400&q=80',
-    alt: 'Sacred Pooja Mandir Thali & Accents'
-  },
-  { 
-    key: 'lamps', 
-    label: 'Ambient Lamps', 
-    image: '/assets/images/product-lantern.jpg',
-    alt: 'Jaipur Jali Architectural Brass Lantern'
-  },
-  { 
-    key: 'wallart', 
-    label: 'Pichwai Art', 
-    image: 'https://images.unsplash.com/photo-1582561424760-0321d75e81fa?auto=format&fit=crop&w=400&q=80',
-    alt: 'Heritage Pichwai Lotus Fresco Plate'
-  },
-  { 
-    key: 'marble', 
-    label: 'Marble Decor', 
-    image: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=400&q=80',
-    alt: 'Makrana Fluted Carved Marble Catchall Bowl'
-  },
-  { 
-    key: 'toran', 
-    label: 'Festive Torans', 
-    image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=400&q=80',
-    alt: 'Silk & Gold Zari Doorway Toran'
-  },
-  { 
-    key: 'wax', 
-    label: 'Scented Wax', 
-    image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=400&q=80',
-    alt: 'Sandalwood & Saffron Soy Urli Candle'
-  },
-  { 
-    key: 'bells', 
-    label: 'Bells & Chimes', 
-    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=400&q=80',
-    alt: 'Sonorous Bronze Hanging Bell Windchime'
-  },
-  { 
     key: 'all', 
-    label: 'View All', 
-    image: '/assets/images/logo.png',
-    alt: 'Browse All Veda Collections',
+    label: 'All Items', 
+    image: '/assets/images/icon_logo.png',
+    alt: 'Browse All Icon Party Hire Equipment',
     isEmblem: true
+  },
+  { 
+    key: 'marquees', 
+    label: 'Gazebos', 
+    image: '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
+    alt: 'Commercial 6x3m Pop-Up Event Gazebos'
+  },
+  { 
+    key: 'backdrops', 
+    label: 'Backdrops', 
+    image: '/assets/images/items/Icon Party Hire flower wall-1024x1024.webp',
+    alt: '3D Silk Flower Walls and Ripple Arches'
+  },
+  { 
+    key: 'tables', 
+    label: 'Tables', 
+    image: '/assets/images/items/Foldable Silver Cocktail Table Hire-6-1024x1024.webp',
+    alt: 'Silver Cocktail Tables and Round Banquet Tables'
+  },
+  { 
+    key: 'chairs', 
+    label: 'Chairs', 
+    image: '/assets/images/items/Icon Party Hire Chair Rental-1-1024x1819.webp',
+    alt: 'White Tiffany Event Chairs and Fitted Spandex Covers'
+  },
+  { 
+    key: 'plinths', 
+    label: 'Plinths', 
+    image: '/assets/images/items/Icon Party Hire white plinths-1024x907.webp',
+    alt: 'Fluted Cylinder Cake Plinths and Gold Stands'
+  },
+  { 
+    key: 'catering', 
+    label: 'Catering', 
+    image: '/assets/images/items/Icon Party Hire chafing dishes-5-1024x1115.webp',
+    alt: 'Stainless Steel Chafing Warmers and 28L Water Urn'
+  },
+  { 
+    key: 'effects', 
+    label: 'Special FX', 
+    image: '/assets/images/items/Spark machines for hire $80-1024x1024.webp',
+    alt: 'Indoor Cold Spark Machines and Low Fog Cloud Effects'
   }
 ];
 
 export default function CategoryBar({ activeCategory, onSelectCategory }) {
   return (
-    <section className="categories-bar-section" aria-label="Product Categories">
+    <section className="categories-bar-section" aria-label="Event Hire Categories">
       <div className="container">
         <div className="category-row">
           {CATEGORIES.map(cat => (
@@ -78,8 +72,7 @@ export default function CategoryBar({ activeCategory, onSelectCategory }) {
                   className={`cat-thumb-img ${cat.isEmblem ? 'cat-emblem-img' : ''}`}
                   loading="lazy"
                   onError={(e) => {
-                    // Fallback gracefully to logo if external unsplash fails
-                    e.currentTarget.src = '/assets/images/logo.png';
+                    e.currentTarget.src = '/assets/images/icon_logo.png';
                   }}
                 />
               </div>

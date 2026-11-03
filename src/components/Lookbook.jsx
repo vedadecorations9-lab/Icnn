@@ -8,34 +8,38 @@ export default function Lookbook({ onOpenQuickView, onAddToCart, formatPrice }) 
           
           {/* Interactive Stage with Hotspots */}
           <div className="lookbook-stage">
-            <img src="/assets/images/hero-banner.jpg" alt="Veda Styled Festive Living Room" className="lookbook-img" />
+            <img
+              src="/assets/images/items/Three elegant outdoor party setups.png"
+              alt="Icon Styled Outdoor Celebration Setup"
+              className="lookbook-img"
+            />
             
-            {/* Hotspot 1: Brass Urli */}
+            {/* Hotspot 1: 6x3m Gazebo */}
             <div
               className="hotspot-pin"
-              style={{ top: '64%', left: '62%' }}
-              onClick={() => onOpenQuickView('veda-01')}
-              title="Click to view Mayura Urli"
+              style={{ top: '25%', left: '50%' }}
+              onClick={() => onOpenQuickView('icon-01')}
+              title="Click to view Icon 6x3m Gazebo"
             >
               <span>+</span>
             </div>
 
-            {/* Hotspot 2: Architectural Lantern */}
+            {/* Hotspot 2: Silver Cocktail Table */}
             <div
               className="hotspot-pin"
-              style={{ top: '56%', left: '28%' }}
-              onClick={() => onOpenQuickView('veda-02')}
-              title="Click to view Jaipur Lantern"
+              style={{ top: '65%', left: '22%' }}
+              onClick={() => onOpenQuickView('icon-06')}
+              title="Click to view Silver Cocktail Table"
             >
               <span>+</span>
             </div>
 
-            {/* Hotspot 3: Pichwai Wall Plate */}
+            {/* Hotspot 3: Ripple Arches */}
             <div
               className="hotspot-pin"
-              style={{ top: '30%', left: '82%' }}
-              onClick={() => onOpenQuickView('veda-03')}
-              title="Click to view Pichwai Art"
+              style={{ top: '45%', left: '80%' }}
+              onClick={() => onOpenQuickView('icon-04')}
+              title="Click to view Ripple Wave Arches"
             >
               <span>+</span>
             </div>
@@ -43,33 +47,37 @@ export default function Lookbook({ onOpenQuickView, onAddToCart, formatPrice }) 
 
           {/* Sidebar Info */}
           <div className="lookbook-sidebar">
-            <span className="lookbook-eyebrow">Interactive Visualizer</span>
-            <h2 className="lookbook-title">Shop The Grand Living Look</h2>
+            <span className="lookbook-eyebrow">Interactive event styling</span>
+            <h2 className="lookbook-title">Style the complete party setup</h2>
             <p className="lookbook-desc">
-              Hover and tap the glowing golden pins on our styled living sanctuary to inspect artisan dimensions, craft materials, and add directly to your bag.
+              Select the markers on our styled Brisbane celebration setup to inspect commercial equipment specs, hire terms, and add directly to your event bag.
             </p>
 
             <div className="lookbook-featured-card">
-              <img src="/assets/images/product-urli.jpg" alt="Mayura Royal Urli" className="lookbook-card-thumb" />
+              <img
+                src="/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp"
+                alt="Icon 6x3m Gazebo"
+                className="lookbook-card-thumb"
+              />
               <div className="lookbook-card-info">
-                <h4 className="lookbook-card-title">Mayura Lotus Royal Brass Urli</h4>
-                <div className="lookbook-card-price">{formatPrice(4850)}</div>
+                <h4 className="lookbook-card-title">Commercial 6x3m pop-up gazebo</h4>
+                <div className="lookbook-card-price">{formatPrice(85)} <span style={{ fontSize: '0.8rem', color: '#E8A28E' }}>/ day</span></div>
               </div>
               <button
                 className="btn-primary"
                 style={{ padding: '8px 16px', fontSize: '0.8125rem' }}
-                onClick={() => onAddToCart('veda-01')}
+                onClick={() => onAddToCart('icon-01')}
               >
-                Add to Bag
+                Add to bag
               </button>
             </div>
 
             <button
               className="btn-secondary"
               style={{ borderColor: 'rgba(255,255,255,0.4)', color: 'white' }}
-              onClick={() => onOpenQuickView('veda-02')}
+              onClick={() => onOpenQuickView('icon-04')}
             >
-              Inspect Ambient Lantern
+              Inspect ripple wave arches
             </button>
           </div>
 

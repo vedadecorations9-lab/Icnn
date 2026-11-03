@@ -17,30 +17,34 @@ export default function CartDrawer({
 
   if (!isOpen) return null;
 
-  // Calculate pricing
-  let rawSubtotalINR = 0;
+  // Calculate pricing in AUD / base
+  let rawSubtotalAUD = 0;
+  let totalBondAUD = 0;
+
   const cartItemsWithDetails = cart.map(item => {
     const prod = products.find(p => p.id === item.productId);
     if (!prod) return null;
-    const itemTotal = prod.priceINR * item.qty;
-    rawSubtotalINR += itemTotal;
-    return { ...prod, qty: item.qty };
+    const price = prod.priceAUD || prod.priceINR;
+    const itemTotal = price * item.qty;
+    rawSubtotalAUD += itemTotal;
+    totalBondAUD += (prod.bondAUD || 30) * item.qty;
+    return { ...prod, qty: item.qty, calculatedPrice: price };
   }).filter(Boolean);
 
-  let discountINR = 0;
+  let discountAUD = 0;
   if (appliedCoupon) {
     if (appliedCoupon.discountPercent) {
-      discountINR = Math.round(rawSubtotalINR * (appliedCoupon.discountPercent / 100));
-    } else if (appliedCoupon.flatDiscountINR) {
-      discountINR = appliedCoupon.flatDiscountINR;
+      discountAUD = Math.round(rawSubtotalAUD * (appliedCoupon.discountPercent / 100));
+    } else if (appliedCoupon.flatDiscountAUD) {
+      discountAUD = appliedCoupon.flatDiscountAUD;
     }
   }
 
-  const thresholdINR = 1999;
-  const isFreeShipping = rawSubtotalINR >= thresholdINR;
-  const shippingINR = isFreeShipping ? 0 : (cart.length > 0 ? 250 : 0);
-  const grandTotalINR = Math.max(0, rawSubtotalINR - discountINR + shippingINR);
-  const shippingPercent = Math.min(100, (rawSubtotalINR / thresholdINR) * 100);
+  const thresholdAUD = 250;
+  const isFreeDelivery = rawSubtotalAUD >= thresholdAUD;
+  const deliveryAUD = isFreeDelivery ? 0 : (cart.length > 0 ? 35 : 0);
+  const grandTotalAUD = Math.max(0, rawSubtotalAUD - discountAUD + deliveryAUD);
+  const deliveryPercent = Math.min(100, (rawSubtotalAUD / thresholdAUD) * 100);
 
   const handleApplyCoupon = () => {
     const code = couponCode.trim().toUpperCase();
@@ -49,32 +53,32 @@ export default function CartDrawer({
       onToast(`Coupon "${code}" applied: ${COUPONS[code].label}!`, 'success');
       setCouponCode('');
     } else {
-      onToast('Invalid coupon. Try "VEDA10" or "FESTIVE20"', 'gold');
+      onToast('Invalid voucher code. Try "ICON10" or "WEEKEND20"', 'gold');
     }
   };
 
   return (
     <>
       <div className="modal-backdrop active" onClick={onClose} />
-      <aside className="slide-drawer active" aria-label="Shopping Cart">
+      <aside className="slide-drawer active" aria-label="Event Hire Bag">
         <div className="drawer-header">
           <h3 className="drawer-title">
-            <span>Sacred Shopping Bag</span>
+            <span>Your Event Hire Bag</span>
           </h3>
           <button className="drawer-close-btn" onClick={onClose} aria-label="Close Bag">✕</button>
         </div>
 
-        {/* Free Shipping Progress */}
+        {/* Free Delivery Progress */}
         <div className="shipping-progress-box">
           <div className="shipping-progress-text">
-            {isFreeShipping ? (
-              <span>🎉 <strong>Complimentary Express Shipping Unlocked!</strong></span>
+            {isFreeDelivery ? (
+              <span><strong>Complimentary Greater Brisbane delivery unlocked</strong></span>
             ) : (
-              <span>Add <strong>{formatPrice(thresholdINR - rawSubtotalINR)}</strong> more for Complimentary Express Shipping</span>
+              <span>Add <strong>{formatPrice(thresholdAUD - rawSubtotalAUD)}</strong> more for free Brisbane delivery</span>
             )}
           </div>
           <div className="shipping-bar-bg">
-            <div className="shipping-bar-fill" style={{ width: `${shippingPercent}%` }} />
+            <div className="shipping-bar-fill" style={{ width: `${deliveryPercent}%` }} />
           </div>
         </div>
 
@@ -86,7 +90,10 @@ export default function CartDrawer({
                 <img src={item.image} alt={item.name} className="cart-item-thumb" />
                 <div className="cart-item-details">
                   <h4 className="cart-item-title">{item.name}</h4>
-                  <div className="cart-item-price">{formatPrice(item.priceINR)}</div>
+                  <div className="cart-item-price">{formatPrice(item.calculatedPrice)} <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>/ hire</span></div>
+                  <div className="cart-item-meta" style={{ fontSize: '0.72rem', color: 'var(--color-rose-gold)', margin: '2px 0 6px' }}>
+                    Bond: ${item.bondAUD || 30} AUD (refundable)
+                  </div>
                   <div className="cart-qty-row">
                     <div className="qty-control">
                       <button className="qty-btn" onClick={() => onUpdateQty(item.id, -1)}>-</button>
@@ -100,10 +107,16 @@ export default function CartDrawer({
             ))
           ) : (
             <div className="drawer-empty-state">
-              <div className="empty-icon">🪔</div>
-              <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: 'var(--color-primary)' }}>Your Sacred Bag is Empty</h4>
-              <p style={{ fontSize: '0.875rem' }}>Discover our handcrafted urlis, pooja thalis, and festive lamps.</p>
-              <button className="btn-primary" style={{ marginTop: '12px' }} onClick={onClose}>Start Browsing</button>
+              <div className="empty-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+              </div>
+              <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: 'var(--color-primary)' }}>Your hire bag is empty</h4>
+              <p style={{ fontSize: '0.875rem' }}>Select gazebos, flower walls, cocktail tables, plinths or cold sparks to start your booking.</p>
+              <button className="btn-primary" style={{ marginTop: '12px' }} onClick={onClose}>Explore hire catalog</button>
             </div>
           )}
         </div>
@@ -115,7 +128,7 @@ export default function CartDrawer({
               <input
                 type="text"
                 className="coupon-input"
-                placeholder="Promo code (VEDA10, FESTIVE20)"
+                placeholder="Voucher code (ICON10, WEEKEND20)"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
               />
@@ -123,26 +136,30 @@ export default function CartDrawer({
             </div>
 
             <div className="price-breakdown-row">
-              <span>Subtotal</span>
-              <span>{formatPrice(rawSubtotalINR)}</span>
+              <span>Equipment Hire Subtotal</span>
+              <span>{formatPrice(rawSubtotalAUD)}</span>
             </div>
             {appliedCoupon && (
               <div className="price-breakdown-row">
-                <span>Artisan Privilege Discount ({appliedCoupon.label})</span>
-                <span style={{ color: '#2E7D32' }}>-{formatPrice(discountINR)}</span>
+                <span>VIP Discount ({appliedCoupon.label})</span>
+                <span style={{ color: '#2E7D32' }}>-{formatPrice(discountAUD)}</span>
               </div>
             )}
             <div className="price-breakdown-row">
-              <span>Insured Courier Shipping</span>
-              <span>{isFreeShipping ? 'FREE' : formatPrice(shippingINR)}</span>
+              <span>Brisbane Van Delivery & Setup</span>
+              <span>{isFreeDelivery ? 'FREE' : formatPrice(deliveryAUD)}</span>
+            </div>
+            <div className="price-breakdown-row" style={{ fontSize: '0.8125rem', color: 'var(--color-rose-gold-dark)' }}>
+              <span>Refundable Security Bond (Held on Card)</span>
+              <span>${totalBondAUD} AUD</span>
             </div>
             <div className="price-breakdown-row total-row">
-              <span>Grand Total</span>
-              <span>{formatPrice(grandTotalINR)}</span>
+              <span>Total Hire Estimate</span>
+              <span>{formatPrice(grandTotalAUD)}</span>
             </div>
 
             <button className="checkout-action-btn" onClick={onCheckout}>
-              Proceed to Secure Checkout →
+              Proceed to Hire Reservation →
             </button>
           </div>
         )}
