@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -8,11 +8,14 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
   const heroRef = useRef(null);
   const copyRef = useRef(null);
   const waveRef = useRef(null);
+  const playerRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   useLayoutEffect(() => {
     const hero = heroRef.current;
     const copy = copyRef.current;
     const wave = waveRef.current;
+    const player = playerRef.current;
     if (!hero || !copy) return;
 
     let ctx = gsap.context(() => {
@@ -29,7 +32,22 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
         },
       });
 
-      // 2. Wave gentle scale out
+      // 2. Music Player Badge gentle parallax
+      if (player) {
+        gsap.to(player, {
+          y: -50,
+          opacity: 0.3,
+          ease: "none",
+          scrollTrigger: {
+            trigger: hero,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.9,
+          },
+        });
+      }
+
+      // 3. Wave gentle scale out
       if (wave) {
         gsap.to(wave, {
           y: 15,
@@ -64,7 +82,7 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
           {/* Left-Aligned Editorial Content */}
           <div className="hero-fullsize-copy" ref={copyRef}>
 
-            {/* Fancy Grand Headline (No Paragraph Below) */}
+            {/* Fancy Grand Headline */}
             <h1 className="hero-full-title">
               Elevate Every <br />
               <span className="hero-fancy-text">Celebration</span>
@@ -83,11 +101,89 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
               </button>
               
               <button className="btn-secondary-glass" onClick={onViewCatalog}>
-                <span>View hire catalog (18 items)</span>
+                <span>View hire catalog (10 categories)</span>
               </button>
             </div>
 
           </div>
+
+          {/* Luxury Music Player Style Rotating Vinyl Logo Badge */}
+          <aside className="hero-music-player-wrap" ref={playerRef} aria-label="Icon Vinyl Player">
+            <div
+              className={`hero-vinyl-deck ${isPlaying ? 'is-playing' : 'is-paused'}`}
+              onClick={() => setIsPlaying(!isPlaying)}
+              role="button"
+              tabIndex={0}
+              title={isPlaying ? "Click to pause rotation" : "Click to play rotation"}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setIsPlaying(!isPlaying);
+                }
+              }}
+            >
+              {/* Ambient Glow Aura */}
+              <div className="vinyl-glow-aura" />
+
+              {/* Rotating Vinyl Record Body */}
+              <div className="vinyl-disc-body">
+                
+                {/* Vinyl Grooves Texture */}
+                <div className="vinyl-groove-rings" />
+
+                {/* SVG Rotating Circular Text Around Logo */}
+                <svg className="vinyl-rotating-svg" viewBox="0 0 200 200" aria-hidden="true">
+                  <defs>
+                    <path
+                      id="vinylPath"
+                      d="M 100, 100 m -72, 0 a 72,72 0 1,1 144,0 a 72,72 0 1,1 -144,0"
+                    />
+                  </defs>
+                  <text className="vinyl-curved-text">
+                    <textPath href="#vinylPath" startOffset="0%">
+                      ✦ ICON PARTY HIRE ✦ BRISBANE LUXURY EVENT HIRE ✦
+                    </textPath>
+                  </text>
+                </svg>
+
+                {/* Center Label: High-Definition Circular Logo */}
+                <div className="vinyl-center-label">
+                  <img
+                    src="/assets/images/logo.png"
+                    alt="Icon Party Hire Official Circular Emblem"
+                    className="vinyl-center-logo-img"
+                  />
+                  {/* Brass Turntable Spindle Eyelet */}
+                  <div className="vinyl-spindle-hole" />
+                </div>
+
+              </div>
+
+              {/* Music Player Equalizer Pill */}
+              <div className="vinyl-player-pill">
+                <div className="vinyl-equalizer-bars" aria-hidden="true">
+                  <span className={`bar bar-1 ${isPlaying ? 'active' : ''}`} />
+                  <span className={`bar bar-2 ${isPlaying ? 'active' : ''}`} />
+                  <span className={`bar bar-3 ${isPlaying ? 'active' : ''}`} />
+                  <span className={`bar bar-4 ${isPlaying ? 'active' : ''}`} />
+                </div>
+                <div className="vinyl-pill-meta">
+                  <span className="vinyl-pill-status">
+                    {isPlaying ? 'NOW SPINNING' : 'PAUSED'}
+                  </span>
+                  <span className="vinyl-pill-title">Icon Luxury Vibes</span>
+                </div>
+                <div className="vinyl-toggle-action">
+                  {isPlaying ? (
+                    <span className="pulse-dot-green" />
+                  ) : (
+                    <span className="pause-bars-icon">❚❚</span>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </aside>
 
         </div>
       </div>

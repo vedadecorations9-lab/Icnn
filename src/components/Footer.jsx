@@ -33,10 +33,12 @@ export default function Footer({ currency, setCurrency, onSelectCategory, onOpen
           <div className="clean-footer-nav">
             <span className="clean-footer-heading">Hire Services</span>
             <div className="clean-footer-links-row">
-              <a href="#home" onClick={() => onSelectCategory('all')}>All 18 Hire Items</a>
-              <a href="#home" onClick={() => onSelectCategory('marquees')}>Gazebos & Marquees</a>
-              <a href="#home" onClick={() => onSelectCategory('backdrops')}>Flower Walls & Arches</a>
-              <a href="#home" onClick={() => onSelectCategory('effects')}>Cold Sparks & Fog</a>
+              <a href="#home" onClick={() => onSelectCategory('all')}>All Hire Equipment</a>
+              <a href="#home" onClick={() => onSelectCategory('gazebo')}>Gazebos</a>
+              <a href="#home" onClick={() => onSelectCategory('chairs')}>Chairs</a>
+              <a href="#home" onClick={() => onSelectCategory('tables')}>Tables</a>
+              <a href="#home" onClick={() => onSelectCategory('backdrops')}>Backdrops</a>
+              <a href="#home" onClick={() => onSelectCategory('lighting')}>Lighting</a>
               <a href="#how-it-works">How It Works</a>
               <a href="#track" onClick={(e) => { e.preventDefault(); onOpenTrackOrder(); }}>Track Delivery</a>
             </div>

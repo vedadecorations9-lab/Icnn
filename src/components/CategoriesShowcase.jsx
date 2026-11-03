@@ -177,7 +177,7 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
             <div>
               <h4 className="strip-title">Looking for the Complete Hire Inventory?</h4>
               <p className="strip-desc">
-                Explore all 18+ items with real-time live availability, package discounts & quick booking dispatches in Brisbane.
+                Explore all 10 hire categories with real-time live availability, package discounts & quick booking dispatches in Brisbane.
               </p>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
             className="btn-primary-gold strip-btn"
             onClick={onViewAllItems}
           >
-            <span>Open hire catalog (18 items)</span>
+            <span>Open hire catalog (10 categories)</span>
             <div className="btn-icon-gold-circle">
               <ArrowRight size={14} />
             </div>

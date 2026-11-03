@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { ArrowLeft, SlidersHorizontal } from 'lucide-react';
 
 const FILTER_TAGS = [
-  { key: 'all', label: 'All Equipment (18)' },
-  { key: 'marquees', label: 'Marquees & Gazebos' },
-  { key: 'backdrops', label: 'Backdrops & Arches' },
-  { key: 'balloons', label: 'Bespoke Balloons' },
-  { key: 'tables', label: 'Tables & Cocktail' },
-  { key: 'chairs', label: 'Chairs & Linens' },
-  { key: 'plinths', label: 'Plinths & Cake Stands' },
-  { key: 'catering', label: 'Catering & Warmers' },
-  { key: 'effects', label: 'Special Effects' }
+  { key: 'all', label: 'All Equipment' },
+  { key: 'chairs', label: 'Chairs' },
+  { key: 'tables', label: 'Tables' },
+  { key: 'gazebo', label: 'Gazebo' },
+  { key: 'backdrops', label: 'Backdrops' },
+  { key: 'lighting', label: 'Lighting' },
+  { key: 'linen', label: 'Linen' },
+  { key: 'heaters', label: 'Heaters' },
+  { key: 'esky', label: 'Esky' },
+  { key: 'plinth', label: 'Plinth' },
+  { key: 'av', label: 'Audio/Video' }
 ];
+
 
 export default function ProductGrid({
   products,
