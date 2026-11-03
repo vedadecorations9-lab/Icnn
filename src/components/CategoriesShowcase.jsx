@@ -1,28 +1,121 @@
-import React from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
 import { CATEGORIES } from '../data/products';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles, Layers } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }) {
+  const sectionRef = useRef(null);
+  const gridRef = useRef(null);
+  const bannerRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    const grid = gridRef.current;
+    const banner = bannerRef.current;
+    if (!section || !grid) return;
+
+    let ctx = gsap.context(() => {
+      // 1. Header reveal
+      gsap.fromTo(
+        '.categories-v-header',
+        { opacity: 0, y: 35 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 85%',
+            once: true,
+          },
+          clearProps: 'opacity,transform',
+        }
+      );
+
+      // 2. Smooth emergence of category cards on vertical scroll
+      const cards = grid.querySelectorAll('.category-vertical-card');
+      gsap.fromTo(
+        cards,
+        {
+          opacity: 0,
+          y: 45,
+          scale: 0.97,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.75,
+          stagger: 0.08,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: grid,
+            start: 'top 82%',
+            once: true,
+          },
+          clearProps: 'opacity,transform',
+        }
+      );
+
+      // 3. Bottom CTA banner emergence
+      if (banner) {
+        gsap.fromTo(
+          banner,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: banner,
+              start: 'top 88%',
+              once: true,
+            },
+            clearProps: 'opacity,transform',
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="categories-showcase-section" id="categories-section">
-      <div className="section-container">
+    <section className="categories-vertical-section" id="categories-section" ref={sectionRef}>
+      <div className="container">
         
         {/* Section Header */}
-        <div className="section-header-centered">
-          <h2 className="section-title-grand">
-            Browse by event category
-          </h2>
-          <p className="section-subtitle-grand">
-            Explore our curated range of commercial-grade party rentals, statement backdrops, luxury furniture, and cinematic special effects. Select any category below to view specific hire items and daily rates.
-          </p>
+        <div className="categories-v-header">
+          <div className="categories-v-header-copy">
+            <h2 className="categories-v-title">
+              Browse by <span className="hero-fancy-text">Event Category</span>
+            </h2>
+            <p className="categories-v-subtitle">
+              Curated commercial-grade party rentals, statement backdrops & luxury event equipment across Brisbane.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="categories-v-all-btn"
+            onClick={onViewAllItems}
+          >
+            <span>View all items</span>
+            <ArrowRight size={15} />
+          </button>
         </div>
 
-        {/* Categories Showcase Grid */}
-        <div className="categories-showcase-grid">
-          {CATEGORIES.map((cat) => (
-            <div
+        {/* Vertical Category Grid with Smooth Emerge */}
+        <div className="categories-vertical-grid" ref={gridRef}>
+          {CATEGORIES.map((cat, idx) => (
+            <article
               key={cat.id}
-              className="category-showcase-card"
+              className="category-vertical-card"
               onClick={() => onExploreCategory(cat.id)}
               role="button"
               tabIndex={0}
@@ -33,44 +126,71 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
                 }
               }}
             >
-              {/* Image Container with Ambient Gradient */}
-              <div className="category-card-media">
+              {/* Media Image Stage */}
+              <div className="category-v-media">
                 <img
                   src={cat.image}
                   alt={cat.label}
                   loading="lazy"
-                  className="category-card-img"
+                  className="category-v-img"
                 />
-                <div className="category-card-overlay" />
-                
-                {/* Floating Tag */}
-                <div className="category-floating-badge">
-                  {cat.tag}
-                </div>
+                <div className="category-v-scrim" />
 
-                {/* Starting Price Pill */}
-                <div className="category-price-pill">
-                  From ${cat.startingPrice} AUD
-                </div>
+                {/* Floating Tag Badge */}
+                <span className="category-v-tag">{cat.tag}</span>
+
+                {/* Price Pill */}
+                <span className="category-v-price">From ${cat.startingPrice} AUD</span>
+
+                {/* Index Watermark */}
+                <span className="category-v-watermark" aria-hidden="true">
+                  0{idx + 1}
+                </span>
               </div>
 
-              {/* Card Content */}
-              <div className="category-card-content">
-                <div className="category-card-top-row">
-                  <h3 className="category-card-title">{cat.label}</h3>
-                  <span className="category-item-count">{cat.itemCount} items</span>
+              {/* Content Block */}
+              <div className="category-v-body">
+                <div className="category-v-meta-row">
+                  <h3 className="category-v-card-title">{cat.label}</h3>
+                  <span className="category-v-count">{cat.itemCount} items</span>
                 </div>
-                <p className="category-card-desc">{cat.description}</p>
-                
-                <div className="category-card-action">
-                  <span className="category-action-label">Explore hire items</span>
-                  <div className="category-arrow-circle">
-                    <ArrowRight size={16} />
+
+                <p className="category-v-desc">{cat.description}</p>
+
+                <div className="category-v-footer">
+                  <span className="category-v-action-text">Explore hire items</span>
+                  <div className="category-v-arrow-circle">
+                    <ArrowRight size={14} />
                   </div>
                 </div>
               </div>
-            </div>
+            </article>
           ))}
+        </div>
+
+        {/* Bottom Full Catalog VIP Strip */}
+        <div className="categories-v-catalog-strip" ref={bannerRef}>
+          <div className="strip-info">
+            <div className="strip-icon-circle">
+              <Sparkles size={22} />
+            </div>
+            <div>
+              <h4 className="strip-title">Looking for the Complete Hire Inventory?</h4>
+              <p className="strip-desc">
+                Explore all 18+ items with real-time live availability, package discounts & quick booking dispatches in Brisbane.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn-primary-gold strip-btn"
+            onClick={onViewAllItems}
+          >
+            <span>Open hire catalog (18 items)</span>
+            <div className="btn-icon-gold-circle">
+              <ArrowRight size={14} />
+            </div>
+          </button>
         </div>
 
       </div>

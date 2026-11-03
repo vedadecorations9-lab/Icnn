@@ -3,9 +3,9 @@ import { PRODUCTS, CURRENCIES, CATEGORIES } from './data/products';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import CategoriesShowcase from './components/CategoriesShowcase';
+import BentoPromos from './components/BentoPromos';
 import HowItWorks from './components/HowItWorks';
 import ProductGrid from './components/ProductGrid';
-import BentoPromos from './components/BentoPromos';
 import TrustStrip from './components/TrustStrip';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -19,10 +19,12 @@ import AdminPanel from './components/AdminPanel';
 import MobileBottomBar from './components/MobileBottomBar';
 import Toast from './components/Toast';
 import { Agentation } from 'agentation';
+import { useLenisScroll } from './hooks/useLenisScroll';
 
 export default function App() {
   // Navigation View: 'home' (Categories on Home) vs 'catalog' (Dedicated Separate Items Page)
   const [currentView, setCurrentView] = useState('home');
+  useLenisScroll(currentView);
 
   // --- Persistent State (Default to AUD for Brisbane, QLD) ---
   const [currency, setCurrencyState] = useState(() => {
@@ -147,13 +149,21 @@ export default function App() {
   // Navigation handlers
   const handleNavigateHome = () => {
     setCurrentView('home');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (window.__iconLenis) {
+      window.__iconLenis.scrollTo(0, { duration: 1.2 });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleNavigateCatalog = (categoryKey = 'all') => {
     setActiveCategory(categoryKey);
     setCurrentView('catalog');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (window.__iconLenis) {
+      window.__iconLenis.scrollTo(0, { duration: 1.2 });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Admin Operations
@@ -227,12 +237,15 @@ export default function App() {
               onViewCatalog={() => handleNavigateCatalog('all')}
             />
 
-
-
-            {/* Core Home Showcase: Rich Category Cards leading to Items */}
+            {/* Core Home Showcase: Rich Category Cards leading to Items (Vertical Scroll + Smooth Emerge) */}
             <CategoriesShowcase
               onExploreCategory={(catId) => handleNavigateCatalog(catId)}
               onViewAllItems={() => handleNavigateCatalog('all')}
+            />
+
+            {/* 3-Column Promo Bento Banners: The 3 Pillars of Icon */}
+            <BentoPromos
+              onSelectCategory={(catId) => handleNavigateCatalog(catId)}
             />
 
             {/* How It Works: 3-Step Simple Process */}
@@ -240,16 +253,8 @@ export default function App() {
               onExploreCatalog={() => handleNavigateCatalog('all')}
             />
 
-            {/* 3-Column Promo Bento Banners */}
-            <BentoPromos
-              onSelectCategory={(catId) => handleNavigateCatalog(catId)}
-            />
-
             {/* Service & Equipment Guarantees Strip */}
             <TrustStrip />
-
-
-
           </>
         ) : (
           /* =================================================================

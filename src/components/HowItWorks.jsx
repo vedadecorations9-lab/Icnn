@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
   {
@@ -22,8 +26,36 @@ const STEPS = [
 ];
 
 export default function HowItWorks() {
+  const sectionRef = useRef(null);
+  const gridRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    const grid = gridRef.current;
+    if (!section || !grid) return;
+
+    let ctx = gsap.context(() => {
+      const cols = grid.querySelectorAll('.hiw-ref-col');
+      gsap.from(cols, {
+        y: 60,
+        opacity: 0,
+        scale: 0.94,
+        stagger: 0.18,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 75%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="how-it-works-ref-section" id="how-it-works" aria-label="How Event Hire Works">
+    <section ref={sectionRef} className="how-it-works-ref-section" id="how-it-works" aria-label="How Event Hire Works">
       <div className="container">
         
         {/* Clean Centered Header Matching Reference */}
@@ -34,7 +66,7 @@ export default function HowItWorks() {
         </div>
 
         {/* 3 Clean Flat Columns */}
-        <div className="hiw-ref-grid">
+        <div className="hiw-ref-grid" ref={gridRef}>
           {STEPS.map((step, idx) => (
             <div key={idx} className="hiw-ref-col">
               <div className="hiw-ref-image-wrapper">
