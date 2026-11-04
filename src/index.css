@@ -7287,63 +7287,11 @@ html.lenis, html.lenis body {
   font-weight: 700;
 }
 
-/* Editorial Header Banner */
-.catalog-header-banner {
-  background: #FFFFFF;
-  border-radius: 28px;
-  padding: clamp(28px, 4vw, 42px);
-  border: 1px solid rgba(27, 6, 26, 0.06);
-  box-shadow: 0 10px 32px -4px rgba(27, 6, 26, 0.05);
+/* Editorial Header (Clean, containerless) */
+.catalog-header-clean {
   margin-bottom: 28px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 32px;
-  flex-wrap: wrap;
-  position: relative;
-  overflow: hidden;
-}
-
-.catalog-header-banner::after {
-  content: '';
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 240px;
-  height: 240px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(216, 27, 96, 0.12) 0%, rgba(247, 209, 186, 0.08) 50%, transparent 72%);
-  pointer-events: none;
-}
-
-.catalog-banner-copy {
-  max-width: 720px;
   position: relative;
   z-index: 2;
-}
-
-.catalog-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #D81B60;
-  margin-bottom: 12px;
-  background: rgba(216, 27, 96, 0.08);
-  padding: 4px 14px;
-  border-radius: 9999px;
-  border: 1px solid rgba(216, 27, 96, 0.15);
-}
-
-.catalog-eyebrow .meta-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #D81B60;
-  box-shadow: 0 0 6px #D81B60;
 }
 
 .catalog-banner-title {
@@ -7352,7 +7300,7 @@ html.lenis, html.lenis body {
   font-weight: 700;
   color: #1B061A;
   line-height: 1.15;
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
   letter-spacing: -0.01em;
 }
 
@@ -7360,44 +7308,8 @@ html.lenis, html.lenis body {
   font-size: 0.95rem;
   color: #64748B;
   line-height: 1.6;
+  max-width: 760px;
   margin: 0;
-}
-
-.catalog-banner-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-end;
-  position: relative;
-  z-index: 2;
-}
-
-.catalog-meta-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 9999px;
-  background: #F8F3F6;
-  border: 1px solid rgba(27, 6, 26, 0.05);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #4A3A47;
-  white-space: nowrap;
-}
-
-.catalog-meta-pill .meta-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #D81B60;
-}
-
-@media (max-width: 900px) {
-  .catalog-banner-meta {
-    align-items: flex-start;
-    width: 100%;
-  }
 }
 
 /* Controls Bar (Filter Tabs & Search/Sort) */

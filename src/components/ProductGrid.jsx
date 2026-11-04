@@ -88,30 +88,14 @@ export default function ProductGrid({
           </div>
         </div>
 
-        {/* Dedicated Catalog Editorial Header Banner */}
-        <div className="catalog-header-banner">
-          <div className="catalog-banner-copy">
-            <div className="catalog-eyebrow">
-              <span className="meta-dot"></span>
-              <span>Brisbane Commercial Hire Catalog</span>
-            </div>
-            <h1 className="catalog-banner-title">
-              {activeCategory === 'all' ? 'All Party & Event Hire Items' : `${currentCategoryObj.label} Hire Collection`}
-            </h1>
-            <p className="catalog-banner-sub">
-              Available for flexible 24h to 72h weekend hire with Brisbane warehouse dispatch, express delivery, and professional event setup across Queensland.
-            </p>
-          </div>
-
-          <div className="catalog-banner-meta">
-            <div className="catalog-meta-pill">
-              <span className="meta-dot"></span>
-              <span><strong>{displayed.length}</strong> items in collection</span>
-            </div>
-            <div className="catalog-meta-pill">
-              <span>Standard refundable bond applies</span>
-            </div>
-          </div>
+        {/* Dedicated Catalog Editorial Header (Clean, containerless) */}
+        <div className="catalog-header-clean">
+          <h1 className="catalog-banner-title">
+            {activeCategory === 'all' ? 'All Party & Event Hire Items' : `${currentCategoryObj.label} Hire Collection`}
+          </h1>
+          <p className="catalog-banner-sub">
+            Available for flexible 24h to 72h weekend hire with Brisbane warehouse dispatch, express delivery, and professional event setup across Queensland.
+          </p>
         </div>
 
         {/* Controls Bar: Category Filter Tabs & Search/Sort */}
