@@ -1455,8 +1455,8 @@ ul, ol {
 }
 
 .card-badge.badge-gold {
-  background-color: var(--color-gold);
-  color: var(--color-bg-dark);
+  background-color: #D81B60;
+  color: #FFFFFF;
 }
 
 /* Wishlist Button */
@@ -5075,7 +5075,7 @@ ul, ol {
   border-top: 1px solid var(--border-soft);
   backdrop-filter: blur(16px);
   padding: 8px 12px 10px 12px;
-  z-index: 90;
+  z-index: 1000;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   justify-content: space-around;
   align-items: center;
@@ -5142,46 +5142,13 @@ ul, ol {
     display: flex;
   }
 
-  /* Header mobile layout */
+  .catalog-dedicated-page {
+    padding-top: 24px !important;
+  }
+
+  /* Top floating navbar completely hidden on mobile — only bottom bar active */
   .luxury-navbar-wrapper {
-  position: fixed;
-  top: 16px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-  padding: 0 clamp(16px, 2vw, 36px);
-  margin: 0;
-}
-  .luxury-navbar {
-    height: 58px;
-    border-radius: 24px;
-  }
-  .luxury-navbar-inner {
-    height: 58px;
-    padding: 0 14px;
-    gap: 10px;
-  }
-
-  .luxury-brand-avatar {
-    width: 48px;
-    height: 48px;
-  }
-
-  .brand-wordmark {
-    font-size: 1.65rem;
-  }
-
-  .brand-location-pill {
-    font-size: 0.625rem;
-    padding: 2px 6px;
-  }
-
-  .brand-heritage-kicker {
-    font-size: 0.65rem;
+    display: none !important;
   }
 
   .main-header {
