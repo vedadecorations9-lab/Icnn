@@ -3,6 +3,7 @@ import { PRODUCTS, CURRENCIES, CATEGORIES } from './data/products';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import CategoriesShowcase from './components/CategoriesShowcase';
+import FeaturedProductsCarousel from './components/FeaturedProductsCarousel';
 import BentoPromos from './components/BentoPromos';
 import HowItWorks from './components/HowItWorks';
 import ProductGrid from './components/ProductGrid';
@@ -239,6 +240,17 @@ export default function App() {
             <CategoriesShowcase
               onExploreCategory={(catId) => handleNavigateCatalog(catId)}
               onViewAllItems={() => handleNavigateCatalog('all')}
+            />
+
+            {/* This Season's Must-Haves: Horizontal Side-by-Side Product Carousel */}
+            <FeaturedProductsCarousel
+              products={products}
+              formatPrice={formatPrice}
+              wishlist={wishlist}
+              onToggleWishlist={handleToggleWishlist}
+              onAddToCart={handleAddToCart}
+              onOpenQuickView={(id) => setQuickViewId(id)}
+              onViewAll={() => handleNavigateCatalog('all')}
             />
 
             {/* 3-Column Promo Bento Banners: The 3 Pillars of Icon */}
