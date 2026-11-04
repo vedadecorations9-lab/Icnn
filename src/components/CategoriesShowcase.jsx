@@ -1,6 +1,6 @@
 import React, { useRef, useLayoutEffect } from 'react';
 import { CATEGORIES } from '../data/products';
-import { ArrowRight, Sparkles, Layers } from 'lucide-react';
+import { ArrowRight, Sparkles, ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -110,12 +110,12 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
           </button>
         </div>
 
-        {/* Vertical Category Grid with Smooth Emerge */}
+        {/* Vertical Category Grid with Modern Design Cards */}
         <div className="categories-vertical-grid" ref={gridRef}>
-          {CATEGORIES.map((cat, idx) => (
+          {CATEGORIES.map((cat) => (
             <article
               key={cat.id}
-              className="category-vertical-card"
+              className="modern-design-card category-vertical-card"
               onClick={() => onExploreCategory(cat.id)}
               role="button"
               tabIndex={0}
@@ -126,42 +126,48 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
                 }
               }}
             >
-              {/* Media Image Stage */}
-              <div className="category-v-media">
+              {/* Media Image Stage with Scallop Top-Right Cutout */}
+              <div className="modern-card-media">
                 <img
                   src={cat.image}
                   alt={cat.label}
                   loading="lazy"
-                  className="category-v-img"
+                  className="modern-card-img"
                 />
-                <div className="category-v-scrim" />
 
-                {/* Floating Tag Badge */}
-                <span className="category-v-tag">{cat.tag}</span>
-
-                {/* Price Pill */}
-                <span className="category-v-price">From ${cat.startingPrice} AUD</span>
-
-                {/* Index Watermark */}
-                <span className="category-v-watermark" aria-hidden="true">
-                  0{idx + 1}
-                </span>
-              </div>
-
-              {/* Content Block */}
-              <div className="category-v-body">
-                <div className="category-v-meta-row">
-                  <h3 className="category-v-card-title">{cat.label}</h3>
-                  <span className="category-v-count">{cat.itemCount} items</span>
+                {/* Top-Right Scallop Notch: Item Count (No Price in Category Cards!) */}
+                <div className="modern-card-notch">
+                  <span className="modern-card-notch-badge">{cat.itemCount} Items</span>
                 </div>
 
-                <p className="category-v-desc">{cat.description}</p>
+                {/* Bottom Delivery / Fleet Pill */}
+                <div className="modern-card-bottom-strip">
+                  <span className="modern-card-bottom-pill">Commercial Fleet • Brisbane</span>
+                </div>
+              </div>
 
-                <div className="category-v-footer">
-                  <span className="category-v-action-text">Explore hire items</span>
-                  <div className="category-v-arrow-circle">
-                    <ArrowRight size={14} />
-                  </div>
+              {/* Card Body: Title, Action, and Concise Feature Pills (NO lengthy sentences) */}
+              <div className="modern-card-body">
+                <div className="modern-card-header-row">
+                  <h3 className="modern-card-title">{cat.label}</h3>
+                  <button
+                    type="button"
+                    className="modern-card-action"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onExploreCategory(cat.id);
+                    }}
+                  >
+                    <span>Explore</span>
+                    <ArrowUpRight size={15} />
+                  </button>
+                </div>
+
+                {/* Minimal Tag Pills (NO lengthy sentences) */}
+                <div className="modern-card-tags">
+                  {cat.pills?.map((pill, i) => (
+                    <span key={i} className="modern-card-tag-pill">{pill}</span>
+                  ))}
                 </div>
               </div>
             </article>

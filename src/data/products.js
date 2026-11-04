@@ -9,6 +9,7 @@ export const CATEGORIES = [
     tag: 'Comfort & Style',
     startingPrice: 5.5,
     itemCount: 2,
+    pills: ['Tiffany Resin', 'Ballroom', 'Padded Cushions', 'White'],
     image: '/assets/images/items/Icon Party Hire Chair Rental-1-1024x1819.webp',
     description: 'White Tiffany resin ballroom chairs with padded cushions and versatile folding party seating.'
   },
@@ -19,6 +20,7 @@ export const CATEGORIES = [
     tag: 'Event Essential',
     startingPrice: 15,
     itemCount: 3,
+    pills: ['Cocktail High-Top', '1.8m Round', 'Trestle 6ft', 'Silver & White'],
     image: '/assets/images/items/Foldable Silver Cocktail Table Hire-6-1024x1024.webp',
     description: 'Brushed silver cocktail high-tops, 1.8m round banquet tables, and 6ft heavy-duty trestle party tables.'
   },
@@ -29,6 +31,7 @@ export const CATEGORIES = [
     tag: 'Weatherproof',
     startingPrice: 70,
     itemCount: 2,
+    pills: ['Commercial 6x3m', 'UV50+ Pop-Up', 'Waterproof 500D', 'Alloy Frame'],
     image: '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
     description: 'Commercial 6x3m heavy-duty pop-up gazebos with UV50+ and 100% waterproof protection for outdoor celebrations.'
   },
@@ -39,6 +42,7 @@ export const CATEGORIES = [
     tag: 'Photo Worthy',
     startingPrice: 120,
     itemCount: 3,
+    pills: ['3D Silk Wall', 'Ripple Wave Arches', 'Photo Stage', 'Trio Sets'],
     image: '/assets/images/items/Icon Party Hire flower wall-1024x1024.webp',
     description: '3D silk floral flower walls, modern ripple wave arch trios, and statement celebration backdrops.'
   },
@@ -49,6 +53,7 @@ export const CATEGORIES = [
     tag: 'Warm Ambience',
     startingPrice: 35,
     itemCount: 2,
+    pills: ['Festoon 20m', 'Edison Warm Glow', 'IP65 Outdoor', 'Cold Sparks'],
     image: '/assets/images/items/festoon-lighting.webp',
     description: 'Warm vintage Edison filament festoon string lighting, ambient battery uplights, and party illumination.'
   },
@@ -59,6 +64,7 @@ export const CATEGORIES = [
     tag: 'Ballroom Luxe',
     startingPrice: 4,
     itemCount: 2,
+    pills: ['Spandex Stretch', 'Banquet Cloths', 'Cocktail Socks', 'Wrinkle-Free'],
     image: '/assets/images/items/Icon Party Hire Chair Cover-2-1024x1024.webp',
     description: 'Wrinkle-free stretch spandex chair covers, round banquet cloths, and dry-bar cocktail table socks.'
   },
@@ -69,6 +75,7 @@ export const CATEGORIES = [
     tag: 'Evening Warmth',
     startingPrice: 65,
     itemCount: 2,
+    pills: ['40MJ Mushroom', 'Pyramid Flame', 'Gas Radiant', '5m Radius'],
     image: '/assets/images/items/patio-heater.webp',
     description: 'Commercial outdoor gas patio mushroom heaters & glass flame towers for evening Brisbane outdoor soirees.'
   },
@@ -79,6 +86,7 @@ export const CATEGORIES = [
     tag: 'Ice Cold',
     startingPrice: 28,
     itemCount: 2,
+    pills: ['100L Commercial', '5-Day Ice', 'Drink Dispensers', 'Heavy-Duty'],
     image: '/assets/images/items/commercial-esky.webp',
     description: 'Heavy-duty 100L commercial cooler ice boxes, acrylic drink dispensers, and stainless beverage party tubs.'
   },
@@ -89,6 +97,7 @@ export const CATEGORIES = [
     tag: 'Dessert Styling',
     startingPrice: 35,
     itemCount: 3,
+    pills: ['Fluted Trio Set', 'Gloss White', 'Pastel Pink', 'Cake Stands'],
     image: '/assets/images/items/Icon Party Hire white plinths-1024x907.webp',
     description: 'Architectural fluted cylinder plinth trios in gloss white or baby pink, plus baroque gold cake stands.'
   },
@@ -99,10 +108,12 @@ export const CATEGORIES = [
     tag: 'Party Sound',
     startingPrice: 75,
     itemCount: 2,
+    pills: ['400W Bluetooth PA', 'Wireless Mics', 'Low Fog Clouds', '12h Battery'],
     image: '/assets/images/items/party-audio-system.webp',
     description: 'High-output portable Bluetooth PA sound speakers with wireless dual microphones and outdoor projectors.'
   }
 ];
+
 
 export const PRODUCTS = [
   {
@@ -683,3 +694,39 @@ export const INITIAL_ORDERS = [
     paymentStatus: 'Paid ($250 Bond Held)'
   }
 ];
+
+export function getProductPills(prod) {
+  if (prod.pills && prod.pills.length > 0) return prod.pills;
+  
+  const map = {
+    'icon-01': ['Commercial 6x3m', 'Heavy-Duty Alloy', 'Waterproof 500D', 'UV50+'],
+    'icon-02': ['Sky Blue 6x3m', 'Pop-Up Frame', 'Weatherproof', 'Brisbane Hire'],
+    'icon-03': ['2.4m × 2.4m', 'Luxe 3D Silk', 'Freestanding', 'Photo Wall'],
+    'icon-04': ['Trio Set', 'Ripple Wave', 'Pastel Pink', 'Freestanding'],
+    'icon-05': ['Trio Set', 'Wave Texture', 'Sky Blue', 'Statement Arch'],
+    'icon-06': ['High-Top Bar', 'Foldable Silver', 'Cocktail Height', 'Steel Frame'],
+    'icon-07': ['1.8m / 6ft Round', 'Seats 8–10', 'Fold-in-Half', 'Banquet'],
+    'icon-08': ['1.8m Trestle', 'Foldable 6ft', 'Heavy-Duty Poly', 'Commercial'],
+    'icon-09': ['White Resin', 'Padded Cushion', 'Tiffany Ballroom', 'Stackable'],
+    'icon-10': ['Spandex Stretch', 'Pure White', 'Reinforced Pockets', 'Luxe Finish'],
+    'icon-11': ['Trio Set', 'Fluted Texture', 'Pure White', 'Cake Plinth'],
+    'icon-12': ['Trio Set', 'Fluted Texture', 'Pastel Pink', 'Dessert Stage'],
+    'icon-13': ['Trio Set', 'Baroque Gold', 'Mirror Finish', 'Cake Stands'],
+    'icon-14': ['20 Metres', 'Vintage Edison', 'Warm Filament', 'IP65 Weatherproof'],
+    'icon-15': ['Cold Spark Pair', 'Indoor Safe', 'DMX / Wireless', 'Cinematic FX'],
+    'icon-16': ['40MJ Gas Heat', 'Brushed Stainless', '5m Radius', 'Anti-Tilt Safe'],
+    'icon-17': ['Quartz Glass', 'Spiral Flame', 'Charcoal Steel', 'VIP Ambience'],
+    'icon-18': ['100 Litres', '5-Day Ice Cold', 'Holds 120 Cans', 'Roto-Molded'],
+    'icon-19': ['Dual 8L Jars', 'Pink Pearl Glass', 'Stainless Spigot', 'Drink Station'],
+    'icon-20': ['400W Portable PA', 'Bluetooth 5.2', 'Dual Wireless Mics', '12h Battery'],
+    'icon-21': ['Dancing on Clouds', 'Dry Ice Low Fog', 'Wedding Magic', 'Brisbane Setup'],
+    'icon-22': ['3m Full Drop', 'Round Banquet', 'Heavy Polyester', 'Wrinkle Resistant'],
+  };
+  
+  if (map[prod.id]) return map[prod.id];
+  
+  const pills = [prod.categoryLabel];
+  if (prod.badge) pills.push(prod.badge);
+  if (prod.material) pills.push(prod.material.split(' ')[0]);
+  return pills.slice(0, 4);
+}

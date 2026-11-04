@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ArrowLeft, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal, ArrowUpRight } from 'lucide-react';
+import { getProductPills } from '../data/products';
 
 const FILTER_TAGS = [
   { key: 'all', label: 'All Equipment' },
@@ -14,7 +15,6 @@ const FILTER_TAGS = [
   { key: 'plinth', label: 'Plinth' },
   { key: 'av', label: 'Audio/Video' }
 ];
-
 
 export default function ProductGrid({
   products,
@@ -47,36 +47,35 @@ export default function ProductGrid({
     );
   }
 
-  // Sort
+  // Sort logic
   if (sortBy === 'price-low') {
-    displayed.sort((a, b) => (a.priceAUD || a.priceINR) - (b.priceAUD || b.priceINR));
+    displayed = [...displayed].sort((a, b) => (a.priceAUD || 0) - (b.priceAUD || 0));
   } else if (sortBy === 'price-high') {
-    displayed.sort((a, b) => (b.priceAUD || b.priceINR) - (a.priceAUD || a.priceINR));
+    displayed = [...displayed].sort((a, b) => (b.priceAUD || 0) - (a.priceAUD || 0));
   } else if (sortBy === 'rating') {
-    displayed.sort((a, b) => b.rating - a.rating);
+    displayed = [...displayed].sort((a, b) => (b.rating || 5) - (a.rating || 5));
   }
 
   const currentCategoryObj = FILTER_TAGS.find(t => t.key === activeCategory) || FILTER_TAGS[0];
 
   return (
-    <section className="catalog-dedicated-page" id="dedicated-catalog-page">
+    <section className="catalog-page-container" aria-label="Dedicated Equipment Catalog">
       <div className="container">
         
-        {/* Breadcrumb & Navigation Bar */}
-        <div className="catalog-top-nav-bar">
+        {/* Navigation Breadcrumb */}
+        <div className="catalog-breadcrumb-bar">
           <button
             type="button"
-            className="catalog-back-home-btn"
+            className="catalog-back-btn"
             onClick={onBackToHome}
+            aria-label="Back to home page"
           >
             <ArrowLeft size={16} />
-            <span>Back to categories</span>
+            <span>Return to Home</span>
           </button>
-
-          <div className="catalog-breadcrumbs">
-            <span className="crumb-link" onClick={onBackToHome}>Home</span>
-            <span className="crumb-sep">/</span>
-            <span className="crumb-link" onClick={() => onSelectCategory('all')}>Hire catalog</span>
+          
+          <div className="catalog-crumb-trail">
+            <span onClick={onBackToHome} className="crumb-link">Home</span>
             <span className="crumb-sep">/</span>
             <span className="crumb-current">{currentCategoryObj.label}</span>
           </div>
@@ -161,92 +160,101 @@ export default function ProductGrid({
           </div>
         </div>
 
-        {/* Dedicated Items Grid */}
+        {/* Dedicated Items Grid with Modern Design Cards */}
         <div className="product-grid" id="products-grid">
           {displayed.length > 0 ? (
             displayed.map(prod => {
               const isSaved = wishlist.includes(prod.id);
               const priceDisplay = formatPrice(prod.priceAUD || prod.priceINR);
+              const pills = getProductPills(prod);
               
               return (
-                <article key={prod.id} className="product-card">
-                  <div className="card-thumb-wrap">
-                    <span className={`card-badge ${prod.badgeType}`}>{prod.badge || prod.discount}</span>
-                    
-                    <button
-                      className={`wishlist-toggle-btn ${isSaved ? 'active' : ''}`}
-                      onClick={() => onToggleWishlist(prod.id)}
-                      title={isSaved ? 'Remove from Wishlist' : 'Save to Wishlist'}
-                      aria-label="Wishlist"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                      </svg>
-                    </button>
-                    
+                <article
+                  key={prod.id}
+                  className="modern-design-card product-card"
+                  onClick={() => onOpenQuickView(prod.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onOpenQuickView(prod.id);
+                    }
+                  }}
+                >
+                  {/* Media Image Stage with Top-Right Scallop Notch */}
+                  <div className="modern-card-media">
                     <img
                       src={prod.image}
                       alt={prod.name}
-                      className="card-img"
+                      className="modern-card-img"
                       loading="lazy"
                       onError={(e) => {
                         e.currentTarget.src = '/assets/images/icon_logo.png';
                       }}
                     />
-                    
+
+                    {/* Top-Left Wishlist Heart Button */}
                     <button
-                      className="quick-view-btn"
-                      onClick={() => onOpenQuickView(prod.id)}
+                      type="button"
+                      className={`modern-card-wishlist ${isSaved ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleWishlist(prod.id);
+                      }}
+                      title={isSaved ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                      aria-label="Wishlist"
                     >
-                      Quick view & specs
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill={isSaved ? '#D81B60' : 'none'}
+                        stroke={isSaved ? '#D81B60' : 'currentColor'}
+                        strokeWidth="2.2"
+                      >
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
                     </button>
+
+                    {/* Top-Right Scallop Notch: PRICE ONLY (As requested: "just the price(only in product cards)") */}
+                    <div className="modern-card-notch">
+                      <span className="modern-card-price">{priceDisplay}</span>
+                    </div>
+
+                    {/* Bottom Fleet / Availability Pill */}
+                    <div className="modern-card-bottom-strip">
+                      <span className="modern-card-bottom-pill">
+                        {prod.badge || 'Commercial Hire • Brisbane'}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="card-body">
-                    <div className="card-meta-top">
-                      <span className="card-category">{prod.categoryLabel}</span>
-                      <span className="card-sku">{prod.sku}</span>
-                    </div>
-
-                    <h3
-                      className="card-title"
-                      onClick={() => onOpenQuickView(prod.id)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {prod.name}
-                    </h3>
-                    
-                    <div className="card-rating-row">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" className="star-icon" aria-hidden="true">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                      </svg>
-                      <span className="rating-num">{prod.rating ? prod.rating.toFixed(1) : '5.0'}</span>
-                      <span className="reviews-count">({prod.reviewsCount} hires)</span>
-                    </div>
-
-                    <div className="card-hire-period">
-                      <span>Hire period: {prod.hirePeriod || 'Weekend hire (Fri–Mon)'}</span>
-                    </div>
-
-                    <div className="card-footer-row">
-                      <div className="price-wrap">
-                        <span className="price-current">{priceDisplay}</span>
-                        <span className="price-sub-label">/ day hire</span>
-                      </div>
-                      
+                  {/* Card Body: Title, Action, and Minimal Tag Pills (NO lengthy sentences) */}
+                  <div className="modern-card-body">
+                    <div className="modern-card-header-row">
+                      <h3 className="modern-card-title" title={prod.name}>
+                        {prod.name}
+                      </h3>
                       <button
-                        className="btn-hire-add"
-                        onClick={() => onAddToCart(prod.id)}
+                        type="button"
+                        className="modern-card-action"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddToCart(prod.id);
+                        }}
                         title="Add to hire bag"
-                        aria-label="Add to hire bag"
                       >
-                        <span>Add to bag</span>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                          <line x1="3" y1="6" x2="21" y2="6"></line>
-                          <path d="M16 10a4 4 0 0 1-8 0"></path>
-                        </svg>
+                        <span>Hire Now</span>
+                        <ArrowUpRight size={15} />
                       </button>
+                    </div>
+
+                    {/* Minimal Tag Pills (NO lengthy sentences) */}
+                    <div className="modern-card-tags">
+                      {pills.map((pill, i) => (
+                        <span key={i} className="modern-card-tag-pill">{pill}</span>
+                      ))}
                     </div>
                   </div>
                 </article>
@@ -268,7 +276,7 @@ export default function ProductGrid({
                   onSelectCategory('all');
                 }}
               >
-                View Full 18 Items Catalog
+                View Full Catalog ({products.length} Items)
               </button>
             </div>
           )}
