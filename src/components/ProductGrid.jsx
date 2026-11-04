@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowLeft, SlidersHorizontal, ArrowUpRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, SlidersHorizontal, ArrowUpRight, Search, X } from 'lucide-react';
 import { getProductPills } from '../data/products';
 
 const FILTER_TAGS = [
@@ -30,6 +30,11 @@ export default function ProductGrid({
   const [sortBy, setSortBy] = useState('popular');
   const [itemSearch, setItemSearch] = useState('');
 
+  // Scroll to top cleanly when switching category
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeCategory]);
+
   // Filter by category
   let displayed = products.filter(p => {
     if (activeCategory === 'all') return true;
@@ -59,10 +64,10 @@ export default function ProductGrid({
   const currentCategoryObj = FILTER_TAGS.find(t => t.key === activeCategory) || FILTER_TAGS[0];
 
   return (
-    <section className="catalog-page-container" aria-label="Dedicated Equipment Catalog">
+    <section className="catalog-dedicated-page" aria-label="Dedicated Equipment Catalog">
       <div className="container">
         
-        {/* Navigation Breadcrumb */}
+        {/* Navigation Breadcrumb Bar */}
         <div className="catalog-breadcrumb-bar">
           <button
             type="button"
@@ -77,19 +82,21 @@ export default function ProductGrid({
           <div className="catalog-crumb-trail">
             <span onClick={onBackToHome} className="crumb-link">Home</span>
             <span className="crumb-sep">/</span>
+            <span className="crumb-link" onClick={() => onSelectCategory('all')}>Catalog</span>
+            <span className="crumb-sep">/</span>
             <span className="crumb-current">{currentCategoryObj.label}</span>
           </div>
         </div>
 
-        {/* Dedicated Catalog Hero Banner */}
+        {/* Dedicated Catalog Editorial Header Banner */}
         <div className="catalog-header-banner">
           <div className="catalog-banner-copy">
             <div className="catalog-eyebrow">
               <span className="meta-dot"></span>
-              <span>Brisbane commercial hire catalog</span>
+              <span>Brisbane Commercial Hire Catalog</span>
             </div>
             <h1 className="catalog-banner-title">
-              {activeCategory === 'all' ? 'All party and event hire items' : currentCategoryObj.label}
+              {activeCategory === 'all' ? 'All Party & Event Hire Items' : `${currentCategoryObj.label} Hire Collection`}
             </h1>
             <p className="catalog-banner-sub">
               Available for flexible 24h to 72h weekend hire with Brisbane warehouse dispatch, express delivery, and professional event setup across Queensland.
@@ -99,7 +106,7 @@ export default function ProductGrid({
           <div className="catalog-banner-meta">
             <div className="catalog-meta-pill">
               <span className="meta-dot"></span>
-              <span><strong>{displayed.length}</strong> items available</span>
+              <span><strong>{displayed.length}</strong> items in collection</span>
             </div>
             <div className="catalog-meta-pill">
               <span>Standard refundable bond applies</span>
@@ -107,13 +114,14 @@ export default function ProductGrid({
           </div>
         </div>
 
-        {/* Controls Bar: Category Filters & Search/Sort */}
+        {/* Controls Bar: Category Filter Tabs & Search/Sort */}
         <div className="catalog-controls-bar">
-          {/* Category Tabs */}
+          {/* Scrollable Category Tabs */}
           <div className="catalog-filter-tabs">
             {FILTER_TAGS.map(tag => (
               <button
                 key={tag.key}
+                type="button"
                 className={`catalog-tab-btn ${activeCategory === tag.key ? 'active' : ''}`}
                 onClick={() => onSelectCategory(tag.key)}
               >
@@ -122,9 +130,10 @@ export default function ProductGrid({
             ))}
           </div>
 
-          {/* Search & Sort Row */}
+          {/* Search & Sort Tools */}
           <div className="catalog-tools-row">
             <div className="catalog-search-wrap">
+              <Search size={16} className="catalog-search-icon" />
               <input
                 type="text"
                 placeholder="Search this catalog..."
@@ -137,8 +146,9 @@ export default function ProductGrid({
                   type="button"
                   className="catalog-search-clear"
                   onClick={() => setItemSearch('')}
+                  aria-label="Clear search"
                 >
-                  ✕
+                  <X size={13} />
                 </button>
               )}
             </div>
@@ -160,7 +170,7 @@ export default function ProductGrid({
           </div>
         </div>
 
-        {/* Dedicated Items Grid with Modern Design Cards */}
+        {/* Dedicated Items Grid with Modern Scallop Design Cards */}
         <div className="product-grid" id="products-grid">
           {displayed.length > 0 ? (
             displayed.map(prod => {
@@ -269,14 +279,14 @@ export default function ProductGrid({
                 Try searching across all equipment or clearing your filter keyword.
               </p>
               <button
-                className="btn-primary"
-                style={{ marginTop: '16px' }}
+                type="button"
+                className="btn-primary-gold"
                 onClick={() => {
                   setItemSearch('');
                   onSelectCategory('all');
                 }}
               >
-                View Full Catalog ({products.length} Items)
+                <span>View Full Catalog ({products.length} Items)</span>
               </button>
             </div>
           )}

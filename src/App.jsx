@@ -150,20 +150,18 @@ export default function App() {
   const handleNavigateHome = () => {
     setCurrentView('home');
     if (window.__iconLenis) {
-      window.__iconLenis.scrollTo(0, { duration: 1.2 });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.__iconLenis.scrollTo(0, { immediate: true });
     }
+    window.scrollTo(0, 0);
   };
 
   const handleNavigateCatalog = (categoryKey = 'all') => {
     setActiveCategory(categoryKey);
     setCurrentView('catalog');
     if (window.__iconLenis) {
-      window.__iconLenis.scrollTo(0, { duration: 1.2 });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.__iconLenis.scrollTo(0, { immediate: true });
     }
+    window.scrollTo(0, 0);
   };
 
   // Admin Operations
