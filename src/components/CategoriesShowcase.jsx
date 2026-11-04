@@ -110,12 +110,12 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
           </button>
         </div>
 
-        {/* Vertical Category Grid with Modern Design Cards */}
-        <div className="categories-vertical-grid" ref={gridRef}>
+        {/* Vertical Category Grid: Exactly 5 Cards per Row on Desktop */}
+        <div className="categories-vertical-grid category-grid-5cols" ref={gridRef}>
           {CATEGORIES.map((cat) => (
             <article
               key={cat.id}
-              className="modern-design-card category-vertical-card"
+              className="modern-design-card category-vertical-card category-card-compact"
               onClick={() => onExploreCategory(cat.id)}
               role="button"
               tabIndex={0}
@@ -159,13 +159,13 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
                     }}
                   >
                     <span>Explore</span>
-                    <ArrowUpRight size={15} />
+                    <ArrowUpRight size={14} />
                   </button>
                 </div>
 
-                {/* Minimal Tag Pills (NO lengthy sentences) */}
+                {/* Minimal Tag Pills (NO lengthy sentences, max 3 for compact 5-per-row fit) */}
                 <div className="modern-card-tags">
-                  {cat.pills?.map((pill, i) => (
+                  {cat.pills?.slice(0, 3).map((pill, i) => (
                     <span key={i} className="modern-card-tag-pill">{pill}</span>
                   ))}
                 </div>
