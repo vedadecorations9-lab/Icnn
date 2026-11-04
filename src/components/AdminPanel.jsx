@@ -60,6 +60,7 @@ const EQUIPMENT_IMAGE_OPTIONS = [
 export default function AdminPanel({
   onClose,
   products = [],
+  isRealtime = false,
   onAddProduct,
   onUpdateProduct,
   onDeleteProduct,
@@ -320,6 +321,19 @@ export default function AdminPanel({
           </div>
         </div>
 
+        {/* Realtime Cloud / Local Indicator */}
+        <div className={`admin-sync-pill ${isRealtime ? 'is-convex' : 'is-local'}`} title={isRealtime ? 'Convex Cloud Sync is active with real-time WebSocket connection' : 'Running in Local Storage. Set VITE_CONVEX_URL in Vercel to activate instant multi-device real-time sync.'}>
+          <span className={`sync-status-dot ${isRealtime ? 'dot-active' : 'dot-local'}`} />
+          <div className="status-text-stack">
+            <span className="status-hub-title">
+              {isRealtime ? 'Convex Cloud Live' : 'Local Storage Mode'}
+            </span>
+            <span className="status-hub-meta">
+              {isRealtime ? 'Real-Time WebSocket' : 'Set VITE_CONVEX_URL'}
+            </span>
+          </div>
+        </div>
+
         {/* Navigation Menu */}
         <nav className="admin-nav-menu" aria-label="Operations Navigation">
           <div className="admin-nav-group-label">STORE MANAGEMENT</div>
@@ -439,6 +453,14 @@ export default function AdminPanel({
           </div>
 
           <div className="admin-topbar-right">
+            <div
+              className={`admin-cloud-indicator-badge ${isRealtime ? 'live' : 'offline'}`}
+              title={isRealtime ? 'Convex Cloud Sync is active and streaming real-time catalog updates' : 'Local storage fallback. Set VITE_CONVEX_URL in Vercel to sync across all devices.'}
+            >
+              <span className="badge-pulse-indicator" />
+              <span>{isRealtime ? 'Convex Live' : 'Local Mode'}</span>
+            </div>
+
             {activeTab === 'inventory' && (
               <button
                 type="button"

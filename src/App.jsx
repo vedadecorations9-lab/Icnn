@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PRODUCTS, CURRENCIES, CATEGORIES } from './data/products';
+import { isConvexConfigured } from './convexClient';
+import { useConvexStore, useLocalStore } from './hooks/useProductsData';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import CategoriesShowcase from './components/CategoriesShowcase';
@@ -21,7 +23,21 @@ import Toast from './components/Toast';
 import { Agentation } from 'agentation';
 import { useLenisScroll } from './hooks/useLenisScroll';
 
-export default function App() {
+/**
+ * Main application interface rendered with either Convex Real-time Cloud store
+ * or local state fallback depending on whether VITE_CONVEX_URL is configured in Vercel.
+ */
+function AppContent({ store, toasts, addToast }) {
+  const {
+    products,
+    isRealtime,
+    handleAdd,
+    handleUpdate,
+    handleDelete,
+    handleUpdateStock,
+    handleReset
+  } = store;
+
   // Navigation View: 'home' (Categories on Home) vs 'catalog' (Dedicated Separate Items Page)
   const [currentView, setCurrentView] = useState('home');
   useLenisScroll(currentView);
@@ -30,23 +46,6 @@ export default function App() {
   const [currency, setCurrencyState] = useState(() => {
     return localStorage.getItem('icon_currency') || 'AUD';
   });
-
-  const [products, setProducts] = useState(() => {
-    try {
-      const saved = localStorage.getItem('icon_products_inventory');
-      return saved ? JSON.parse(saved) : PRODUCTS;
-    } catch {
-      return PRODUCTS;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('icon_products_inventory', JSON.stringify(products));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [products]);
 
   const [cart, setCart] = useState(() => {
     try {
@@ -74,7 +73,6 @@ export default function App() {
   const [isTrackOrderOpen, setIsTrackOrderOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [toasts, setToasts] = useState([]);
 
   // Save changes to localStorage
   useEffect(() => {
@@ -91,15 +89,6 @@ export default function App() {
       localStorage.setItem('icon_currency', code);
       addToast(`Currency updated to ${code} (${CURRENCIES[code].symbol})`, 'gold');
     }
-  };
-
-  // Toast Handler
-  const addToast = (message, type = 'gold') => {
-    const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
-    }, 3500);
   };
 
   // Price Formatter in AUD / Currency
@@ -179,38 +168,6 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  // Admin Operations (Full CRUD)
-  const handleAddProduct = (newProd) => {
-    setProducts(prev => [newProd, ...prev]);
-    addToast(`Added "${newProd.name}" to Brisbane catalog`, 'gold');
-  };
-
-  const handleUpdateProduct = (updatedProd) => {
-    setProducts(prev =>
-      prev.map(p => (p.id === updatedProd.id ? updatedProd : p))
-    );
-    addToast(`Updated "${updatedProd.name}" successfully`, 'gold');
-  };
-
-  const handleDeleteProduct = (prodId) => {
-    const target = products.find(p => p.id === prodId);
-    setProducts(prev => prev.filter(p => p.id !== prodId));
-    addToast(`Removed "${target ? target.name : prodId}" from inventory`, 'gold');
-  };
-
-  const handleUpdateProductStock = (id, newStock) => {
-    setProducts(prev =>
-      prev.map(p => (p.id === id ? { ...p, stock: newStock } : p))
-    );
-    addToast('Equipment inventory stock updated', 'gold');
-  };
-
-  const handleResetProducts = () => {
-    setProducts(PRODUCTS);
-    localStorage.removeItem('icon_products_inventory');
-    addToast('Restored official Brisbane equipment catalog', 'gold');
-  };
-
   const quickViewProduct = quickViewId ? products.find(p => p.id === quickViewId) : null;
   const totalCartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
@@ -221,11 +178,12 @@ export default function App() {
         <AdminPanel
           onClose={() => setIsAdminOpen(false)}
           products={products}
-          onAddProduct={handleAddProduct}
-          onUpdateProduct={handleUpdateProduct}
-          onDeleteProduct={handleDeleteProduct}
-          onUpdateProductStock={handleUpdateProductStock}
-          onResetProducts={handleResetProducts}
+          isRealtime={isRealtime}
+          onAddProduct={handleAdd}
+          onUpdateProduct={handleUpdate}
+          onDeleteProduct={handleDelete}
+          onUpdateProductStock={handleUpdateStock}
+          onResetProducts={handleReset}
           onToast={addToast}
         />
         <Toast toasts={toasts} />
@@ -235,8 +193,7 @@ export default function App() {
 
   return (
     <div className="icon-app">
-      
-      {/* 2. Unified Luxury Editorial Header */}
+      {/* 1. Luxury Editorial Header */}
       <Header
         currentView={currentView}
         currency={currency}
@@ -407,4 +364,39 @@ export default function App() {
       {import.meta.env.DEV && <Agentation />}
     </div>
   );
+}
+
+// 1. App variant with Convex Cloud real-time subscriptions
+function ConvexConnectedApp() {
+  const [toasts, setToasts] = useState([]);
+  const addToast = (message, type = 'gold') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 3500);
+  };
+  const store = useConvexStore(PRODUCTS, addToast);
+  return <AppContent store={store} toasts={toasts} addToast={addToast} />;
+}
+
+// 2. App variant with local storage fallback when Convex URL is pending
+function LocalFallbackApp() {
+  const [toasts, setToasts] = useState([]);
+  const addToast = (message, type = 'gold') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 3500);
+  };
+  const store = useLocalStore(PRODUCTS, addToast);
+  return <AppContent store={store} toasts={toasts} addToast={addToast} />;
+}
+
+export default function App() {
+  if (isConvexConfigured) {
+    return <ConvexConnectedApp />;
+  }
+  return <LocalFallbackApp />;
 }
