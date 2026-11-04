@@ -10,15 +10,23 @@ export function useLenisScroll(dependency) {
   const lenisRef = useRef(null);
 
   useEffect(() => {
-    // 1. Initialize Lenis Smooth Scroll
+    // Check if device is touch-primary (mobile/tablet) to prevent touch hijacking
+    const isTouch = typeof window !== 'undefined' && (
+      window.matchMedia('(pointer: coarse)').matches ||
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0
+    );
+
+    // 1. Initialize Lenis Smooth Scroll with zero touch-hijacking & single RAF
     const lenis = new Lenis({
-      duration: 1.25,
+      duration: 1.05,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // smooth natural deceleration
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.75,
+      smoothTouch: false, // Never hijack native mobile touch scrolling
+      touchMultiplier: 0, // Ensure mobile retains 120Hz native momentum
+      autoRaf: false,     // Critical: disable Lenis internal loop to prevent double-RAF with GSAP ticker
       infinite: false,
     });
 
@@ -34,12 +42,13 @@ export function useLenisScroll(dependency) {
     };
 
     gsap.ticker.add(tickerCallback);
-    gsap.ticker.lagSmoothing(0);
+    // Enable lag smoothing to prevent violent jumps on minor frame drop
+    gsap.ticker.lagSmoothing(500, 33);
 
     // 4. Initial ScrollTrigger Refresh
     const timer = setTimeout(() => {
       ScrollTrigger.refresh();
-    }, 200);
+    }, 150);
 
     return () => {
       clearTimeout(timer);
@@ -57,10 +66,9 @@ export function useLenisScroll(dependency) {
       if (lenisRef.current) {
         lenisRef.current.resize();
       }
-    }, 150);
+    }, 100);
     return () => clearTimeout(timer);
   }, [dependency]);
 
   return lenisRef;
 }
-

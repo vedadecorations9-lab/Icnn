@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Glass } from 'glisse';
-import 'glisse/styles.css';
 import { CATEGORIES } from '../data/products';
 
 export default function Header({
@@ -26,14 +24,23 @@ export default function Header({
   const [searchVal, setSearchVal] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Smooth scroll listener for transparent-to-white navbar transition
+  // High-performance RAF scroll listener (no redundant re-renders)
   useEffect(() => {
+    let rafId = null;
     function handleScroll() {
-      setIsScrolled(window.scrollY > 35);
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        const scrolled = window.scrollY > 35;
+        setIsScrolled(prev => (prev !== scrolled ? scrolled : prev));
+        rafId = null;
+      });
     }
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const isTransparent = currentView === 'home' && !isScrolled;
@@ -77,7 +84,7 @@ export default function Header({
   return (
     <>
       <header className="luxury-navbar-wrapper" role="banner">
-        <Glass className={`luxury-navbar glisse-navbar ${isScrolled ? 'navbar-scrolled' : 'navbar-glass'}`}>
+        <nav className={`luxury-navbar ${isScrolled ? 'navbar-scrolled' : 'navbar-glass'}`} aria-label="Main Floating Navigation">
 
         <div className="luxury-navbar-inner">
           
@@ -240,7 +247,7 @@ export default function Header({
           </div>
 
         </div>
-        </Glass>
+        </nav>
       </header>
 
     </>

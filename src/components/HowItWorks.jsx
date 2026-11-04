@@ -46,7 +46,8 @@ export default function HowItWorks() {
         scrollTrigger: {
           trigger: section,
           start: 'top 75%',
-          toggleActions: 'play none none reverse',
+          once: true,
+        clearProps: 'opacity,transform',
         },
       });
     }, sectionRef);

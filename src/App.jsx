@@ -198,7 +198,7 @@ export default function App() {
   }
 
   return (
-    <div className="icon-app" data-glisse-backdrop>
+    <div className="icon-app">
       
       {/* 2. Unified Luxury Editorial Header */}
       <Header

@@ -54,8 +54,7 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
       ref={heroRef}
       className="hero-fullsize-banner"
       id="home"
-      data-glisse-backdrop
-      style={{ backgroundImage: "url('/assets/images/hero_sec.png?v=hero_balanced_v1')" }}
+      style={{ backgroundImage: "url('/assets/images/hero_sec.webp')" }}
       aria-label="Icon Party Hire Brisbane Hero Banner"
     >
       {/* High-Contrast Left Scrim Overlay for Clean Readability without Covering Centerpiece */}
@@ -108,7 +107,7 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
                     {/* Center High-Definition Circular Logo */}
                     <span className="vinyl-center-label">
                       <img
-                        src="/assets/images/logo.png"
+                        src="/assets/images/logo.webp"
                         alt="Icon Party Hire Official Circular Emblem"
                         className="vinyl-center-logo-img"
                       />

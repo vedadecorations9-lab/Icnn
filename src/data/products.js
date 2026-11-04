@@ -49,7 +49,7 @@ export const CATEGORIES = [
     tag: 'Warm Ambience',
     startingPrice: 35,
     itemCount: 2,
-    image: '/assets/images/items/festoon-lighting.jpg',
+    image: '/assets/images/items/festoon-lighting.webp',
     description: 'Warm vintage Edison filament festoon string lighting, ambient battery uplights, and party illumination.'
   },
   {
@@ -69,7 +69,7 @@ export const CATEGORIES = [
     tag: 'Evening Warmth',
     startingPrice: 65,
     itemCount: 2,
-    image: '/assets/images/items/patio-heater.jpg',
+    image: '/assets/images/items/patio-heater.webp',
     description: 'Commercial outdoor gas patio mushroom heaters & glass flame towers for evening Brisbane outdoor soirees.'
   },
   {
@@ -79,7 +79,7 @@ export const CATEGORIES = [
     tag: 'Ice Cold',
     startingPrice: 28,
     itemCount: 2,
-    image: '/assets/images/items/commercial-esky.jpg',
+    image: '/assets/images/items/commercial-esky.webp',
     description: 'Heavy-duty 100L commercial cooler ice boxes, acrylic drink dispensers, and stainless beverage party tubs.'
   },
   {
@@ -99,7 +99,7 @@ export const CATEGORIES = [
     tag: 'Party Sound',
     startingPrice: 75,
     itemCount: 2,
-    image: '/assets/images/items/party-audio-system.jpg',
+    image: '/assets/images/items/party-audio-system.webp',
     description: 'High-output portable Bluetooth PA sound speakers with wireless dual microphones and outdoor projectors.'
   }
 ];
@@ -417,7 +417,7 @@ export const PRODUCTS = [
     reviewsCount: 380,
     badge: 'Night Magic',
     badgeType: 'badge-gold',
-    image: '/assets/images/items/festoon-lighting.jpg',
+    image: '/assets/images/items/festoon-lighting.webp',
     description: 'Heavy-duty 20-metre commercial festoon lighting harness with 20 vintage Edison-style warm filament LED teardrop bulbs. Connectable up to 100m, IP65 waterproof rated for all Brisbane garden and marquee evening celebrations.',
     origin: 'Icon Lighting Collection',
     material: 'Weatherproof Heavy-Gauge Rubber Cable & Shatterproof Filament Bulbs',
@@ -463,7 +463,7 @@ export const PRODUCTS = [
     reviewsCount: 340,
     badge: 'Warmth Pro',
     badgeType: 'badge-sale',
-    image: '/assets/images/items/patio-heater.jpg',
+    image: '/assets/images/items/patio-heater.webp',
     description: 'Commercial 40MJ brushed stainless steel outdoor mushroom patio heater. Radiates deep infrared warmth over a 5m radius to keep guests comfortable during chilly Brisbane evening deck and marquee celebrations. Includes safety anti-tilt shutoff.',
     origin: 'Icon Heating Fleet',
     material: 'Food-Grade Brushed Stainless Steel & Heavy Weighted Base',
@@ -486,7 +486,7 @@ export const PRODUCTS = [
     reviewsCount: 220,
     badge: 'Visual Flame',
     badgeType: 'badge-gold',
-    image: '/assets/images/items/patio-heater.jpg',
+    image: '/assets/images/items/patio-heater.webp',
     description: 'Dramatic architectural pyramid flame patio heater featuring a dancing spiral flame housed inside a quartz glass tube. Delivers 360-degree radiant heat alongside stunning visual ambient flame aesthetics for VIP events.',
     origin: 'Icon Heating Fleet',
     material: 'Powder-Coated Charcoal Steel & High-Temp Quartz Glass Tube',
@@ -509,7 +509,7 @@ export const PRODUCTS = [
     reviewsCount: 410,
     badge: 'Ice Cold',
     badgeType: 'badge-sale',
-    image: '/assets/images/items/commercial-esky.jpg',
+    image: '/assets/images/items/commercial-esky.webp',
     description: 'Premium rotomolded 100-Litre commercial ice box esky. Holds up to 120 cans plus ice, featuring ultra-thick polyurethane insulation walls that keep ice frozen for up to 5 days. Equipped with heavy-duty rope handles, rubber T-latches, and rapid drain spout.',
     origin: 'Icon Cold Storage Equipment',
     material: 'UV-Stabilized Food-Grade Roto-Molded Polyethylene',
@@ -555,7 +555,7 @@ export const PRODUCTS = [
     reviewsCount: 460,
     badge: 'Crisp Sound',
     badgeType: 'badge-gold',
-    image: '/assets/images/items/party-audio-system.jpg',
+    image: '/assets/images/items/party-audio-system.webp',
     description: 'High-output 400W battery-powered portable PA event sound speaker. Features Bluetooth 5.2 connectivity, AUX/USB input, bass boost, and includes 2 handheld metallic UHF wireless microphones with rechargeable base. 12-hour continuous battery life for parks or beaches.',
     origin: 'Icon AV Division',
     material: 'Acoustic Composite Casing & Heavy Metal Perforated Grille',
