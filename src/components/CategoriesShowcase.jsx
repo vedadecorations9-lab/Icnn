@@ -1,6 +1,6 @@
 import React, { useRef, useLayoutEffect } from 'react';
 import { CATEGORIES } from '../data/products';
-import { ArrowRight, Sparkles, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -9,12 +9,10 @@ gsap.registerPlugin(ScrollTrigger);
 export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }) {
   const sectionRef = useRef(null);
   const gridRef = useRef(null);
-  const bannerRef = useRef(null);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
     const grid = gridRef.current;
-    const banner = bannerRef.current;
     if (!section || !grid) return;
 
     let ctx = gsap.context(() => {
@@ -60,26 +58,6 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
           clearProps: 'opacity,transform',
         }
       );
-
-      // 3. Bottom CTA banner emergence
-      if (banner) {
-        gsap.fromTo(
-          banner,
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: banner,
-              start: 'top 88%',
-              once: true,
-            },
-            clearProps: 'opacity,transform',
-          }
-        );
-      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -172,31 +150,6 @@ export default function CategoriesShowcase({ onExploreCategory, onViewAllItems }
               </div>
             </article>
           ))}
-        </div>
-
-        {/* Bottom Full Catalog VIP Strip */}
-        <div className="categories-v-catalog-strip" ref={bannerRef}>
-          <div className="strip-info">
-            <div className="strip-icon-circle">
-              <Sparkles size={22} />
-            </div>
-            <div>
-              <h4 className="strip-title">Looking for the Complete Hire Inventory?</h4>
-              <p className="strip-desc">
-                Explore all 10 hire categories with real-time live availability, package discounts & quick booking dispatches in Brisbane.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="btn-primary-gold strip-btn"
-            onClick={onViewAllItems}
-          >
-            <span>Open hire catalog (10 categories)</span>
-            <div className="btn-icon-gold-circle">
-              <ArrowRight size={14} />
-            </div>
-          </button>
         </div>
 
       </div>

@@ -7,7 +7,6 @@ import FeaturedProductsCarousel from './components/FeaturedProductsCarousel';
 import BentoPromos from './components/BentoPromos';
 import HowItWorks from './components/HowItWorks';
 import ProductGrid from './components/ProductGrid';
-import TrustStrip from './components/TrustStrip';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import WishlistDrawer from './components/WishlistDrawer';
@@ -262,9 +261,6 @@ export default function App() {
             <HowItWorks
               onExploreCatalog={() => handleNavigateCatalog('all')}
             />
-
-            {/* Service & Equipment Guarantees Strip */}
-            <TrustStrip />
           </>
         ) : (
           /* =================================================================

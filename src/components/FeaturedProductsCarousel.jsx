@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Sparkles, Clock, Flame } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { getProductPills } from '../data/products';
 
 export default function FeaturedProductsCarousel({
@@ -14,21 +14,6 @@ export default function FeaturedProductsCarousel({
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-
-  // Live countdown timer for seasonal weekend booking urgency (similar to Image 3)
-  const [timeLeft, setTimeLeft] = useState({ hours: 9, minutes: 39, seconds: 16 });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return { hours: 12, minutes: 0, seconds: 0 };
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   // Filter curated top picks for this season's must-haves
   const mustHaves = products.filter(p =>
@@ -60,8 +45,6 @@ export default function FeaturedProductsCarousel({
     };
   }, []);
 
-  const pad = (n) => String(n).padStart(2, '0');
-
   return (
     <section className="musthave-section" aria-label="This Season's Must-Haves">
       <div className="container">
@@ -69,17 +52,6 @@ export default function FeaturedProductsCarousel({
         {/* Section Header */}
         <div className="musthave-header">
           <div className="musthave-header-copy">
-            <div className="musthave-urgency-row">
-              <span className="musthave-badge">
-                <Flame size={13} className="text-pink-500" />
-                <span>Brisbane Most-Hired</span>
-              </span>
-              <div className="musthave-timer-pill" title="Next delivery dispatch cutoff">
-                <Clock size={13} />
-                <span>Next Weekend Dispatch In: <strong>{pad(timeLeft.hours)}h : {pad(timeLeft.minutes)}m : {pad(timeLeft.seconds)}s</strong></span>
-              </div>
-            </div>
-
             <h2 className="musthave-title">
               This Season's <span className="hero-fancy-text">Must-Haves</span>
             </h2>
