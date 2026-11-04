@@ -31,7 +31,22 @@ export default function App() {
     return localStorage.getItem('icon_currency') || 'AUD';
   });
 
-  const [products, setProducts] = useState(PRODUCTS);
+  const [products, setProducts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('icon_products_inventory');
+      return saved ? JSON.parse(saved) : PRODUCTS;
+    } catch {
+      return PRODUCTS;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('icon_products_inventory', JSON.stringify(products));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [products]);
 
   const [cart, setCart] = useState(() => {
     try {
@@ -164,16 +179,36 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  // Admin Operations
+  // Admin Operations (Full CRUD)
   const handleAddProduct = (newProd) => {
     setProducts(prev => [newProd, ...prev]);
+    addToast(`Added "${newProd.name}" to Brisbane catalog`, 'gold');
+  };
+
+  const handleUpdateProduct = (updatedProd) => {
+    setProducts(prev =>
+      prev.map(p => (p.id === updatedProd.id ? updatedProd : p))
+    );
+    addToast(`Updated "${updatedProd.name}" successfully`, 'gold');
+  };
+
+  const handleDeleteProduct = (prodId) => {
+    const target = products.find(p => p.id === prodId);
+    setProducts(prev => prev.filter(p => p.id !== prodId));
+    addToast(`Removed "${target ? target.name : prodId}" from inventory`, 'gold');
   };
 
   const handleUpdateProductStock = (id, newStock) => {
     setProducts(prev =>
       prev.map(p => (p.id === id ? { ...p, stock: newStock } : p))
     );
-    addToast('Equipment inventory updated in Brisbane warehouse', 'gold');
+    addToast('Equipment inventory stock updated', 'gold');
+  };
+
+  const handleResetProducts = () => {
+    setProducts(PRODUCTS);
+    localStorage.removeItem('icon_products_inventory');
+    addToast('Restored official Brisbane equipment catalog', 'gold');
   };
 
   const quickViewProduct = quickViewId ? products.find(p => p.id === quickViewId) : null;
@@ -187,7 +222,10 @@ export default function App() {
           onClose={() => setIsAdminOpen(false)}
           products={products}
           onAddProduct={handleAddProduct}
+          onUpdateProduct={handleUpdateProduct}
+          onDeleteProduct={handleDeleteProduct}
           onUpdateProductStock={handleUpdateProductStock}
+          onResetProducts={handleResetProducts}
           onToast={addToast}
         />
         <Toast toasts={toasts} />

@@ -225,6 +225,22 @@ export default function Header({
               {wishlistCount > 0 && <span className="nav-micro-counter">{wishlistCount}</span>}
             </button>
 
+            {/* Admin Operations HQ (Desktop) */}
+            <button
+              type="button"
+              className="nav-icon-action-btn hide-mobile"
+              onClick={onOpenAdmin}
+              title="Icon Operations Admin HQ"
+              aria-label="Open Admin Operations Panel"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+
             {/* Shopping Bag / Cart */}
             <button
               type="button"
