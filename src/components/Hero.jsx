@@ -1,4 +1,5 @@
 import React, { useRef, useLayoutEffect, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -64,6 +65,13 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
           {/* Left-Aligned Editorial Content */}
           <div className="hero-fullsize-copy" ref={copyRef}>
 
+            {/* Fancy Eyebrow Jewel Badge */}
+            <div className="hero-jewel-eyebrow">
+              <span className="jewel-sparkle-dot">✦</span>
+              <span className="jewel-eyebrow-text">Brisbane's Premier Party & Event Hire</span>
+              <span className="jewel-sparkle-dot">✦</span>
+            </div>
+
             {/* Fancy Grand Headline with Rotating Vinyl Emblem Beside "Every" */}
             <h1 className="hero-full-title">
               <span className="hero-title-first-line">
@@ -116,24 +124,45 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
                   </span>
                 </span>
               </span>
-              <br />
-              <span className="hero-fancy-text">Celebration</span>
+              <span className="hero-title-second-line">
+                <span className="hero-fancy-text">Celebration</span>
+              </span>
             </h1>
 
-            {/* Action CTAs Directly Below Heading */}
+            {/* Fancy Secondary Main Heading (Crisp & Editorial — NO lengthy sentences) */}
+            <h2 className="hero-fancy-subheading">
+              <span>Curated Party Equipment</span>
+              <span className="hero-subheading-sparkle">✦</span>
+              <span>Statement Centerpieces</span>
+            </h2>
+
+            {/* Concise Value Highlights (Crisp Micro-Pills) */}
+            <div className="hero-features-ribbon">
+              <span className="hero-feature-chip">
+                <span className="chip-bullet">✓</span>
+                <span>Brisbane Warehouse Dispatch</span>
+              </span>
+              <span className="hero-feature-chip">
+                <span className="chip-bullet">✓</span>
+                <span>Flexible Weekend Hire</span>
+              </span>
+              <span className="hero-feature-chip">
+                <span className="chip-bullet">✓</span>
+                <span>Commercial Grade</span>
+              </span>
+            </div>
+
+            {/* Single Primary Action CTA (Removed the "View hire catalog" card) */}
             <div className="hero-full-cta-group">
-              <button className="btn-primary-gold" onClick={onExploreCategories}>
-                <span>Browse categories</span>
+              <button
+                type="button"
+                className="btn-primary-gold hero-primary-btn"
+                onClick={onExploreCategories}
+              >
+                <span>Browse Event Categories</span>
                 <div className="btn-icon-gold-circle">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <polyline points="19 12 12 19 5 12"></polyline>
-                  </svg>
+                  <ArrowRight size={15} />
                 </div>
-              </button>
-              
-              <button className="btn-secondary-glass" onClick={onViewCatalog}>
-                <span>View hire catalog (10 categories)</span>
               </button>
             </div>
 
