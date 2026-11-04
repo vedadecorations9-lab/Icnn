@@ -65,13 +65,6 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
           {/* Left-Aligned Editorial Content */}
           <div className="hero-fullsize-copy" ref={copyRef}>
 
-            {/* Fancy Eyebrow Jewel Badge */}
-            <div className="hero-jewel-eyebrow">
-              <span className="jewel-sparkle-dot">✦</span>
-              <span className="jewel-eyebrow-text">Brisbane's Premier Party & Event Hire</span>
-              <span className="jewel-sparkle-dot">✦</span>
-            </div>
-
             {/* Fancy Grand Headline with Rotating Vinyl Emblem Beside "Every" */}
             <h1 className="hero-full-title">
               <span className="hero-title-first-line">
@@ -129,30 +122,7 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
               </span>
             </h1>
 
-            {/* Fancy Secondary Main Heading (Crisp & Editorial — NO lengthy sentences) */}
-            <h2 className="hero-fancy-subheading">
-              <span>Curated Party Equipment</span>
-              <span className="hero-subheading-sparkle">✦</span>
-              <span>Statement Centerpieces</span>
-            </h2>
-
-            {/* Concise Value Highlights (Crisp Micro-Pills) */}
-            <div className="hero-features-ribbon">
-              <span className="hero-feature-chip">
-                <span className="chip-bullet">✓</span>
-                <span>Brisbane Warehouse Dispatch</span>
-              </span>
-              <span className="hero-feature-chip">
-                <span className="chip-bullet">✓</span>
-                <span>Flexible Weekend Hire</span>
-              </span>
-              <span className="hero-feature-chip">
-                <span className="chip-bullet">✓</span>
-                <span>Commercial Grade</span>
-              </span>
-            </div>
-
-            {/* Single Primary Action CTA (Removed the "View hire catalog" card) */}
+            {/* Single Primary Action CTA */}
             <div className="hero-full-cta-group">
               <button
                 type="button"

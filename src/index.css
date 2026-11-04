@@ -876,7 +876,7 @@ ul, ol {
   font-weight: 700;
   line-height: 1.06;
   color: #FFFFFF;
-  margin: 0 0 16px 0;
+  margin: 0 0 32px 0;
   letter-spacing: -0.015em;
   text-shadow: 0 4px 32px rgba(0, 0, 0, 0.75);
   display: flex;
@@ -5327,9 +5327,9 @@ ul, ol {
   }
 
   .hero-full-title {
-    font-size: clamp(2.25rem, 8.5vw, 3.1rem);
+    font-size: clamp(2.35rem, 8.5vw, 3.2rem);
     line-height: 1.1;
-    margin-bottom: 12px;
+    margin-bottom: 24px;
   }
 
   .hero-title-first-line {
@@ -6012,7 +6012,7 @@ ul, ol {
   font-size: 0.84rem;
   color: #6B7280;
   line-height: 1.5;
-  margin: 0 0 16px 0;
+  margin: 0 0 32px 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -6331,7 +6331,7 @@ html.lenis, html.lenis body {
   font-size: 0.84rem;
   color: #64748B;
   line-height: 1.5;
-  margin: 0 0 16px 0;
+  margin: 0 0 32px 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
