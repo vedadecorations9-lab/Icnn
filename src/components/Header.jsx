@@ -58,13 +58,10 @@ export default function Header({
       ).slice(0, 6)
     : [];
 
-
-
   // Handle Escape key & outside clicks
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.key === 'Escape') {
-        setSearchModalOpen(false);
         setCollectionsMenuOpen(false);
       }
     }
@@ -112,17 +109,10 @@ export default function Header({
               aria-label="Icon Party Hire Brisbane Home"
             >
               <img
-                src="/assets/images/icon_logo.png"
-                alt="Icon Party Hire Logo"
-                className="luxury-brand-avatar"
+                src="/assets/images/icon_logo_navbar.webp"
+                alt="Icon Party Hire Brisbane"
+                className="luxury-brand-navbar-img"
               />
-              <div className="luxury-brand-text">
-                <div className="brand-title-row">
-                  <span className="brand-wordmark">Icon</span>
-                  
-                </div>
-                <span className="brand-heritage-kicker">Party & event hire</span>
-              </div>
             </div>
           </div>
 
@@ -209,8 +199,6 @@ export default function Header({
               />
             </form>
 
-
-
             {/* Wishlist */}
             <button
               type="button"
@@ -265,7 +253,6 @@ export default function Header({
         </div>
         </nav>
       </header>
-
     </>
   );
 }

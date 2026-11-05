@@ -304,10 +304,34 @@ ul, ol {
 }
 
 .luxury-brand-lockup {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
   text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  user-select: none;
+}
+
+.luxury-brand-lockup:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.luxury-brand-navbar-img {
+  height: 42px;
+  max-height: 46px;
+  width: auto;
+  aspect-ratio: 3200 / 1066;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 2px 8px rgba(27, 6, 26, 0.08));
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.luxury-brand-lockup:hover .luxury-brand-navbar-img {
+  filter: drop-shadow(0 3px 12px rgba(216, 27, 96, 0.18));
 }
 
 .luxury-brand-avatar {
