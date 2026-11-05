@@ -1503,13 +1503,18 @@
 }
 
 @media (max-width: 768px) {
+  /* Sidebar Mobile Drawer */
   .admin-portal-sidebar {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
+    width: 290px;
+    max-width: 85vw;
     transform: translateX(-100%);
-    box-shadow: 12px 0 36px rgba(0, 0, 0, 0.4);
+    box-shadow: 12px 0 36px rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    overflow-y: auto;
   }
 
   .admin-portal-sidebar.drawer-open {
@@ -1519,33 +1524,263 @@
   .admin-drawer-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 45;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 95;
   }
 
+  /* Visibility Switches */
+  .show-mobile,
+  .show-mobile-table {
+    display: flex !important;
+  }
+
+  .hide-mobile,
+  .hide-mobile-table {
+    display: none !important;
+  }
+
+  .admin-hamburger-btn {
+    display: flex !important;
+  }
+
+  .admin-mobile-bottom-bar {
+    display: flex !important;
+  }
+
+  /* Header Topbar on Mobile */
   .admin-topbar {
-    padding: 14px 18px;
+    padding: 10px 14px;
+    gap: 8px;
   }
 
+  .admin-topbar-left {
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .admin-breadcrumbs {
+    display: none;
+  }
+
+  .admin-page-title {
+    font-size: 1.05rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin-topbar-right {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .admin-cloud-indicator-badge {
+    padding: 6px 8px;
+    font-size: 0.6875rem;
+  }
+
+  .admin-cloud-indicator-badge .cloud-badge-text {
+    display: none;
+  }
+
+  .admin-btn-primary {
+    padding: 7px 12px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  .admin-btn-close-store {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+  }
+
+  /* Main Tab Content - Room for Fixed Bottom Bar */
   .admin-tab-content {
-    padding: 18px 16px 80px 16px;
+    padding: 14px 12px 100px 12px;
   }
 
+  /* KPI Strip: Clean 2-column grid instead of huge 1-col stack */
   .admin-kpi-strip {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .kpi-mini-card,
+  .admin-kpi-card {
+    padding: 10px 12px;
+    gap: 6px;
+    border-radius: 14px;
+  }
+
+  .kpi-mini-card .kpi-label,
+  .admin-kpi-card .kpi-label {
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+
+  .kpi-mini-card .kpi-val,
+  .admin-kpi-card .kpi-value {
+    font-size: 1.125rem;
+  }
+
+  .admin-kpi-card .kpi-icon-wrap {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .kpi-subtext {
+    font-size: 0.625rem;
+    display: none;
+  }
+
+  /* Inventory Toolbar */
+  .admin-toolbar-card {
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+  }
+
+  .toolbar-top-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .toolbar-search-box {
+    width: 100%;
+    max-width: 100% !important;
+  }
+
+  .toolbar-dropdowns {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .toolbar-select {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    font-size: 0.75rem;
+  }
+
+  .toolbar-categories-pills {
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cat-pill {
+    padding: 5px 12px;
+    font-size: 0.6875rem;
+  }
+
+  /* Category Cards Management Section */
+  .admin-cat-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .admin-cat-toolbar .admin-search-box {
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  .cat-toolbar-meta {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .cat-toolbar-meta .admin-btn-primary {
+    margin-left: auto !important;
+  }
+
+  .admin-cat-deck {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .admin-table-container {
+    padding: 12px !important;
+    border-radius: 14px;
+  }
+
+  /* Modals on Mobile View */
+  .admin-modal-backdrop {
+    padding: 8px;
+    align-items: flex-end;
+  }
+
+  .admin-modal-card,
+  .admin-confirm-modal-card,
+  .admin-inspect-modal-card {
+    max-height: 94vh;
+    border-radius: 20px 20px 14px 14px;
+    width: 100%;
+    padding: 16px;
+  }
+
+  .admin-modal-header {
+    padding: 14px 16px 12px 16px;
+  }
+
+  .admin-modal-form {
+    padding: 14px 16px 18px 16px;
+    gap: 14px;
   }
 
   .modal-form-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .form-group.full-width {
     grid-column: span 1;
   }
 
+  /* Eliminate iOS Safari automatic zoom */
+  .form-input,
+  .form-select,
+  .form-textarea,
+  .toolbar-search-input,
+  .admin-search-input {
+    font-size: 16px !important;
+  }
+
+  .admin-modal-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+    padding-top: 14px;
+  }
+
+  .admin-modal-footer button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-action-stack {
+    flex-direction: column-reverse !important;
+    width: 100%;
+  }
+
+  .modal-action-stack button {
+    width: 100%;
+    justify-content: center;
+  }
+
   .inspect-body {
     flex-direction: column;
+    gap: 14px;
   }
 
   .inspect-media {
@@ -1553,10 +1788,32 @@
     height: 180px;
   }
 
+  .inspect-specs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  /* Operations & Logistics Hero */
   .dispatch-hero-banner {
     flex-direction: column;
-    padding: 24px;
+    padding: 16px;
     align-items: flex-start;
+    gap: 12px;
+  }
+
+  .dispatch-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .dispatch-actions button {
+    width: 100%;
+  }
+
+  .showroom-boxes-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 

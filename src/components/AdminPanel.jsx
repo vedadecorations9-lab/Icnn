@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
+  Menu,
   Package,
   Plus,
   Search,
@@ -566,9 +567,7 @@ export default function AdminPanel({
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open sidebar menu"
             >
-              <div className="hamburger-line" />
-              <div className="hamburger-line" />
-              <div className="hamburger-line" />
+              <Menu size={20} />
             </button>
 
             <div>
@@ -599,7 +598,7 @@ export default function AdminPanel({
               title={isRealtime ? 'Convex Cloud Sync is active and streaming real-time catalog updates' : 'Local storage fallback. Set VITE_CONVEX_URL in Vercel to sync across all devices.'}
             >
               <span className="badge-pulse-indicator" />
-              <span>{isRealtime ? 'Convex Live' : 'Local Mode'}</span>
+              <span className="cloud-badge-text">{isRealtime ? 'Convex Live' : 'Local Mode'}</span>
             </div>
 
             {activeTab === 'inventory' && (
@@ -744,7 +743,8 @@ export default function AdminPanel({
 
             {/* Inventory Data Table */}
             <div className="admin-table-card">
-              <div className="table-responsive-wrapper">
+              {/* Desktop / Tablet Data Table */}
+              <div className="table-responsive-wrapper hide-mobile-table">
                 <table className="admin-data-table">
                   <thead>
                     <tr>
@@ -1227,6 +1227,124 @@ export default function AdminPanel({
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Native Mobile Equipment Cards List */}
+              <div className="admin-mobile-inventory-list show-mobile-table">
+                {filteredProducts.length === 0 ? (
+                  <div className="admin-mobile-empty-card">
+                    <AlertTriangle size={28} className="empty-icon text-amber-500" />
+                    <h4>No equipment found</h4>
+                    <p>Adjust your search query or category filter.</p>
+                    <button
+                      type="button"
+                      className="btn-outline-gold"
+                      onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setStockFilter('all'); }}
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                ) : (
+                  filteredProducts.map(prod => {
+                    const price = prod.priceAUD || Math.round((prod.priceINR || 0) * 0.0185);
+                    const isLowStock = (prod.stock || 0) <= 5 && (prod.stock || 0) > 0;
+                    const isOutOfStock = (prod.stock || 0) === 0;
+
+                    return (
+                      <div key={prod.id} className="admin-mobile-eq-card">
+                        <div className="mobile-eq-header">
+                          <div className="mobile-eq-thumb-frame">
+                            <img
+                              src={prod.image}
+                              alt={prod.name}
+                              className="mobile-eq-thumb"
+                              onError={(e) => {
+                                e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
+                              }}
+                            />
+                          </div>
+                          <div className="mobile-eq-details">
+                            <div className="mobile-eq-title-row">
+                              <h4 className="mobile-eq-name">{prod.name}</h4>
+                              {prod.badge && <span className="prod-cell-badge">{prod.badge}</span>}
+                            </div>
+                            <div className="mobile-eq-meta-row">
+                              <span className="admin-cat-badge">{prod.categoryLabel || prod.category}</span>
+                              <span className="mobile-eq-sku">{prod.sku || `IPH-${prod.id}`}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mobile-eq-body">
+                          <div className="mobile-eq-pricing">
+                            <div className="mobile-eq-rate">
+                              <span className="rate-num">${price} AUD</span>
+                              <span className="rate-unit">/ weekend</span>
+                            </div>
+                            <div className="mobile-eq-bond">
+                              ${prod.bondAUD || 50} AUD Bond
+                            </div>
+                          </div>
+
+                          <div className="mobile-eq-stock-box">
+                            <span className="mobile-eq-stock-label">Stock Units:</span>
+                            <div className="stock-stepper-box">
+                              <button
+                                type="button"
+                                className="stock-step-btn"
+                                onClick={() => onUpdateProductStock?.(prod.id, Math.max(0, (prod.stock || 0) - 1))}
+                                disabled={(prod.stock || 0) === 0}
+                                aria-label="Decrease stock"
+                              >
+                                -
+                              </button>
+                              <span className={`stock-step-count ${isOutOfStock ? 'stock-empty' : isLowStock ? 'stock-warning' : ''}`}>
+                                {prod.stock || 0}
+                              </span>
+                              <button
+                                type="button"
+                                className="stock-step-btn"
+                                onClick={() => onUpdateProductStock?.(prod.id, (prod.stock || 0) + 1)}
+                                aria-label="Increase stock"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mobile-eq-actions">
+                          <button
+                            type="button"
+                            className="mobile-action-btn view"
+                            onClick={() => setInspectProduct(prod)}
+                            title="Inspect"
+                          >
+                            <Eye size={15} />
+                            <span>Inspect</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="mobile-action-btn edit"
+                            onClick={() => handleOpenEdit(prod)}
+                            title="Edit Equipment"
+                          >
+                            <Edit3 size={15} />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="mobile-action-btn delete"
+                            onClick={() => setDeletingProductId(prod.id)}
+                            title="Delete Equipment"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
 
@@ -1726,19 +1844,19 @@ export default function AdminPanel({
       {categoryDeleteWarning && (
         <div className="admin-modal-backdrop" onClick={() => setCategoryDeleteWarning(null)}>
           <div className="admin-confirm-modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px' }}>
-            <div className="confirm-icon-bubble" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B' }}>
+            <div className="confirm-icon-bubble" style={{ background: '#FEF3C7', color: '#D97706' }}>
               <AlertTriangle size={32} />
             </div>
-            <h3 className="confirm-title" style={{ color: '#F8FAFC' }}>
+            <h3 className="confirm-title">
               Cannot Delete Category "{categoryDeleteWarning.category.label}"
             </h3>
-            <p className="confirm-desc" style={{ color: '#94A3B8', fontSize: '0.9rem', lineHeight: '1.5' }}>
-              There are currently <strong style={{ color: '#F8FAFC' }}>{categoryDeleteWarning.count}</strong> equipment items assigned to this category in your catalog (including <em>{categoryDeleteWarning.sampleNames.join(', ')}</em>).
+            <p className="confirm-desc" style={{ fontSize: '0.9rem', lineHeight: '1.5' }}>
+              There are currently <strong>{categoryDeleteWarning.count}</strong> equipment items assigned to this category in your catalog (including <em>{categoryDeleteWarning.sampleNames.join(', ')}</em>).
             </p>
-            <div style={{ padding: '12px 16px', background: 'rgba(245, 158, 11, 0.08)', borderRadius: '10px', border: '1px solid rgba(245, 158, 11, 0.2)', marginBottom: '20px', fontSize: '0.8125rem', color: '#CBD5E1', lineHeight: '1.5', textAlign: 'left' }}>
+            <div style={{ padding: '12px 16px', background: '#FFFBEB', borderRadius: '12px', border: '1px solid #FDE68A', marginBottom: '20px', fontSize: '0.8125rem', color: '#92400E', lineHeight: '1.5', textAlign: 'left' }}>
               💡 <strong>Safety Recommendation:</strong> To maintain catalog integrity and prevent orphaned products, please reassign or delete these items in the <strong>Equipment Items</strong> section before deleting this category.
             </div>
-            <div className="confirm-actions" style={{ justifyContent: 'flex-end', gap: '10px' }}>
+            <div className="confirm-actions modal-action-stack" style={{ justifyContent: 'flex-end', gap: '10px' }}>
               <button
                 type="button"
                 className="btn-outline-cancel"
@@ -1810,7 +1928,7 @@ export default function AdminPanel({
             setEditingCategory(null);
           }}
         >
-          <div className="admin-modal-dialog-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
+          <div className="admin-modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
             <div className="admin-modal-header">
               <div>
                 <h3 className="modal-title">
@@ -1983,7 +2101,66 @@ export default function AdminPanel({
           </div>
         </div>
       )}
+      {/* Sleek Mobile Bottom Navigation Bar (Phone-Native Fast Switcher) */}
+      <nav className="admin-mobile-bottom-bar show-mobile" aria-label="Mobile Operations Navigation">
+        <button
+          type="button"
+          className={`mobile-bar-item ${activeTab === 'inventory' ? 'active' : ''}`}
+          onClick={() => setActiveTab('inventory')}
+        >
+          <div className="mobile-bar-icon-wrap">
+            <Package size={20} />
+            {products.length > 0 && <span className="mobile-bar-badge">{products.length}</span>}
+          </div>
+          <span className="mobile-bar-label">Items</span>
+        </button>
 
+        <button
+          type="button"
+          className={`mobile-bar-item ${activeTab === 'categories' ? 'active' : ''}`}
+          onClick={() => setActiveTab('categories')}
+        >
+          <div className="mobile-bar-icon-wrap">
+            <Layers size={20} />
+            {activeCategories.length > 0 && <span className="mobile-bar-badge">{activeCategories.length}</span>}
+          </div>
+          <span className="mobile-bar-label">Categories</span>
+        </button>
+
+        <button
+          type="button"
+          className={`mobile-bar-item ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          <div className="mobile-bar-icon-wrap">
+            <BarChart3 size={20} />
+          </div>
+          <span className="mobile-bar-label">Overview</span>
+        </button>
+
+        <button
+          type="button"
+          className={`mobile-bar-item ${activeTab === 'bookings' ? 'active' : ''}`}
+          onClick={() => setActiveTab('bookings')}
+        >
+          <div className="mobile-bar-icon-wrap">
+            <Calendar size={20} />
+            {bookings.length > 0 && <span className="mobile-bar-badge">{bookings.length}</span>}
+          </div>
+          <span className="mobile-bar-label">Bookings</span>
+        </button>
+
+        <button
+          type="button"
+          className="mobile-bar-item"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <div className="mobile-bar-icon-wrap">
+            <SlidersHorizontal size={20} />
+          </div>
+          <span className="mobile-bar-label">More</span>
+        </button>
+      </nav>
     </div>
   );
 }
