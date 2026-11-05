@@ -1546,7 +1546,7 @@
   }
 
   .admin-mobile-bottom-bar {
-    display: flex !important;
+    display: none !important;
   }
 
   /* Header Topbar on Mobile */
@@ -2190,7 +2190,7 @@
   }
 
   .admin-tab-content {
-    padding: 12px 12px 105px 12px !important;
+    padding: 12px 12px 30px 12px !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -2205,9 +2205,9 @@
     display: flex !important;
   }
 
-  /* Fixed Mobile Bottom Bar */
+  /* Mobile Bottom Bar hidden — all operations navigation shifted into topbar hamburger drawer */
   .admin-mobile-bottom-bar {
-    display: flex !important;
+    display: none !important;
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;

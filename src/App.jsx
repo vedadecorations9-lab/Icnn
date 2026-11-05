@@ -338,24 +338,7 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
         onOpenTrackOrder={() => setIsTrackOrderOpen(true)}
       />
 
-      {/* Mobile Bottom Navigation Bar */}
-      <MobileBottomBar
-        currentView={currentView}
-        isCartOpen={isCartOpen}
-        isWishlistOpen={isWishlistOpen}
-        isCategoriesOpen={isCategoriesOpen}
-        cartCount={totalCartCount}
-        wishlistCount={wishlist.length}
-        onNavigateHome={handleNavigateHome}
-        onNavigateCatalog={handleNavigateCatalog}
-        onOpenCart={handleOpenCart}
-        onOpenWishlist={handleOpenWishlist}
-        onOpenCategories={handleOpenCategories}
-        onOpenAdmin={() => {
-          closeAllDrawers();
-          setIsAdminOpen(true);
-        }}
-      />
+      {/* Mobile Bottom Navigation Bar removed — shifted into top navbar hamburger drawer */}
 
       {/* --- Drawers & Modals --- */}
       <CartDrawer
@@ -385,8 +368,23 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
 
       <CategoriesDrawer
         isOpen={isCategoriesOpen}
-        categories={categories}
         onClose={() => setIsCategoriesOpen(false)}
+        currentView={currentView}
+        cartCount={totalCartCount}
+        wishlistCount={wishlist.length}
+        onNavigateHome={handleNavigateHome}
+        onNavigateCatalog={handleNavigateCatalog}
+        onOpenCart={handleOpenCart}
+        onOpenWishlist={handleOpenWishlist}
+        onOpenTrackOrder={() => {
+          closeAllDrawers();
+          setIsTrackOrderOpen(true);
+        }}
+        onOpenAdmin={() => {
+          closeAllDrawers();
+          setIsAdminOpen(true);
+        }}
+        categories={categories}
         onSelectCategory={(catId) => {
           setIsCategoriesOpen(false);
           handleNavigateCatalog(catId);
