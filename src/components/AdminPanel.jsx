@@ -583,11 +583,36 @@ export default function AdminPanel({
                 </span>
               </div>
               <h2 className="admin-page-title">
-                {activeTab === 'inventory' && 'Commercial Equipment Items'}
-                {activeTab === 'categories' && 'Storefront Category Cards'}
-                {activeTab === 'overview' && 'Event Fleet & Revenue Overview'}
-                {activeTab === 'bookings' && 'Customer Bookings & Dispatches'}
-                {activeTab === 'logistics' && 'Warehouse & Fleet Logistics'}
+                {activeTab === 'inventory' && (
+                  <>
+                    <span className="hide-mobile">Commercial Equipment Items</span>
+                    <span className="show-mobile">Equipment</span>
+                  </>
+                )}
+                {activeTab === 'categories' && (
+                  <>
+                    <span className="hide-mobile">Storefront Category Cards</span>
+                    <span className="show-mobile">Categories</span>
+                  </>
+                )}
+                {activeTab === 'overview' && (
+                  <>
+                    <span className="hide-mobile">Event Fleet & Revenue Overview</span>
+                    <span className="show-mobile">Overview</span>
+                  </>
+                )}
+                {activeTab === 'bookings' && (
+                  <>
+                    <span className="hide-mobile">Customer Bookings & Dispatches</span>
+                    <span className="show-mobile">Bookings</span>
+                  </>
+                )}
+                {activeTab === 'logistics' && (
+                  <>
+                    <span className="hide-mobile">Warehouse & Fleet Logistics</span>
+                    <span className="show-mobile">Logistics</span>
+                  </>
+                )}
               </h2>
             </div>
           </div>
@@ -608,7 +633,8 @@ export default function AdminPanel({
                 onClick={handleOpenCreate}
               >
                 <Plus size={16} />
-                <span>Add Equipment</span>
+                <span className="hide-mobile">Add Equipment</span>
+                <span className="show-mobile">Add</span>
               </button>
             )}
 
@@ -619,7 +645,8 @@ export default function AdminPanel({
                 onClick={handleOpenCategoryCreate}
               >
                 <Plus size={16} />
-                <span>Add Category</span>
+                <span className="hide-mobile">Add Category</span>
+                <span className="show-mobile">Add</span>
               </button>
             )}
 
@@ -642,21 +669,21 @@ export default function AdminPanel({
             {/* Quick Metrics Bar */}
             <div className="admin-kpi-strip">
               <div className="kpi-mini-card">
-                <span className="kpi-label">TOTAL EQUIPMENT MODELS</span>
+                <span className="kpi-label">Equipment models</span>
                 <span className="kpi-val">{stats.totalItems} SKUs</span>
               </div>
               <div className="kpi-mini-card">
-                <span className="kpi-label">TOTAL WAREHOUSE UNITS</span>
+                <span className="kpi-label">Warehouse units</span>
                 <span className="kpi-val">{stats.totalUnits} Units</span>
               </div>
               <div className="kpi-mini-card">
-                <span className="kpi-label">LOW STOCK ALERTS</span>
+                <span className="kpi-label">Low stock alerts</span>
                 <span className={`kpi-val ${stats.lowStockCount > 0 ? 'text-amber-500' : ''}`}>
                   {stats.lowStockCount} Items
                 </span>
               </div>
               <div className="kpi-mini-card">
-                <span className="kpi-label">TOTAL FLEET INVENTORY VALUE</span>
+                <span className="kpi-label">Fleet inventory value</span>
                 <span className="kpi-val text-pink-600">${stats.totalCatalogValue.toLocaleString()} AUD</span>
               </div>
             </div>
@@ -983,7 +1010,7 @@ export default function AdminPanel({
             </div>
 
             {/* Category Search & Filter Toolbar */}
-            <div className="admin-table-container" style={{ padding: '20px 24px' }}>
+            <div className="admin-table-container admin-cat-container">
               <div className="admin-cat-toolbar">
                 <div className="admin-search-box" style={{ maxWidth: '400px' }}>
                   <Search size={16} className="search-icon" />
@@ -1012,8 +1039,7 @@ export default function AdminPanel({
                     type="button"
                     className="admin-btn-primary"
                     onClick={handleOpenCategoryCreate}
-                    style={{ marginLeft: '16px' }}
-                  >
+                    >
                     <Plus size={16} />
                     <span>Add New Category</span>
                   </button>
@@ -1106,7 +1132,7 @@ export default function AdminPanel({
             {/* Courier Banner */}
             <div className="dispatch-hero-banner">
               <div className="dispatch-hero-copy">
-                <span className="dispatch-badge">TODAY'S FLEET RUNS · GREATER BRISBANE</span>
+                <span className="dispatch-badge">Today's fleet runs · Greater Brisbane</span>
                 <h3 className="dispatch-title">Icon Mercedes Sprinter & Tail-Lift Truck Fleet</h3>
                 <p className="dispatch-desc">
                   18 event packages staged in Murrumba Downs dispatch bays. Express setup crews active in New Farm, Paddington, Hamilton, and Gold Coast.
@@ -1374,7 +1400,8 @@ export default function AdminPanel({
             </div>
 
             <div className="admin-table-card">
-              <div className="table-responsive-wrapper">
+              {/* Desktop / Tablet Bookings Table */}
+              <div className="table-responsive-wrapper hide-mobile-table">
                 <table className="admin-data-table">
                   <thead>
                     <tr>
@@ -1433,6 +1460,55 @@ export default function AdminPanel({
                       ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Native Mobile Bookings Cards */}
+              <div className="admin-mobile-bookings-list show-mobile-table">
+                {bookings
+                  .filter(b => bookingFilter === 'all' || b.status.toLowerCase() === bookingFilter.toLowerCase())
+                  .map(booking => (
+                    <div key={booking.id} className="admin-mobile-booking-card">
+                      <div className="mobile-booking-header">
+                        <span className="booking-ref-badge">{booking.id}</span>
+                        <select
+                          value={booking.status}
+                          onChange={(e) => handleBookingStatusChange(booking.id, e.target.value)}
+                          className={`status-select-pill status-${booking.status.toLowerCase()}`}
+                        >
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Dispatched">Dispatched</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Returned">Returned</option>
+                        </select>
+                      </div>
+
+                      <div className="mobile-booking-customer">
+                        <strong className="customer-name">{booking.customerName}</strong>
+                        <span className="customer-phone">{booking.phone}</span>
+                      </div>
+
+                      <div className="mobile-booking-event">
+                        <span>{booking.eventType}</span> • <span>{booking.eventDate}</span> • <span>{booking.city}</span>
+                      </div>
+
+                      <div className="mobile-booking-items">
+                        {booking.items.map((it, idx) => (
+                          <span key={idx} className="booking-item-chip">• {it}</span>
+                        ))}
+                      </div>
+
+                      <div className="mobile-booking-footer">
+                        <div className="booking-carrier-info">
+                          <span className="carrier-tag">{booking.carrier}</span>
+                          <span className="text-subtle-xs font-mono">{booking.tracking}</span>
+                        </div>
+                        <div className="booking-total-box">
+                          <span className="booking-amount">${booking.totalAUD} AUD</span>
+                          <span className="booking-pay-status">{booking.paymentStatus}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
