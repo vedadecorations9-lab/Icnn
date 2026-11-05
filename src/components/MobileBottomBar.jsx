@@ -1,6 +1,10 @@
 import React from 'react';
 
 export default function MobileBottomBar({
+  currentView = 'home',
+  isCartOpen = false,
+  isWishlistOpen = false,
+  isCategoriesOpen = false,
   cartCount,
   wishlistCount,
   onNavigateHome,
@@ -10,9 +14,16 @@ export default function MobileBottomBar({
   onOpenCategories,
   onOpenAdmin
 }) {
+  const isAnyDrawerOpen = isCartOpen || isWishlistOpen || isCategoriesOpen;
+  const isHomeActive = currentView === 'home' && !isAnyDrawerOpen;
+  const isCatalogActive = currentView === 'catalog' && !isAnyDrawerOpen;
+
   return (
     <nav className="mobile-bottom-bar" aria-label="Mobile Navigation">
-      <button className="mobile-bottom-item" onClick={onNavigateHome}>
+      <button
+        className={`mobile-bottom-item ${isHomeActive ? 'active' : ''}`}
+        onClick={onNavigateHome}
+      >
         <div className="bottom-icon-wrap">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,7 +33,10 @@ export default function MobileBottomBar({
         <span>Home</span>
       </button>
 
-      <button className="mobile-bottom-item" onClick={onOpenCategories}>
+      <button
+        className={`mobile-bottom-item ${isCategoriesOpen ? 'active' : ''}`}
+        onClick={onOpenCategories}
+      >
         <div className="bottom-icon-wrap">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="3" width="7" height="7"></rect>
@@ -34,7 +48,10 @@ export default function MobileBottomBar({
         <span>Categories</span>
       </button>
 
-      <button className="mobile-bottom-item" onClick={() => onNavigateCatalog?.('all')}>
+      <button
+        className={`mobile-bottom-item ${isCatalogActive ? 'active' : ''}`}
+        onClick={() => onNavigateCatalog?.('all')}
+      >
         <div className="bottom-icon-wrap">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8"></circle>
@@ -44,7 +61,10 @@ export default function MobileBottomBar({
         <span>Catalog</span>
       </button>
 
-      <button className="mobile-bottom-item" onClick={onOpenWishlist}>
+      <button
+        className={`mobile-bottom-item ${isWishlistOpen ? 'active' : ''}`}
+        onClick={onOpenWishlist}
+      >
         <div className="bottom-icon-wrap">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -54,7 +74,10 @@ export default function MobileBottomBar({
         <span>Saved</span>
       </button>
 
-      <button className="mobile-bottom-item" onClick={onOpenCart}>
+      <button
+        className={`mobile-bottom-item ${isCartOpen ? 'active' : ''}`}
+        onClick={onOpenCart}
+      >
         <div className="bottom-icon-wrap">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>

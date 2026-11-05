@@ -159,8 +159,35 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
     }
   };
 
+  // Close all overlay drawers helper
+  const closeAllDrawers = () => {
+    setIsCartOpen(false);
+    setIsWishlistOpen(false);
+    setIsCategoriesOpen(false);
+    setIsTrackOrderOpen(false);
+    setIsCheckoutOpen(false);
+    setQuickViewId(null);
+  };
+
+  // Mutually exclusive drawer openers (so drawers NEVER stack on top of each other)
+  const handleOpenCart = () => {
+    closeAllDrawers();
+    setIsCartOpen(true);
+  };
+
+  const handleOpenWishlist = () => {
+    closeAllDrawers();
+    setIsWishlistOpen(true);
+  };
+
+  const handleOpenCategories = () => {
+    closeAllDrawers();
+    setIsCategoriesOpen(true);
+  };
+
   // Navigation handlers
   const handleNavigateHome = () => {
+    closeAllDrawers();
     setCurrentView('home');
     if (window.__iconLenis) {
       window.__iconLenis.scrollTo(0, { immediate: true });
@@ -169,6 +196,7 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
   };
 
   const handleNavigateCatalog = (categoryKey = 'all') => {
+    closeAllDrawers();
     setActiveCategory(categoryKey);
     setCurrentView('catalog');
     if (window.__iconLenis) {
@@ -219,15 +247,24 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
         onSelectCategory={setActiveCategory}
         onNavigateHome={handleNavigateHome}
         onNavigateCatalog={handleNavigateCatalog}
-        onOpenCategories={() => setIsCategoriesOpen(true)}
-        onOpenQuickView={(id) => setQuickViewId(id)}
+        onOpenCategories={handleOpenCategories}
+        onOpenQuickView={(id) => {
+          closeAllDrawers();
+          setQuickViewId(id);
+        }}
         cartCount={totalCartCount}
         wishlistCount={wishlist.length}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenWishlist={() => setIsWishlistOpen(true)}
-        onOpenTrackOrder={() => setIsTrackOrderOpen(true)}
-        onOpenAdmin={() => setIsAdminOpen(true)}
-        onOpenMobileMenu={() => setIsCategoriesOpen(true)}
+        onOpenCart={handleOpenCart}
+        onOpenWishlist={handleOpenWishlist}
+        onOpenTrackOrder={() => {
+          closeAllDrawers();
+          setIsTrackOrderOpen(true);
+        }}
+        onOpenAdmin={() => {
+          closeAllDrawers();
+          setIsAdminOpen(true);
+        }}
+        onOpenMobileMenu={handleOpenCategories}
       />
 
       <main>
@@ -303,14 +340,21 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
 
       {/* Mobile Bottom Navigation Bar */}
       <MobileBottomBar
+        currentView={currentView}
+        isCartOpen={isCartOpen}
+        isWishlistOpen={isWishlistOpen}
+        isCategoriesOpen={isCategoriesOpen}
         cartCount={totalCartCount}
         wishlistCount={wishlist.length}
         onNavigateHome={handleNavigateHome}
         onNavigateCatalog={handleNavigateCatalog}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenWishlist={() => setIsWishlistOpen(true)}
-        onOpenCategories={() => setIsCategoriesOpen(true)}
-        onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenCart={handleOpenCart}
+        onOpenWishlist={handleOpenWishlist}
+        onOpenCategories={handleOpenCategories}
+        onOpenAdmin={() => {
+          closeAllDrawers();
+          setIsAdminOpen(true);
+        }}
       />
 
       {/* --- Drawers & Modals --- */}
