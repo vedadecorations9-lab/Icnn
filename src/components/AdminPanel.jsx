@@ -934,8 +934,126 @@ export default function AdminPanel({
                 </table>
               </div>
 
+              {/* Native Mobile Equipment Cards List */}
+              <div className="admin-mobile-inventory-list show-mobile-table">
+                {filteredProducts.length === 0 ? (
+                  <div className="admin-mobile-empty-card">
+                    <AlertTriangle size={28} className="empty-icon text-amber-500" />
+                    <h4>No equipment found</h4>
+                    <p>Adjust your search query or category filter.</p>
+                    <button
+                      type="button"
+                      className="btn-outline-gold"
+                      onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setStockFilter('all'); }}
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                ) : (
+                  filteredProducts.map(prod => {
+                    const price = prod.priceAUD || Math.round((prod.priceINR || 0) * 0.0185);
+                    const isLowStock = (prod.stock || 0) <= 5 && (prod.stock || 0) > 0;
+                    const isOutOfStock = (prod.stock || 0) === 0;
+
+                    return (
+                      <div key={prod.id} className="admin-mobile-eq-card">
+                        <div className="mobile-eq-header">
+                          <div className="mobile-eq-thumb-frame">
+                            <img
+                              src={prod.image}
+                              alt={prod.name}
+                              className="mobile-eq-thumb"
+                              onError={(e) => {
+                                e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
+                              }}
+                            />
+                          </div>
+                          <div className="mobile-eq-details">
+                            <div className="mobile-eq-title-row">
+                              <h4 className="mobile-eq-name">{prod.name}</h4>
+                              {prod.badge && <span className="prod-cell-badge">{prod.badge}</span>}
+                            </div>
+                            <div className="mobile-eq-meta-row">
+                              <span className="admin-cat-badge">{prod.categoryLabel || prod.category}</span>
+                              <span className="mobile-eq-sku">{prod.sku || `IPH-${prod.id}`}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mobile-eq-body">
+                          <div className="mobile-eq-pricing">
+                            <div className="mobile-eq-rate">
+                              <span className="rate-num">${price} AUD</span>
+                              <span className="rate-unit">/ weekend</span>
+                            </div>
+                            <div className="mobile-eq-bond">
+                              ${prod.bondAUD || 50} AUD Bond
+                            </div>
+                          </div>
+
+                          <div className="mobile-eq-stock-box">
+                            <span className="mobile-eq-stock-label">Stock Units:</span>
+                            <div className="stock-stepper-box">
+                              <button
+                                type="button"
+                                className="stock-step-btn"
+                                onClick={() => onUpdateProductStock?.(prod.id, Math.max(0, (prod.stock || 0) - 1))}
+                                disabled={(prod.stock || 0) === 0}
+                                aria-label="Decrease stock"
+                              >
+                                -
+                              </button>
+                              <span className={`stock-step-count ${isOutOfStock ? 'stock-empty' : isLowStock ? 'stock-warning' : ''}`}>
+                                {prod.stock || 0}
+                              </span>
+                              <button
+                                type="button"
+                                className="stock-step-btn"
+                                onClick={() => onUpdateProductStock?.(prod.id, (prod.stock || 0) + 1)}
+                                aria-label="Increase stock"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mobile-eq-actions">
+                          <button
+                            type="button"
+                            className="mobile-action-btn view"
+                            onClick={() => setInspectProduct(prod)}
+                            title="Inspect"
+                          >
+                            <Eye size={15} />
+                            <span>Inspect</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="mobile-action-btn edit"
+                            onClick={() => handleOpenEdit(prod)}
+                            title="Edit Equipment"
+                          >
+                            <Edit3 size={15} />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="mobile-action-btn delete"
+                            onClick={() => setDeletingProductId(prod.id)}
+                            title="Delete Equipment"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
               {/* Table Footer */}
-              <div className="admin-table-footer">
+              <div className="admin-table-footer hide-mobile-table">
                 <span>Showing <strong>{filteredProducts.length}</strong> of <strong>{products.length}</strong> Brisbane equipment items</span>
                 <span className="footer-sync-note">Live connected with customer storefront</span>
               </div>
@@ -1223,7 +1341,7 @@ export default function AdminPanel({
                 </button>
               </div>
 
-              <div className="table-responsive-wrapper">
+              <div className="table-responsive-wrapper hide-mobile-table">
                 <table className="admin-data-table">
                   <thead>
                     <tr>
@@ -1256,121 +1374,40 @@ export default function AdminPanel({
               </div>
 
               {/* Native Mobile Equipment Cards List */}
-              <div className="admin-mobile-inventory-list show-mobile-table">
-                {filteredProducts.length === 0 ? (
-                  <div className="admin-mobile-empty-card">
-                    <AlertTriangle size={28} className="empty-icon text-amber-500" />
-                    <h4>No equipment found</h4>
-                    <p>Adjust your search query or category filter.</p>
-                    <button
-                      type="button"
-                      className="btn-outline-gold"
-                      onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setStockFilter('all'); }}
-                    >
-                      Reset Filters
-                    </button>
-                  </div>
-                ) : (
-                  filteredProducts.map(prod => {
-                    const price = prod.priceAUD || Math.round((prod.priceINR || 0) * 0.0185);
-                    const isLowStock = (prod.stock || 0) <= 5 && (prod.stock || 0) > 0;
-                    const isOutOfStock = (prod.stock || 0) === 0;
-
-                    return (
-                      <div key={prod.id} className="admin-mobile-eq-card">
-                        <div className="mobile-eq-header">
-                          <div className="mobile-eq-thumb-frame">
-                            <img
-                              src={prod.image}
-                              alt={prod.name}
-                              className="mobile-eq-thumb"
-                              onError={(e) => {
-                                e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
-                              }}
-                            />
-                          </div>
-                          <div className="mobile-eq-details">
-                            <div className="mobile-eq-title-row">
-                              <h4 className="mobile-eq-name">{prod.name}</h4>
-                              {prod.badge && <span className="prod-cell-badge">{prod.badge}</span>}
-                            </div>
-                            <div className="mobile-eq-meta-row">
-                              <span className="admin-cat-badge">{prod.categoryLabel || prod.category}</span>
-                              <span className="mobile-eq-sku">{prod.sku || `IPH-${prod.id}`}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mobile-eq-body">
-                          <div className="mobile-eq-pricing">
-                            <div className="mobile-eq-rate">
-                              <span className="rate-num">${price} AUD</span>
-                              <span className="rate-unit">/ weekend</span>
-                            </div>
-                            <div className="mobile-eq-bond">
-                              ${prod.bondAUD || 50} AUD Bond
-                            </div>
-                          </div>
-
-                          <div className="mobile-eq-stock-box">
-                            <span className="mobile-eq-stock-label">Stock Units:</span>
-                            <div className="stock-stepper-box">
-                              <button
-                                type="button"
-                                className="stock-step-btn"
-                                onClick={() => onUpdateProductStock?.(prod.id, Math.max(0, (prod.stock || 0) - 1))}
-                                disabled={(prod.stock || 0) === 0}
-                                aria-label="Decrease stock"
-                              >
-                                -
-                              </button>
-                              <span className={`stock-step-count ${isOutOfStock ? 'stock-empty' : isLowStock ? 'stock-warning' : ''}`}>
-                                {prod.stock || 0}
-                              </span>
-                              <button
-                                type="button"
-                                className="stock-step-btn"
-                                onClick={() => onUpdateProductStock?.(prod.id, (prod.stock || 0) + 1)}
-                                aria-label="Increase stock"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mobile-eq-actions">
-                          <button
-                            type="button"
-                            className="mobile-action-btn view"
-                            onClick={() => setInspectProduct(prod)}
-                            title="Inspect"
-                          >
-                            <Eye size={15} />
-                            <span>Inspect</span>
-                          </button>
-                          <button
-                            type="button"
-                            className="mobile-action-btn edit"
-                            onClick={() => handleOpenEdit(prod)}
-                            title="Edit Equipment"
-                          >
-                            <Edit3 size={15} />
-                            <span>Edit</span>
-                          </button>
-                          <button
-                            type="button"
-                            className="mobile-action-btn delete"
-                            onClick={() => setDeletingProductId(prod.id)}
-                            title="Delete Equipment"
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
+              {/* Native Mobile Recent Bookings List */}
+              <div className="admin-mobile-bookings-list show-mobile-table">
+                {bookings.slice(0, 4).map(b => (
+                  <div key={b.id} className="admin-mobile-booking-card">
+                    <div className="mobile-booking-header">
+                      <span className="booking-ref-badge">{b.id}</span>
+                      <span className={`status-pill-badge status-${b.status.toLowerCase()}`}>
+                        {b.status}
+                      </span>
+                    </div>
+                    <div className="mobile-booking-customer">
+                      <strong className="customer-name">{b.customerName}</strong>
+                      <span className="customer-phone">{b.phone}</span>
+                    </div>
+                    <div className="mobile-booking-event">
+                      <span>{b.eventType}</span> • <span>{b.eventDate}</span> • <span>{b.city}</span>
+                    </div>
+                    <div className="mobile-booking-items">
+                      {b.items.map((it, idx) => (
+                        <span key={idx} className="booking-item-chip">• {it}</span>
+                      ))}
+                    </div>
+                    <div className="mobile-booking-footer">
+                      <div className="booking-carrier-info">
+                        <span className="carrier-tag">{b.carrier}</span>
+                        <span className="text-subtle-xs font-mono">{b.tracking}</span>
                       </div>
-                    );
-                  })
-                )}
+                      <div className="booking-total-box">
+                        <span className="booking-amount">${b.totalAUD} AUD</span>
+                        <span className="booking-pay-status">{b.paymentStatus}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 

@@ -169,6 +169,23 @@ export default function Header({
           {/* RIGHT ZONE: Search Trigger + Admin HQ + Wishlist + Cart */}
           <div className="nav-zone-right">
             
+            {/* Mobile Quick Search Button */}
+            <button
+              type="button"
+              className="nav-mobile-search-btn show-mobile"
+              onClick={() => {
+                onSelectCategory?.('all');
+                onNavigateCatalog?.('all');
+              }}
+              title="Search equipment catalog"
+              aria-label="Search catalog"
+            >
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+
             {/* Inline Search Bar (No popup modal) */}
             <form
               className="nav-search-form hide-mobile"
