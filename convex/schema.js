@@ -29,6 +29,18 @@ export default defineSchema({
     .index('by_category', ['category'])
     .index('by_sku', ['sku']),
 
+  categories: defineTable({
+    id: v.string(),
+    label: v.string(),
+    shortLabel: v.optional(v.string()),
+    tag: v.optional(v.string()),
+    startingPrice: v.number(),
+    itemCount: v.optional(v.number()),
+    pills: v.optional(v.array(v.string())),
+    image: v.string(),
+    description: v.optional(v.string())
+  }).index('by_id', ['id']),
+
   bookings: defineTable({
     id: v.string(),
     customerName: v.string(),
@@ -46,4 +58,3 @@ export default defineSchema({
     paymentStatus: v.optional(v.string())
   }).index('by_status', ['status'])
 });
-

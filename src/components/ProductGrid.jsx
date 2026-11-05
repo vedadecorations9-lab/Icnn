@@ -1,23 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, SlidersHorizontal, ArrowUpRight, Search, X } from 'lucide-react';
-import { getProductPills } from '../data/products';
-
-const FILTER_TAGS = [
-  { key: 'all', label: 'All Equipment' },
-  { key: 'chairs', label: 'Chairs' },
-  { key: 'tables', label: 'Tables' },
-  { key: 'gazebo', label: 'Gazebo' },
-  { key: 'backdrops', label: 'Backdrops' },
-  { key: 'lighting', label: 'Lighting' },
-  { key: 'linen', label: 'Linen' },
-  { key: 'heaters', label: 'Heaters' },
-  { key: 'esky', label: 'Esky' },
-  { key: 'plinth', label: 'Plinth' },
-  { key: 'av', label: 'Audio/Video' }
-];
+import { CATEGORIES, getProductPills } from '../data/products';
 
 export default function ProductGrid({
   products,
+  categories = CATEGORIES,
   activeCategory,
   onSelectCategory,
   onBackToHome,
@@ -29,6 +16,16 @@ export default function ProductGrid({
 }) {
   const [sortBy, setSortBy] = useState('popular');
   const [itemSearch, setItemSearch] = useState('');
+
+  const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;
+
+  const filterTags = [
+    { key: 'all', label: 'All Equipment' },
+    ...activeCategories.map(c => ({
+      key: c.id,
+      label: c.shortLabel || c.label
+    }))
+  ];
 
   // Scroll to top cleanly when switching category
   useEffect(() => {
@@ -61,7 +58,7 @@ export default function ProductGrid({
     displayed = [...displayed].sort((a, b) => (b.rating || 5) - (a.rating || 5));
   }
 
-  const currentCategoryObj = FILTER_TAGS.find(t => t.key === activeCategory) || FILTER_TAGS[0];
+  const currentCategoryObj = filterTags.find(t => t.key === activeCategory) || filterTags[0];
 
   return (
     <section className="catalog-dedicated-page" aria-label="Dedicated Equipment Catalog">
@@ -78,31 +75,43 @@ export default function ProductGrid({
             <ArrowLeft size={16} />
             <span>Return to Home</span>
           </button>
-          
-          <div className="catalog-crumb-trail">
-            <span onClick={onBackToHome} className="crumb-link">Home</span>
+
+          <div className="catalog-breadcrumbs">
+            <span>Icon Party Hire</span>
             <span className="crumb-sep">/</span>
-            <span className="crumb-link" onClick={() => onSelectCategory('all')}>Catalog</span>
+            <span>Catalog</span>
             <span className="crumb-sep">/</span>
             <span className="crumb-current">{currentCategoryObj.label}</span>
           </div>
         </div>
 
-        {/* Dedicated Catalog Editorial Header (Clean, containerless) */}
-        <div className="catalog-header-clean">
-          <h1 className="catalog-banner-title">
-            {activeCategory === 'all' ? 'All Party & Event Hire Items' : `${currentCategoryObj.label} Hire Collection`}
-          </h1>
-          <p className="catalog-banner-sub">
-            Available for flexible 24h to 72h weekend hire with Brisbane warehouse dispatch, express delivery, and professional event setup across Queensland.
-          </p>
+        {/* Page Title & Category Header */}
+        <div className="catalog-header-area">
+          <div className="catalog-title-col">
+            <span className="catalog-eyebrow">BRISBANE PARTY EQUIPMENT CATALOG</span>
+            <h1 className="catalog-main-title">
+              {activeCategory === 'all' ? (
+                <>All Event <span className="hero-fancy-text">Equipment Hire</span></>
+              ) : (
+                <>{currentCategoryObj.label} <span className="hero-fancy-text">Collection</span></>
+              )}
+            </h1>
+            <p className="catalog-subtitle">
+              Browse Brisbane's commercial event equipment hire catalog. All items serviced, tested, and dispatched from our Murrumba Downs hub.
+            </p>
+          </div>
+
+          <div className="catalog-stats-badge">
+            <span className="catalog-stats-num">{displayed.length}</span>
+            <span className="catalog-stats-lbl">Items Available</span>
+          </div>
         </div>
 
         {/* Controls Bar: Category Filter Tabs & Search/Sort */}
         <div className="catalog-controls-bar">
           {/* Scrollable Category Tabs */}
           <div className="catalog-filter-tabs">
-            {FILTER_TAGS.map(tag => (
+            {filterTags.map(tag => (
               <button
                 key={tag.key}
                 type="button"
@@ -138,12 +147,12 @@ export default function ProductGrid({
             </div>
 
             <div className="catalog-sort-wrap">
-              <SlidersHorizontal size={15} />
+              <label htmlFor="catalog-sort" className="catalog-sort-label">Sort:</label>
               <select
+                id="catalog-sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="catalog-sort-select"
-                aria-label="Sort catalog items"
               >
                 <option value="popular">Most Popular</option>
                 <option value="price-low">Price: Low to High</option>
@@ -154,127 +163,119 @@ export default function ProductGrid({
           </div>
         </div>
 
-        {/* Dedicated Items Grid with Modern Scallop Design Cards */}
-        <div className="product-grid" id="products-grid">
-          {displayed.length > 0 ? (
-            displayed.map(prod => {
-              const isSaved = wishlist.includes(prod.id);
-              const priceDisplay = formatPrice(prod.priceAUD || prod.priceINR);
-              const pills = getProductPills(prod);
-              
+        {/* Product Grid Cards */}
+        {displayed.length === 0 ? (
+          <div className="catalog-empty-state">
+            <p className="empty-title">No equipment found matching your criteria</p>
+            <p className="empty-sub">Try searching for a different keyword or resetting your category filter.</p>
+            <button
+              type="button"
+              className="btn-primary-gold"
+              onClick={() => {
+                onSelectCategory('all');
+                setItemSearch('');
+              }}
+            >
+              <span>View All Equipment ({products.length})</span>
+            </button>
+          </div>
+        ) : (
+          <div className="product-grid">
+            {displayed.map((product) => {
+              const pills = getProductPills(product);
+              const isWish = wishlist.includes(product.id);
+
               return (
-                <article
-                  key={prod.id}
-                  className="modern-design-card product-card"
-                  onClick={() => onOpenQuickView(prod.id)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onOpenQuickView(prod.id);
-                    }
-                  }}
-                >
-                  {/* Media Image Stage with Top-Right Scallop Notch */}
-                  <div className="modern-card-media">
+                <article key={product.id} className="clean-item-card">
+                  
+                  {/* Card Media Image */}
+                  <div
+                    className="item-media-stage"
+                    onClick={() => onOpenQuickView(product.id)}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <img
-                      src={prod.image}
-                      alt={prod.name}
-                      className="modern-card-img"
+                      src={product.image}
+                      alt={product.name}
                       loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.src = '/assets/images/icon_logo.png';
-                      }}
+                      className="item-photo"
                     />
 
-                    {/* Top-Left Wishlist Heart Button */}
+                    {/* Badge */}
+                    {product.badge && (
+                      <div className="item-badge-pill">
+                        <span>{product.badge}</span>
+                      </div>
+                    )}
+
+                    {/* Wishlist Button */}
                     <button
                       type="button"
-                      className={`modern-card-wishlist ${isSaved ? 'active' : ''}`}
+                      className={`item-wishlist-trigger ${isWish ? 'active' : ''}`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onToggleWishlist(prod.id);
+                        onToggleWishlist(product.id);
                       }}
-                      title={isSaved ? 'Remove from Wishlist' : 'Save to Wishlist'}
-                      aria-label="Wishlist"
+                      title={isWish ? 'Remove from saved' : 'Save to wishlist'}
+                      aria-label="Save to wishlist"
                     >
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill={isSaved ? '#D81B60' : 'none'}
-                        stroke={isSaved ? '#D81B60' : 'currentColor'}
-                        strokeWidth="2.2"
-                      >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill={isWish ? '#D81B60' : 'none'} stroke={isWish ? '#D81B60' : 'currentColor'} strokeWidth="2">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                       </svg>
                     </button>
-
-                    {/* Top-Right Scallop Notch: PRICE ONLY (As requested: "just the price(only in product cards)") */}
-                    <div className="modern-card-notch">
-                      <span className="modern-card-price">{priceDisplay}</span>
-                    </div>
-
-                    {/* Bottom Fleet / Availability Pill */}
-                    <div className="modern-card-bottom-strip">
-                      <span className="modern-card-bottom-pill">
-                        {prod.badge || 'Commercial Hire • Brisbane'}
-                      </span>
-                    </div>
                   </div>
 
-                  {/* Card Body: Title, Action, and Minimal Tag Pills (NO lengthy sentences) */}
-                  <div className="modern-card-body">
-                    <div className="modern-card-header-row">
-                      <h3 className="modern-card-title" title={prod.name}>
-                        {prod.name}
-                      </h3>
+                  {/* Card Body */}
+                  <div className="item-card-details">
+                    <div className="item-category-kicker">
+                      <span>{product.categoryLabel}</span>
+                    </div>
+
+                    <h2
+                      className="item-card-name"
+                      onClick={() => onOpenQuickView(product.id)}
+                    >
+                      {product.name}
+                    </h2>
+
+                    {/* Spec Tag Pills */}
+                    <div className="item-spec-tags">
+                      {pills.slice(0, 3).map((pill, i) => (
+                        <span key={i} className="spec-tag">{pill}</span>
+                      ))}
+                    </div>
+
+                    {/* Price and Add to Bag */}
+                    <div className="item-card-bottom-row">
+                      <div className="item-price-block">
+                        <span className="price-prefix">From</span>
+                        <div className="price-value-row">
+                          <span className="price-curr-val">{formatPrice(product.priceAUD)}</span>
+                          <span className="price-term">/day</span>
+                        </div>
+                        {product.bondAUD && (
+                          <span className="price-bond-note">+${product.bondAUD} bond</span>
+                        )}
+                      </div>
+
                       <button
                         type="button"
-                        className="modern-card-action"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddToCart(prod.id);
-                        }}
-                        title="Add to hire bag"
+                        className="btn-hire-add"
+                        onClick={() => onAddToCart(product.id)}
+                        aria-label={`Add ${product.name} to hire bag`}
                       >
-                        <span>Hire Now</span>
-                        <ArrowUpRight size={15} />
+                        <span>Add to bag</span>
                       </button>
                     </div>
 
-                    {/* Minimal Tag Pills (NO lengthy sentences) */}
-                    <div className="modern-card-tags">
-                      {pills.map((pill, i) => (
-                        <span key={i} className="modern-card-tag-pill">{pill}</span>
-                      ))}
-                    </div>
                   </div>
+
                 </article>
               );
-            })
-          ) : (
-            <div className="catalog-empty-state">
-              <p className="empty-title">
-                No hire equipment matches &ldquo;{itemSearch}&rdquo; in this category
-              </p>
-              <p className="empty-subtitle">
-                Try searching across all equipment or clearing your filter keyword.
-              </p>
-              <button
-                type="button"
-                className="btn-primary-gold"
-                onClick={() => {
-                  setItemSearch('');
-                  onSelectCategory('all');
-                }}
-              >
-                <span>View Full Catalog ({products.length} Items)</span>
-              </button>
-            </div>
-          )}
-        </div>
+            })}
+          </div>
+        )}
 
       </div>
     </section>

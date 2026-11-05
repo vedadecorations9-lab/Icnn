@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PRODUCTS, CURRENCIES, CATEGORIES } from './data/products';
 import { isConvexConfigured } from './convexClient';
 import { useConvexStore, useLocalStore } from './hooks/useProductsData';
+import { useConvexCategoriesStore, useLocalCategoriesStore } from './hooks/useCategoriesData';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import CategoriesShowcase from './components/CategoriesShowcase';
@@ -27,7 +28,7 @@ import { useLenisScroll } from './hooks/useLenisScroll';
  * Main application interface rendered with either Convex Real-time Cloud store
  * or local state fallback depending on whether VITE_CONVEX_URL is configured in Vercel.
  */
-function AppContent({ store, toasts, addToast }) {
+function AppContent({ store, categoriesStore, toasts, addToast }) {
   const {
     products,
     isRealtime,
@@ -37,6 +38,14 @@ function AppContent({ store, toasts, addToast }) {
     handleUpdateStock,
     handleReset
   } = store;
+
+  const {
+    categories,
+    handleAddCategory,
+    handleUpdateCategory,
+    handleDeleteCategory,
+    handleResetCategories
+  } = categoriesStore;
 
   // Navigation View: 'home' (Categories on Home) vs 'catalog' (Dedicated Separate Items Page)
   const [currentView, setCurrentView] = useState('home');
@@ -178,12 +187,17 @@ function AppContent({ store, toasts, addToast }) {
         <AdminPanel
           onClose={() => setIsAdminOpen(false)}
           products={products}
+          categories={categories}
           isRealtime={isRealtime}
           onAddProduct={handleAdd}
           onUpdateProduct={handleUpdate}
           onDeleteProduct={handleDelete}
           onUpdateProductStock={handleUpdateStock}
           onResetProducts={handleReset}
+          onAddCategory={handleAddCategory}
+          onUpdateCategory={handleUpdateCategory}
+          onDeleteCategory={handleDeleteCategory}
+          onResetCategories={handleResetCategories}
           onToast={addToast}
         />
         <Toast toasts={toasts} />
@@ -200,6 +214,7 @@ function AppContent({ store, toasts, addToast }) {
         setCurrency={setCurrency}
         formatPrice={formatPrice}
         products={products}
+        categories={categories}
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
         onNavigateHome={handleNavigateHome}
@@ -232,6 +247,8 @@ function AppContent({ store, toasts, addToast }) {
 
             {/* Core Home Showcase: Rich Category Cards leading to Items (Vertical Scroll + Smooth Emerge) */}
             <CategoriesShowcase
+              categories={categories}
+              products={products}
               onExploreCategory={(catId) => handleNavigateCatalog(catId)}
               onViewAllItems={() => handleNavigateCatalog('all')}
             />
@@ -263,6 +280,7 @@ function AppContent({ store, toasts, addToast }) {
              ================================================================= */
           <ProductGrid
             products={products}
+            categories={categories}
             activeCategory={activeCategory}
             onSelectCategory={setActiveCategory}
             onBackToHome={handleNavigateHome}
@@ -323,6 +341,7 @@ function AppContent({ store, toasts, addToast }) {
 
       <CategoriesDrawer
         isOpen={isCategoriesOpen}
+        categories={categories}
         onClose={() => setIsCategoriesOpen(false)}
         onSelectCategory={(catId) => {
           setIsCategoriesOpen(false);
@@ -377,7 +396,15 @@ function ConvexConnectedApp() {
     }, 3500);
   };
   const store = useConvexStore(PRODUCTS, addToast);
-  return <AppContent store={store} toasts={toasts} addToast={addToast} />;
+  const categoriesStore = useConvexCategoriesStore(CATEGORIES, addToast);
+  return (
+    <AppContent
+      store={store}
+      categoriesStore={categoriesStore}
+      toasts={toasts}
+      addToast={addToast}
+    />
+  );
 }
 
 // 2. App variant with local storage fallback when Convex URL is pending
@@ -391,7 +418,15 @@ function LocalFallbackApp() {
     }, 3500);
   };
   const store = useLocalStore(PRODUCTS, addToast);
-  return <AppContent store={store} toasts={toasts} addToast={addToast} />;
+  const categoriesStore = useLocalCategoriesStore(CATEGORIES, addToast);
+  return (
+    <AppContent
+      store={store}
+      categoriesStore={categoriesStore}
+      toasts={toasts}
+      addToast={addToast}
+    />
+  );
 }
 
 export default function App() {

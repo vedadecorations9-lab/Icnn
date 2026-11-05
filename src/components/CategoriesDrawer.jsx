@@ -2,8 +2,15 @@ import React from 'react';
 import { CATEGORIES } from '../data/products';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
-export default function CategoriesDrawer({ isOpen, onClose, onSelectCategory }) {
+export default function CategoriesDrawer({
+  isOpen,
+  onClose,
+  onSelectCategory,
+  categories = CATEGORIES
+}) {
   if (!isOpen) return null;
+
+  const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;
 
   return (
     <>
@@ -14,11 +21,11 @@ export default function CategoriesDrawer({ isOpen, onClose, onSelectCategory }) 
         aria-label="Category Navigation"
       >
         <div className="drawer-header">
-          <h3 className="drawer-title">Hire Categories (10)</h3>
+          <h3 className="drawer-title">Hire Categories ({activeCategories.length})</h3>
           <button className="drawer-close-btn" onClick={onClose} aria-label="Close menu">✕</button>
         </div>
         <div className="drawer-body">
-          {CATEGORIES.map(cat => (
+          {activeCategories.map(cat => (
             <div
               key={cat.id}
               className="mobile-nav-item"

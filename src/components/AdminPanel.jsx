@@ -60,17 +60,144 @@ const EQUIPMENT_IMAGE_OPTIONS = [
 export default function AdminPanel({
   onClose,
   products = [],
+  categories = [],
   isRealtime = false,
   onAddProduct,
   onUpdateProduct,
   onDeleteProduct,
   onUpdateProductStock,
   onResetProducts,
+  onAddCategory,
+  onUpdateCategory,
+  onDeleteCategory,
+  onResetCategories,
   onToast
 }) {
+  const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;
   // Navigation Tabs: 'inventory' | 'overview' | 'bookings' | 'logistics'
   const [activeTab, setActiveTab] = useState('inventory');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Category Management State
+  const [categorySearch, setCategorySearch] = useState('');
+  const [isCreateCategoryModalOpen, setIsCreateCategoryModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [deletingCategoryId, setDeletingCategoryId] = useState(null);
+  const [categoryDeleteWarning, setCategoryDeleteWarning] = useState(null);
+
+  const initialCategoryFormState = {
+    id: '',
+    label: '',
+    shortLabel: '',
+    tag: 'Event Essential',
+    startingPrice: 50,
+    image: '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
+    pills: 'Commercial Grade, Brisbane Fleet',
+    description: 'Commercial event party equipment range maintained in pristine condition.'
+  };
+  const [categoryFormData, setCategoryFormData] = useState(initialCategoryFormState);
+
+  // Category Open Handlers
+  const handleOpenCategoryCreate = () => {
+    setCategoryFormData({
+      ...initialCategoryFormState,
+      id: `cat-${Date.now().toString().slice(-4)}`
+    });
+    setIsCreateCategoryModalOpen(true);
+  };
+
+  const handleOpenCategoryEdit = (cat) => {
+    setCategoryFormData({
+      id: cat.id,
+      label: cat.label || '',
+      shortLabel: cat.shortLabel || cat.label || '',
+      tag: cat.tag || 'Event Essential',
+      startingPrice: cat.startingPrice || 50,
+      image: cat.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
+      pills: Array.isArray(cat.pills) ? cat.pills.join(', ') : (cat.pills || ''),
+      description: cat.description || ''
+    });
+    setEditingCategory(cat);
+  };
+
+  // Category Submit Handlers
+  const handleSubmitCategoryCreate = (e) => {
+    e.preventDefault();
+    if (!categoryFormData.label.trim()) {
+      onToast?.('Please enter a category name', 'warning');
+      return;
+    }
+    const slug = categoryFormData.id.trim() || categoryFormData.label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const pillsArr = categoryFormData.pills
+      ? categoryFormData.pills.split(',').map(s => s.trim()).filter(Boolean)
+      : ['Commercial Grade', 'Brisbane Fleet'];
+    const count = products.filter(p => p.category === slug).length;
+
+    const newCat = {
+      id: slug,
+      label: categoryFormData.label.trim(),
+      shortLabel: categoryFormData.shortLabel.trim() || categoryFormData.label.trim(),
+      tag: categoryFormData.tag.trim() || 'Event Essential',
+      startingPrice: Number(categoryFormData.startingPrice) || 50,
+      itemCount: count,
+      pills: pillsArr,
+      image: categoryFormData.image,
+      description: categoryFormData.description.trim() || 'Commercial party hire equipment range.'
+    };
+
+    onAddCategory?.(newCat);
+    setIsCreateCategoryModalOpen(false);
+  };
+
+  const handleSubmitCategoryEdit = (e) => {
+    e.preventDefault();
+    if (!categoryFormData.label.trim() || !editingCategory) return;
+    const pillsArr = categoryFormData.pills
+      ? categoryFormData.pills.split(',').map(s => s.trim()).filter(Boolean)
+      : ['Commercial Grade', 'Brisbane Fleet'];
+    const count = products.filter(p => p.category === editingCategory.id).length;
+
+    const updatedCat = {
+      ...editingCategory,
+      label: categoryFormData.label.trim(),
+      shortLabel: categoryFormData.shortLabel.trim() || categoryFormData.label.trim(),
+      tag: categoryFormData.tag.trim() || 'Event Essential',
+      startingPrice: Number(categoryFormData.startingPrice) || 50,
+      itemCount: count,
+      pills: pillsArr,
+      image: categoryFormData.image,
+      description: categoryFormData.description.trim()
+    };
+
+    onUpdateCategory?.(updatedCat);
+    setEditingCategory(null);
+  };
+
+  // Attempt Delete Category with Safety Check
+  const handleAttemptDeleteCategory = (cat) => {
+    const linked = products.filter(p => p.category === cat.id);
+    if (linked.length > 0) {
+      setCategoryDeleteWarning({
+        category: cat,
+        count: linked.length,
+        sampleNames: linked.slice(0, 3).map(p => p.name)
+      });
+    } else {
+      setDeletingCategoryId(cat.id);
+    }
+  };
+
+  // Filter Categories
+  const filteredCategories = useMemo(() => {
+    if (!categorySearch.trim()) return activeCategories;
+    const q = categorySearch.toLowerCase();
+    return activeCategories.filter(c =>
+      (c.label && c.label.toLowerCase().includes(q)) ||
+      (c.id && c.id.toLowerCase().includes(q)) ||
+      (c.tag && c.tag.toLowerCase().includes(q)) ||
+      (c.description && c.description.toLowerCase().includes(q))
+    );
+  }, [activeCategories, categorySearch]);
 
   // Search & Filtering State
   const [searchQuery, setSearchQuery] = useState('');
@@ -151,7 +278,7 @@ export default function AdminPanel({
       return;
     }
 
-    const catObj = CATEGORIES.find(c => c.id === formData.category) || CATEGORIES[0];
+    const catObj = activeCategories.find(c => c.id === formData.category) || activeCategories[0] || CATEGORIES[0];
     const price = Number(formData.priceAUD) || 50;
 
     const newProduct = {
@@ -188,7 +315,7 @@ export default function AdminPanel({
     e.preventDefault();
     if (!formData.name.trim() || !editingProduct) return;
 
-    const catObj = CATEGORIES.find(c => c.id === formData.category) || CATEGORIES[0];
+    const catObj = activeCategories.find(c => c.id === formData.category) || activeCategories[0] || CATEGORIES[0];
     const price = Number(formData.priceAUD) || 50;
 
     const updatedProduct = {
@@ -346,8 +473,20 @@ export default function AdminPanel({
             <div className="nav-item-icon">
               <Package size={18} />
             </div>
-            <span className="nav-item-text">Equipment Inventory</span>
+            <span className="nav-item-text">Equipment Items</span>
             <span className="nav-item-badge">{products.length}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-nav-item ${activeTab === 'categories' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('categories'); setIsSidebarOpen(false); }}
+          >
+            <div className="nav-item-icon">
+              <Layers size={18} />
+            </div>
+            <span className="nav-item-text">Category Cards</span>
+            <span className="nav-item-badge">{activeCategories.length}</span>
           </button>
 
           <button
@@ -437,14 +576,16 @@ export default function AdminPanel({
                 <span>Icon Party Hire</span>
                 <ChevronRight size={13} />
                 <span className="crumb-active">
-                  {activeTab === 'inventory' && 'Equipment Inventory (CRUD Hub)'}
+                  {activeTab === 'inventory' && 'Equipment Items (CRUD Hub)'}
+                  {activeTab === 'categories' && 'Category Cards Management'}
                   {activeTab === 'overview' && 'Operations Dashboard'}
                   {activeTab === 'bookings' && 'Weekend Party Bookings'}
                   {activeTab === 'logistics' && 'Brisbane Warehouse Hub'}
                 </span>
               </div>
               <h2 className="admin-page-title">
-                {activeTab === 'inventory' && 'Commercial Equipment Inventory'}
+                {activeTab === 'inventory' && 'Commercial Equipment Items'}
+                {activeTab === 'categories' && 'Storefront Category Cards'}
                 {activeTab === 'overview' && 'Event Fleet & Revenue Overview'}
                 {activeTab === 'bookings' && 'Customer Bookings & Dispatches'}
                 {activeTab === 'logistics' && 'Warehouse & Fleet Logistics'}
@@ -469,6 +610,17 @@ export default function AdminPanel({
               >
                 <Plus size={16} />
                 <span>Add Equipment</span>
+              </button>
+            )}
+
+            {activeTab === 'categories' && (
+              <button
+                type="button"
+                className="admin-btn-primary"
+                onClick={handleOpenCategoryCreate}
+              >
+                <Plus size={16} />
+                <span>Add Category</span>
               </button>
             )}
 
@@ -572,7 +724,7 @@ export default function AdminPanel({
                 >
                   All ({products.length})
                 </button>
-                {CATEGORIES.map(cat => {
+                {activeCategories.map(cat => {
                   const count = products.filter(p => p.category === cat.id).length;
                   return (
                     <button
@@ -759,6 +911,188 @@ export default function AdminPanel({
               <div className="admin-table-footer">
                 <span>Showing <strong>{filteredProducts.length}</strong> of <strong>{products.length}</strong> Brisbane equipment items</span>
                 <span className="footer-sync-note">Live connected with customer storefront</span>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* Tab: CATEGORY CARDS MANAGEMENT */}
+        {activeTab === 'categories' && (
+          <div className="admin-tab-content">
+            
+            {/* KPI Strip for Categories */}
+            <div className="admin-kpi-strip">
+              <div className="admin-kpi-card">
+                <div className="kpi-icon-wrap" style={{ background: 'rgba(216, 27, 96, 0.12)', color: '#D81B60' }}>
+                  <Layers size={22} />
+                </div>
+                <div className="kpi-info">
+                  <span className="kpi-label">Active Storefront Categories</span>
+                  <div className="kpi-val-row">
+                    <span className="kpi-value">{activeCategories.length}</span>
+                    <span className="kpi-badge gold">Live in Store</span>
+                  </div>
+                  <span className="kpi-subtext">5-col desktop & 2-col mobile cards</span>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card">
+                <div className="kpi-icon-wrap" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10B981' }}>
+                  <Package size={22} />
+                </div>
+                <div className="kpi-info">
+                  <span className="kpi-label">Equipment Items Assigned</span>
+                  <div className="kpi-val-row">
+                    <span className="kpi-value">{products.length}</span>
+                    <span className="kpi-badge green">Catalog Ready</span>
+                  </div>
+                  <span className="kpi-subtext">Distributed across {activeCategories.length} categories</span>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card">
+                <div className="kpi-icon-wrap" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#F59E0B' }}>
+                  <DollarSign size={22} />
+                </div>
+                <div className="kpi-info">
+                  <span className="kpi-label">Lowest Entry Hire Price</span>
+                  <div className="kpi-val-row">
+                    <span className="kpi-value">
+                      ${Math.min(...activeCategories.map(c => c.startingPrice || 5))} AUD
+                    </span>
+                    <span className="kpi-badge gold">Starting From</span>
+                  </div>
+                  <span className="kpi-subtext">Displayed on category badges</span>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card">
+                <div className="kpi-icon-wrap" style={{ background: 'rgba(59, 130, 246, 0.12)', color: '#3B82F6' }}>
+                  <Shield size={22} />
+                </div>
+                <div className="kpi-info">
+                  <span className="kpi-label">Category Guard Protection</span>
+                  <div className="kpi-val-row">
+                    <span className="kpi-value">Active</span>
+                    <span className="kpi-badge green">Zero Orphans</span>
+                  </div>
+                  <span className="kpi-subtext">Prevents accidental deletion of active items</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Category Search & Filter Toolbar */}
+            <div className="admin-table-container" style={{ padding: '20px 24px' }}>
+              <div className="admin-cat-toolbar">
+                <div className="admin-search-box" style={{ maxWidth: '400px' }}>
+                  <Search size={16} className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder="Search category cards..."
+                    value={categorySearch}
+                    onChange={(e) => setCategorySearch(e.target.value)}
+                    className="admin-search-input"
+                  />
+                  {categorySearch && (
+                    <button
+                      type="button"
+                      className="search-clear-btn"
+                      onClick={() => setCategorySearch('')}
+                      aria-label="Clear search"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="cat-toolbar-meta">
+                  <span>Showing <strong>{filteredCategories.length}</strong> of <strong>{activeCategories.length}</strong> categories</span>
+                  <button
+                    type="button"
+                    className="admin-btn-primary"
+                    onClick={handleOpenCategoryCreate}
+                    style={{ marginLeft: '16px' }}
+                  >
+                    <Plus size={16} />
+                    <span>Add New Category</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Categories Grid Deck */}
+              <div className="admin-cat-deck">
+                {filteredCategories.map((cat) => {
+                  const linkedProducts = products.filter(p => p.category === cat.id);
+                  const itemCount = linkedProducts.length || cat.itemCount || 0;
+
+                  return (
+                    <div key={cat.id} className="admin-cat-card">
+                      <div className="admin-cat-media">
+                        <img
+                          src={cat.image}
+                          alt={cat.label}
+                          className="admin-cat-img"
+                        />
+                        <div className="admin-cat-badge-notch">
+                          <span>{itemCount} Items</span>
+                        </div>
+                        {cat.tag && (
+                          <div className="admin-cat-tag-pill">
+                            <span>{cat.tag}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="admin-cat-body">
+                        <div className="admin-cat-header-line">
+                          <h4 className="admin-cat-name">{cat.label}</h4>
+                          <span className="admin-cat-price">From ${cat.startingPrice} AUD</span>
+                        </div>
+
+                        <div className="admin-cat-id-row">
+                          <span className="admin-cat-slug-pill">Slug: {cat.id}</span>
+                          <span className="admin-cat-linked-badge">
+                            {linkedProducts.length} assigned
+                          </span>
+                        </div>
+
+                        {cat.description && (
+                          <p className="admin-cat-desc">{cat.description}</p>
+                        )}
+
+                        {cat.pills && Array.isArray(cat.pills) && (
+                          <div className="admin-cat-pill-tags">
+                            {cat.pills.slice(0, 3).map((pill, i) => (
+                              <span key={i} className="admin-cat-spec-tag">{pill}</span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="admin-cat-card-actions">
+                          <button
+                            type="button"
+                            className="admin-cat-action-btn edit"
+                            onClick={() => handleOpenCategoryEdit(cat)}
+                          >
+                            <Edit3 size={14} />
+                            <span>Edit Card</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            className="admin-cat-action-btn delete"
+                            onClick={() => handleAttemptDeleteCategory(cat)}
+                            title={linkedProducts.length > 0 ? `Cannot delete: ${linkedProducts.length} equipment items assigned` : 'Delete category card'}
+                          >
+                            <Trash2 size={14} />
+                            <span>Delete</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -1096,7 +1430,7 @@ export default function AdminPanel({
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="form-select"
                   >
-                    {CATEGORIES.map(c => (
+                    {activeCategories.map(c => (
                       <option key={c.id} value={c.id}>{c.label}</option>
                     ))}
                   </select>
@@ -1382,6 +1716,270 @@ export default function AdminPanel({
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+         6. CATEGORY SAFETY DELETE WARNING MODAL
+         ===================================================================== */}
+      {categoryDeleteWarning && (
+        <div className="admin-modal-backdrop" onClick={() => setCategoryDeleteWarning(null)}>
+          <div className="admin-confirm-modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px' }}>
+            <div className="confirm-icon-bubble" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B' }}>
+              <AlertTriangle size={32} />
+            </div>
+            <h3 className="confirm-title" style={{ color: '#F8FAFC' }}>
+              Cannot Delete Category "{categoryDeleteWarning.category.label}"
+            </h3>
+            <p className="confirm-desc" style={{ color: '#94A3B8', fontSize: '0.9rem', lineHeight: '1.5' }}>
+              There are currently <strong style={{ color: '#F8FAFC' }}>{categoryDeleteWarning.count}</strong> equipment items assigned to this category in your catalog (including <em>{categoryDeleteWarning.sampleNames.join(', ')}</em>).
+            </p>
+            <div style={{ padding: '12px 16px', background: 'rgba(245, 158, 11, 0.08)', borderRadius: '10px', border: '1px solid rgba(245, 158, 11, 0.2)', marginBottom: '20px', fontSize: '0.8125rem', color: '#CBD5E1', lineHeight: '1.5', textAlign: 'left' }}>
+              💡 <strong>Safety Recommendation:</strong> To maintain catalog integrity and prevent orphaned products, please reassign or delete these items in the <strong>Equipment Items</strong> section before deleting this category.
+            </div>
+            <div className="confirm-actions" style={{ justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                className="btn-outline-cancel"
+                onClick={() => setCategoryDeleteWarning(null)}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="admin-btn-primary"
+                onClick={() => {
+                  setSelectedCategory(categoryDeleteWarning.category.id);
+                  setActiveTab('inventory');
+                  setCategoryDeleteWarning(null);
+                }}
+              >
+                <Package size={15} />
+                <span>View Equipment in this Category ({categoryDeleteWarning.count})</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+         7. CATEGORY DELETE CONFIRMATION MODAL (0 Linked Items)
+         ===================================================================== */}
+      {deletingCategoryId && (
+        <div className="admin-modal-backdrop" onClick={() => setDeletingCategoryId(null)}>
+          <div className="admin-confirm-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-icon-bubble">
+              <Trash2 size={28} className="text-red-500" />
+            </div>
+            <h3 className="confirm-title">Delete Category Card?</h3>
+            <p className="confirm-desc">
+              Are you sure you want to permanently delete the <strong>"{activeCategories.find(c => c.id === deletingCategoryId)?.label || deletingCategoryId}"</strong> category card from your storefront?
+            </p>
+            <div className="confirm-actions">
+              <button
+                type="button"
+                className="btn-outline-cancel"
+                onClick={() => setDeletingCategoryId(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-danger-confirm"
+                onClick={() => {
+                  onDeleteCategory?.(deletingCategoryId);
+                  setDeletingCategoryId(null);
+                }}
+              >
+                Yes, Delete Category
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+         8. CATEGORY CREATE / EDIT MODAL
+         ===================================================================== */}
+      {(isCreateCategoryModalOpen || editingCategory) && (
+        <div
+          className="admin-modal-backdrop"
+          onClick={() => {
+            setIsCreateCategoryModalOpen(false);
+            setEditingCategory(null);
+          }}
+        >
+          <div className="admin-modal-dialog-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
+            <div className="admin-modal-header">
+              <div>
+                <h3 className="modal-title">
+                  {editingCategory ? `Edit Category: ${editingCategory.label}` : 'Add New Event Category'}
+                </h3>
+                <span className="modal-sub">
+                  {editingCategory ? 'Update storefront card visuals and pricing' : 'Create a new hire category card for your Brisbane storefront'}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="modal-close-icon-btn"
+                onClick={() => {
+                  setIsCreateCategoryModalOpen(false);
+                  setEditingCategory(null);
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={editingCategory ? handleSubmitCategoryEdit : handleSubmitCategoryCreate} className="admin-modal-form">
+              <div className="modal-form-grid">
+                
+                {/* Category Name */}
+                <div className="form-group full-width">
+                  <label className="form-label">Category Name *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Dance Floors & Staging, Photo Booths"
+                    value={categoryFormData.label}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const autoSlug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                      setCategoryFormData(prev => ({
+                        ...prev,
+                        label: val,
+                        id: editingCategory ? prev.id : (autoSlug || prev.id),
+                        shortLabel: editingCategory ? prev.shortLabel : val
+                      }));
+                    }}
+                    required
+                  />
+                </div>
+
+                {/* Slug / Key */}
+                <div className="form-group">
+                  <label className="form-label">Category Key / Slug *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. dance-floors"
+                    value={categoryFormData.id}
+                    onChange={(e) => setCategoryFormData({ ...categoryFormData, id: e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, '') })}
+                    disabled={Boolean(editingCategory)}
+                    required
+                  />
+                  <span className="form-help-hint">Unique identifier used for filtering items</span>
+                </div>
+
+                {/* Short Label */}
+                <div className="form-group">
+                  <label className="form-label">Short Label (Tabs & Badges)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Staging"
+                    value={categoryFormData.shortLabel}
+                    onChange={(e) => setCategoryFormData({ ...categoryFormData, shortLabel: e.target.value })}
+                  />
+                  <span className="form-help-hint">Used in compact mobile tabs</span>
+                </div>
+
+                {/* Starting Price */}
+                <div className="form-group">
+                  <label className="form-label">Starting Price ($ AUD) *</label>
+                  <input
+                    type="number"
+                    min="1"
+                    className="form-input"
+                    placeholder="e.g. 80"
+                    value={categoryFormData.startingPrice}
+                    onChange={(e) => setCategoryFormData({ ...categoryFormData, startingPrice: e.target.value })}
+                    required
+                  />
+                  <span className="form-help-hint">Shown as "From $X AUD" on category badges</span>
+                </div>
+
+                {/* Highlight Tag / Badge */}
+                <div className="form-group">
+                  <label className="form-label">Editorial Badge / Tag</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Event Essential, Luxury Decor, Weatherproof"
+                    value={categoryFormData.tag}
+                    onChange={(e) => setCategoryFormData({ ...categoryFormData, tag: e.target.value })}
+                  />
+                </div>
+
+                {/* Cover Image Selector */}
+                <div className="form-group full-width">
+                  <label className="form-label">Category Cover Image *</label>
+                  <select
+                    value={categoryFormData.image}
+                    onChange={(e) => setCategoryFormData({ ...categoryFormData, image: e.target.value })}
+                    className="form-select"
+                  >
+                    {EQUIPMENT_IMAGE_OPTIONS.map((img, i) => (
+                      <option key={i} value={img.path}>{img.label}</option>
+                    ))}
+                  </select>
+                  <div style={{ marginTop: '8px' }}>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Or enter custom image path (/assets/images/...)"
+                      value={categoryFormData.image}
+                      onChange={(e) => setCategoryFormData({ ...categoryFormData, image: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                {/* Specification Pills */}
+                <div className="form-group full-width">
+                  <label className="form-label">Feature Pills (Comma-separated)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Modular 1x1m, Oak & White, Non-Slip Surface"
+                    value={categoryFormData.pills}
+                    onChange={(e) => setCategoryFormData({ ...categoryFormData, pills: e.target.value })}
+                  />
+                  <span className="form-help-hint">Displayed as mini pills on desktop cards (max 3 shown)</span>
+                </div>
+
+                {/* Description */}
+                <div className="form-group full-width">
+                  <label className="form-label">Short Description</label>
+                  <textarea
+                    rows={2}
+                    className="form-textarea"
+                    placeholder="Brief overview of what equipment is included in this category..."
+                    value={categoryFormData.description}
+                    onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
+                  />
+                </div>
+
+              </div>
+
+              <div className="admin-modal-footer">
+                <button
+                  type="button"
+                  className="btn-outline-cancel"
+                  onClick={() => {
+                    setIsCreateCategoryModalOpen(false);
+                    setEditingCategory(null);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="admin-btn-primary">
+                  <Check size={16} />
+                  <span>{editingCategory ? 'Save Changes' : 'Create Category Card'}</span>
+                </button>
+              </div>
+            </form>
+
           </div>
         </div>
       )}
