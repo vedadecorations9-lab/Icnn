@@ -5329,14 +5329,29 @@ ul, ol {
   .hero-fullsize-scrim {
     min-height: 100vh;
     min-height: 100dvh;
-    padding-top: 86px !important;
-    padding-bottom: 70px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    padding-top: clamp(44px, 8.5vh, 64px) !important;
+    padding-bottom: 50px !important;
     background: linear-gradient(
       180deg,
-      rgba(18, 7, 19, 0.65) 0%,
-      rgba(18, 7, 19, 0.88) 45%,
+      rgba(18, 7, 19, 0.70) 0%,
+      rgba(18, 7, 19, 0.85) 45%,
       rgba(18, 7, 19, 0.96) 100%
     );
+  }
+
+  .hero-fullsize-inner {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    padding-top: 0 !important;
+  }
+
+  .hero-fullsize-copy {
+    width: 100% !important;
+    margin-top: 0 !important;
   }
 
   .hero-jewel-eyebrow {
