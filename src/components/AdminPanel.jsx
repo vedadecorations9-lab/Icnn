@@ -2214,66 +2214,6 @@ export default function AdminPanel({
           </div>
         </div>
       )}
-      {/* Sleek Mobile Bottom Navigation Bar (Phone-Native Fast Switcher) */}
-      <nav className="admin-mobile-bottom-bar show-mobile" aria-label="Mobile Operations Navigation">
-        <button
-          type="button"
-          className={`mobile-bar-item ${activeTab === 'inventory' ? 'active' : ''}`}
-          onClick={() => setActiveTab('inventory')}
-        >
-          <div className="mobile-bar-icon-wrap">
-            <Package size={20} />
-            {products.length > 0 && <span className="mobile-bar-badge">{products.length}</span>}
-          </div>
-          <span className="mobile-bar-label">Items</span>
-        </button>
-
-        <button
-          type="button"
-          className={`mobile-bar-item ${activeTab === 'categories' ? 'active' : ''}`}
-          onClick={() => setActiveTab('categories')}
-        >
-          <div className="mobile-bar-icon-wrap">
-            <Layers size={20} />
-            {activeCategories.length > 0 && <span className="mobile-bar-badge">{activeCategories.length}</span>}
-          </div>
-          <span className="mobile-bar-label">Categories</span>
-        </button>
-
-        <button
-          type="button"
-          className={`mobile-bar-item ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          <div className="mobile-bar-icon-wrap">
-            <BarChart3 size={20} />
-          </div>
-          <span className="mobile-bar-label">Overview</span>
-        </button>
-
-        <button
-          type="button"
-          className={`mobile-bar-item ${activeTab === 'bookings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('bookings')}
-        >
-          <div className="mobile-bar-icon-wrap">
-            <Calendar size={20} />
-            {bookings.length > 0 && <span className="mobile-bar-badge">{bookings.length}</span>}
-          </div>
-          <span className="mobile-bar-label">Bookings</span>
-        </button>
-
-        <button
-          type="button"
-          className="mobile-bar-item"
-          onClick={() => setIsSidebarOpen(true)}
-        >
-          <div className="mobile-bar-icon-wrap">
-            <SlidersHorizontal size={20} />
-          </div>
-          <span className="mobile-bar-label">More</span>
-        </button>
-      </nav>
     </div>
   );
 }

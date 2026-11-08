@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useState } from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,7 +9,6 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
   const heroRef = useRef(null);
   const copyRef = useRef(null);
   const waveRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(true);
 
   useLayoutEffect(() => {
     const hero = heroRef.current;
@@ -20,8 +19,8 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
     let ctx = gsap.context(() => {
       // 1. Text lift and fade on scroll down
       gsap.to(copy, {
-        y: -90,
-        opacity: 0.15,
+        y: -70,
+        opacity: 0.25,
         ease: "none",
         scrollTrigger: {
           trigger: hero,
@@ -34,8 +33,8 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
       // 2. Wave gentle scale out
       if (wave) {
         gsap.to(wave, {
-          y: 15,
-          scaleY: 1.12,
+          y: 12,
+          scaleY: 1.1,
           ease: "none",
           scrollTrigger: {
             trigger: hero,
@@ -65,58 +64,18 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
           {/* Left-Aligned Editorial Content */}
           <div className="hero-fullsize-copy" ref={copyRef}>
 
-            {/* Fancy Grand Headline with Rotating Vinyl Emblem Beside "Every" */}
-            <h1 className="hero-full-title">
-              <span className="hero-title-first-line">
-                <span>Elevate Every</span>
-                
-                {/* Rotating Vinyl Logo Disc placed aside "Every" */}
-                <span
-                  className={`hero-inline-vinyl ${isPlaying ? 'is-playing' : 'is-paused'}`}
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  role="button"
-                  tabIndex={0}
-                  title={isPlaying ? "Click to pause rotation" : "Click to play rotation"}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setIsPlaying(!isPlaying);
-                    }
-                  }}
-                  aria-label="Icon Party Hire Rotating Logo Emblem"
-                >
-                  <span className="vinyl-glow-aura" />
-                  
-                  <span className="vinyl-disc-body">
-                    <span className="vinyl-groove-rings" />
-                    
-                    {/* SVG Rotating Words on Curved Path */}
-                    <svg className="vinyl-rotating-svg" viewBox="0 0 200 200" aria-hidden="true">
-                      <defs>
-                        <path
-                          id="vinylPath"
-                          d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0"
-                        />
-                      </defs>
-                      <text className="vinyl-curved-text">
-                        <textPath href="#vinylPath" startOffset="0%">
-                          ✦ ICON PARTY HIRE ✦ BRISBANE LUXURY HIRE ✦
-                        </textPath>
-                      </text>
-                    </svg>
+            {/* Prominent Navbar Brand Logo */}
+            <div className="hero-brand-logo-frame">
+              <img
+                src="/assets/images/icon_logo_navbar.webp"
+                alt="Icon Party Hire Brisbane"
+                className="hero-brand-logo-img"
+              />
+            </div>
 
-                    {/* Center High-Definition Circular Logo */}
-                    <span className="vinyl-center-label">
-                      <img
-                        src="/assets/images/logo.webp"
-                        alt="Icon Party Hire Official Circular Emblem"
-                        className="vinyl-center-logo-img"
-                      />
-                      <span className="vinyl-spindle-hole" />
-                    </span>
-                  </span>
-                </span>
-              </span>
+            {/* Grand Editorial Headline */}
+            <h1 className="hero-full-title">
+              <span className="hero-title-first-line">ELEVATE EVERY</span>
               <span className="hero-title-second-line">
                 <span className="hero-fancy-text">Celebration</span>
               </span>
@@ -126,7 +85,7 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
             <div className="hero-full-cta-group">
               <button
                 type="button"
-                className="btn-primary-gold hero-primary-btn"
+                className="hero-primary-btn"
                 onClick={onExploreCategories}
               >
                 <span>Browse Event Categories</span>
