@@ -855,19 +855,19 @@ ul, ol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 780px;
+  max-width: 620px;
   z-index: 2;
 }
 
 /* Prominent 3D Metallic Brand Logo in Hero */
 .hero-brand-logo-frame {
   display: inline-block;
-  margin-bottom: clamp(14px, 2.2vh, 24px);
-  filter: drop-shadow(0 6px 28px rgba(216, 27, 96, 0.42)) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.6));
+  margin-bottom: clamp(10px, 1.8vh, 18px);
+  filter: drop-shadow(0 6px 24px rgba(216, 27, 96, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));
 }
 
 .hero-brand-logo-img {
-  width: clamp(240px, 25vw, 360px);
+  width: clamp(190px, 16vw, 260px);
   max-width: 100%;
   height: auto;
   object-fit: contain;
@@ -877,13 +877,13 @@ ul, ol {
 /* Grand Editorial Headline */
 .hero-full-title {
   font-family: var(--font-serif, 'Cinzel', serif);
-  font-size: clamp(2.8rem, 4.6vw, 4.5rem);
+  font-size: clamp(2rem, 2.8vw, 3rem);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.12;
   color: #FFFFFF;
-  margin: 0 0 clamp(24px, 3.2vh, 36px) 0;
-  letter-spacing: 0.03em;
-  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.8);
+  margin: 0 0 clamp(16px, 2.2vh, 22px) 0;
+  letter-spacing: 0.025em;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.75);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -893,7 +893,7 @@ ul, ol {
   display: block;
   font-family: var(--font-serif, 'Cinzel', serif);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.035em;
   color: #FFFFFF;
 }
 
@@ -905,37 +905,37 @@ ul, ol {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-style: italic;
   font-weight: 500;
-  font-size: 1.18em;
+  font-size: 1.14em;
   background: linear-gradient(135deg, #FFF1E8 0%, #FAD1C0 40%, #F7C5AF 75%, #F0A58F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
   letter-spacing: -0.01em;
-  filter: drop-shadow(0 4px 22px rgba(216, 27, 96, 0.42));
+  filter: drop-shadow(0 4px 20px rgba(216, 27, 96, 0.4));
 }
 
 /* Single Action CTA Group */
 .hero-full-cta-group {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   margin-bottom: 0;
 }
 
 .hero-primary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   background: linear-gradient(135deg, #E03E8A 0%, #D81B60 60%, #C2185B 100%) !important;
   color: #FFFFFF !important;
-  padding: 14px 28px !important;
+  padding: 12px 24px !important;
   border-radius: 9999px !important;
-  font-size: 0.95rem !important;
+  font-size: 0.875rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.02em !important;
   border: 1px solid rgba(255, 255, 255, 0.28) !important;
   box-shadow:
-    0 10px 30px rgba(216, 27, 96, 0.52),
+    0 8px 24px rgba(216, 27, 96, 0.48),
     inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -945,13 +945,13 @@ ul, ol {
 .hero-primary-btn:hover {
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow:
-    0 16px 40px rgba(216, 27, 96, 0.7),
+    0 14px 34px rgba(216, 27, 96, 0.65),
     inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
 }
 
 .hero-primary-btn .btn-icon-gold-circle {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   background: rgba(255, 255, 255, 0.22);
   border-radius: 50%;
   display: flex;
@@ -964,6 +964,24 @@ ul, ol {
 .hero-primary-btn:hover .btn-icon-gold-circle {
   transform: translateX(3px);
   background: rgba(255, 255, 255, 0.35);
+}
+
+/* Height-aware scaling for compact screens (e.g. 1536x730, 1366x768) */
+@media (max-height: 780px) and (min-width: 769px) {
+  .hero-brand-logo-img {
+    width: clamp(170px, 14vw, 220px);
+  }
+  .hero-brand-logo-frame {
+    margin-bottom: 10px;
+  }
+  .hero-full-title {
+    font-size: clamp(1.75rem, 2.4vw, 2.4rem);
+    margin-bottom: 14px;
+  }
+  .hero-primary-btn {
+    padding: 10px 20px !important;
+    font-size: 0.8125rem !important;
+  }
 }
 
 .btn-primary-gold {
@@ -5816,17 +5834,17 @@ ul, ol {
   }
 
   .hero-brand-logo-frame {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .hero-brand-logo-img {
-    width: clamp(200px, 60vw, 270px);
+    width: clamp(170px, 50vw, 220px);
   }
 
   .hero-full-title {
-    font-size: clamp(2.2rem, 8.5vw, 3.1rem);
-    line-height: 1.1;
-    margin-bottom: 24px;
+    font-size: clamp(1.8rem, 7.5vw, 2.35rem);
+    line-height: 1.12;
+    margin-bottom: 18px;
   }
 
   .hero-full-cta-group {
@@ -5838,8 +5856,8 @@ ul, ol {
     width: auto;
     max-width: 100%;
     justify-content: center;
-    padding: 13px 24px !important;
-    font-size: 0.92rem !important;
+    padding: 11px 20px !important;
+    font-size: 0.825rem !important;
   }
 
   .section-title {
