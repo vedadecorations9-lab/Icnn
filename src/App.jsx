@@ -7,8 +7,6 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import BentoPromos from './components/BentoPromos';
 import HowItWorks from './components/HowItWorks';
-import Lookbook from './components/Lookbook';
-import Reviews from './components/Reviews';
 import ShopPage from './components/ShopPage';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -288,24 +286,6 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
             {/* How It Works: 3-Step Simple Process */}
             <HowItWorks
               onExploreCatalog={() => handleNavigateCatalog('all')}
-            />
-
-            {/* Interactive Lookbook: Styled Event Setups with Hotspots */}
-            <Lookbook
-              onOpenQuickView={(id) => {
-                closeAllDrawers();
-                setQuickViewId(id);
-              }}
-              onAddToCart={handleAddToCart}
-              formatPrice={formatPrice}
-            />
-
-            {/* Client Reviews: 5-Star Social Proof from Brisbane Hosts */}
-            <Reviews
-              onOpenReviewModal={() => {
-                closeAllDrawers();
-                setIsReviewOpen(true);
-              }}
             />
           </>
         ) : (
