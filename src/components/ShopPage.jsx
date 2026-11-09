@@ -166,30 +166,33 @@ export default function ShopPage({
     <div className="shop-page-wrapper" aria-label="Icon Party Hire Equipment Shop">
       
       {/* =========================================================================
-         1. TOP EDITORIAL BANNER CARD (Inspired by Reference Design Hero Banner)
+         1. TOP EDITORIAL BANNER (Full Panoramic Banner Conveying Service & Atmosphere)
          ========================================================================= */}
       <section className="shop-hero-card-section">
         <div className="container">
           <div className="shop-hero-card">
             
-            {/* Visual Media Side */}
+            {/* Full Panoramic Background Image */}
             <div className="shop-hero-media">
               <img
-                src={currentCategoryMeta.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp'}
-                alt={currentCategoryMeta.label}
+                src="/assets/images/shop_hero_banner.jpg"
+                alt="Icon Party Hire Brisbane Celebration Service"
                 className="shop-hero-img"
               />
-              <div className="shop-hero-media-badge">
-                <Sparkles size={13} className="text-amber-400" />
-                <span>Brisbane Hire HQ</span>
-              </div>
             </div>
 
-            {/* Content Side */}
+            {/* Directional Luxury Scrim for High-Contrast Text Readability */}
+            <div className="shop-hero-scrim" aria-hidden="true" />
+
+            {/* Editorial Content Overlay */}
             <div className="shop-hero-copy">
               <div className="shop-kicker-row">
                 <span className="shop-kicker-tag">— Event Equipment Collections</span>
-                <span className="shop-hub-pill">Murrumba Downs Dispatch</span>
+                <span className="shop-hub-pill">Brisbane Celebration Service</span>
+                <div className="shop-hero-media-badge">
+                  <Sparkles size={13} className="text-amber-300" />
+                  <span>Murrumba Downs HQ</span>
+                </div>
               </div>
 
               <h1 className="shop-hero-title">
@@ -200,11 +203,13 @@ export default function ShopPage({
               </h1>
 
               <p className="shop-hero-desc">
-                {currentCategoryMeta.description ||
-                  "Discover Brisbane's leading commercial event and party equipment rental collection. 100% waterproof gazebos, statement flower walls, ripple arches, and luxury Tiffany seating serviced and delivered across Greater Brisbane."}
+                {selectedCat === 'all'
+                  ? "Greater Brisbane's trusted event equipment hire and logistics dispatch. We deliver, install, and stage luxury celebration atmospheres across Brisbane, Moreton Bay, and the Sunshine Coast."
+                  : currentCategoryMeta.description ||
+                    "Discover Brisbane's leading commercial event and party equipment rental collection. 100% waterproof gazebos, statement flower walls, ripple arches, and luxury Tiffany seating serviced and delivered across Greater Brisbane."}
               </p>
 
-              {/* Value Highlights */}
+              {/* Service Highlights */}
               <div className="shop-hero-perks">
                 <div className="shop-perk-item">
                   <ShieldCheck size={16} className="perk-icon" />
