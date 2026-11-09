@@ -64,10 +64,10 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
           {/* Left-Aligned Editorial Content */}
           <div className="hero-fullsize-copy" ref={copyRef}>
 
-            {/* Prominent Navbar Brand Logo */}
+            {/* Prominent Hero Brand Logo */}
             <div className="hero-brand-logo-frame">
               <img
-                src="/assets/images/icon_logo_navbar.webp"
+                src="/assets/images/hero_logo.webp"
                 alt="Icon Party Hire Brisbane"
                 className="hero-brand-logo-img"
               />

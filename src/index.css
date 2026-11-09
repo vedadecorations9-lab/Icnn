@@ -859,15 +859,16 @@ ul, ol {
   z-index: 2;
 }
 
-/* Prominent Navbar Brand Logo in Hero */
+/* Prominent 3D Metallic Brand Logo in Hero */
 .hero-brand-logo-frame {
   display: inline-block;
-  margin-bottom: clamp(16px, 2.6vh, 28px);
-  filter: drop-shadow(0 4px 24px rgba(216, 27, 96, 0.35));
+  margin-bottom: clamp(14px, 2.2vh, 24px);
+  filter: drop-shadow(0 6px 28px rgba(216, 27, 96, 0.42)) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.6));
 }
 
 .hero-brand-logo-img {
-  width: clamp(230px, 24vw, 340px);
+  width: clamp(240px, 25vw, 360px);
+  max-width: 100%;
   height: auto;
   object-fit: contain;
   display: block;
@@ -5815,11 +5816,11 @@ ul, ol {
   }
 
   .hero-brand-logo-frame {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .hero-brand-logo-img {
-    width: clamp(190px, 58vw, 250px);
+    width: clamp(200px, 60vw, 270px);
   }
 
   .hero-full-title {
