@@ -166,64 +166,36 @@ export default function ShopPage({
     <div className="shop-page-wrapper" aria-label="Icon Party Hire Equipment Shop">
       
       {/* =========================================================================
-         1. TOP EDITORIAL BANNER (Full Panoramic Banner Conveying Service & Atmosphere)
+         1. TOP EDITORIAL BANNER (Exact Wink Reference Match: Clean, Quiet Luxury)
          ========================================================================= */}
       <section className="shop-hero-card-section">
         <div className="container">
           <div className="shop-hero-card">
             
-            {/* Full Panoramic Background Image */}
+            {/* Left Side: Soft Studio Celebration Visual */}
             <div className="shop-hero-media">
               <img
                 src="/assets/images/shop_hero_banner.jpg"
-                alt="Icon Party Hire Brisbane Celebration Service"
+                alt="Icon Party Hire Celebration Service"
                 className="shop-hero-img"
               />
             </div>
 
-            {/* Directional Luxury Scrim for High-Contrast Text Readability */}
-            <div className="shop-hero-scrim" aria-hidden="true" />
-
-            {/* Editorial Content Overlay */}
+            {/* Right Side: Pure Typography (Zero Pills, Quiet Luxury) */}
             <div className="shop-hero-copy">
-              <div className="shop-kicker-row">
-                <span className="shop-kicker-tag">— Event Equipment Collections</span>
-                <span className="shop-hub-pill">Brisbane Celebration Service</span>
-                <div className="shop-hero-media-badge">
-                  <Sparkles size={13} className="text-amber-300" />
-                  <span>Murrumba Downs HQ</span>
-                </div>
-              </div>
+              <span className="shop-hero-kicker">- Collections</span>
 
               <h1 className="shop-hero-title">
                 Explore The Complete Collection of{' '}
-                <span className="hero-fancy-text">
-                  {selectedCat === 'all' ? 'Icon Party Hire' : currentCategoryMeta.label}
-                </span>
+                {selectedCat === 'all' ? 'Icon Party Hire' : currentCategoryMeta.label}
               </h1>
 
               <p className="shop-hero-desc">
                 {selectedCat === 'all'
-                  ? "Greater Brisbane's trusted event equipment hire and logistics dispatch. We deliver, install, and stage luxury celebration atmospheres across Brisbane, Moreton Bay, and the Sunshine Coast."
+                  ? "Don't miss out on premium commercial event hire equipment for your next celebration."
                   : currentCategoryMeta.description ||
-                    "Discover Brisbane's leading commercial event and party equipment rental collection. 100% waterproof gazebos, statement flower walls, ripple arches, and luxury Tiffany seating serviced and delivered across Greater Brisbane."}
+                    "Commercial party equipment serviced and delivered across Greater Brisbane."}
               </p>
-
-              {/* Service Highlights */}
-              <div className="shop-hero-perks">
-                <div className="shop-perk-item">
-                  <ShieldCheck size={16} className="perk-icon" />
-                  <span>Commercial Tested & Sanitized</span>
-                </div>
-                <div className="shop-perk-item">
-                  <Calendar size={16} className="perk-icon" />
-                  <span>24–72h Flexible Weekend Hire</span>
-                </div>
-                <div className="shop-perk-item">
-                  <Truck size={16} className="perk-icon" />
-                  <span>Greater Brisbane Delivery & Setup</span>
-                </div>
-              </div>
             </div>
 
           </div>
