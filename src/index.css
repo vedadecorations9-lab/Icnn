@@ -855,19 +855,19 @@ ul, ol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 620px;
+  max-width: 720px;
   z-index: 2;
 }
 
 /* Prominent 3D Metallic Brand Logo in Hero */
 .hero-brand-logo-frame {
   display: inline-block;
-  margin-bottom: clamp(10px, 1.8vh, 18px);
-  filter: drop-shadow(0 6px 24px rgba(216, 27, 96, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));
+  margin-bottom: clamp(14px, 2vh, 22px);
+  filter: drop-shadow(0 6px 26px rgba(216, 27, 96, 0.42)) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.58));
 }
 
 .hero-brand-logo-img {
-  width: clamp(190px, 16vw, 260px);
+  width: clamp(230px, 20vw, 310px);
   max-width: 100%;
   height: auto;
   object-fit: contain;
@@ -877,13 +877,13 @@ ul, ol {
 /* Grand Editorial Headline */
 .hero-full-title {
   font-family: var(--font-serif, 'Cinzel', serif);
-  font-size: clamp(2rem, 2.8vw, 3rem);
+  font-size: clamp(2.5rem, 3.8vw, 3.8rem);
   font-weight: 700;
-  line-height: 1.12;
+  line-height: 1.08;
   color: #FFFFFF;
-  margin: 0 0 clamp(16px, 2.2vh, 22px) 0;
-  letter-spacing: 0.025em;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.75);
+  margin: 0 0 clamp(20px, 2.6vh, 28px) 0;
+  letter-spacing: 0.03em;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.78);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -893,7 +893,7 @@ ul, ol {
   display: block;
   font-family: var(--font-serif, 'Cinzel', serif);
   font-weight: 700;
-  letter-spacing: 0.035em;
+  letter-spacing: 0.04em;
   color: #FFFFFF;
 }
 
@@ -905,13 +905,13 @@ ul, ol {
   font-family: var(--font-display, 'Playfair Display', serif);
   font-style: italic;
   font-weight: 500;
-  font-size: 1.14em;
+  font-size: 1.15em;
   background: linear-gradient(135deg, #FFF1E8 0%, #FAD1C0 40%, #F7C5AF 75%, #F0A58F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
   letter-spacing: -0.01em;
-  filter: drop-shadow(0 4px 20px rgba(216, 27, 96, 0.4));
+  filter: drop-shadow(0 4px 20px rgba(216, 27, 96, 0.42));
 }
 
 /* Single Action CTA Group */
@@ -925,17 +925,17 @@ ul, ol {
 .hero-primary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 13px;
   background: linear-gradient(135deg, #E03E8A 0%, #D81B60 60%, #C2185B 100%) !important;
   color: #FFFFFF !important;
-  padding: 12px 24px !important;
+  padding: 13px 26px !important;
   border-radius: 9999px !important;
-  font-size: 0.875rem !important;
+  font-size: 0.92rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.02em !important;
   border: 1px solid rgba(255, 255, 255, 0.28) !important;
   box-shadow:
-    0 8px 24px rgba(216, 27, 96, 0.48),
+    0 9px 28px rgba(216, 27, 96, 0.5),
     inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -945,13 +945,13 @@ ul, ol {
 .hero-primary-btn:hover {
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow:
-    0 14px 34px rgba(216, 27, 96, 0.65),
+    0 15px 38px rgba(216, 27, 96, 0.68),
     inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
 }
 
 .hero-primary-btn .btn-icon-gold-circle {
-  width: 24px;
-  height: 24px;
+  width: 25px;
+  height: 25px;
   background: rgba(255, 255, 255, 0.22);
   border-radius: 50%;
   display: flex;
@@ -964,24 +964,6 @@ ul, ol {
 .hero-primary-btn:hover .btn-icon-gold-circle {
   transform: translateX(3px);
   background: rgba(255, 255, 255, 0.35);
-}
-
-/* Height-aware scaling for compact screens (e.g. 1536x730, 1366x768) */
-@media (max-height: 780px) and (min-width: 769px) {
-  .hero-brand-logo-img {
-    width: clamp(170px, 14vw, 220px);
-  }
-  .hero-brand-logo-frame {
-    margin-bottom: 10px;
-  }
-  .hero-full-title {
-    font-size: clamp(1.75rem, 2.4vw, 2.4rem);
-    margin-bottom: 14px;
-  }
-  .hero-primary-btn {
-    padding: 10px 20px !important;
-    font-size: 0.8125rem !important;
-  }
 }
 
 .btn-primary-gold {
@@ -5834,17 +5816,17 @@ ul, ol {
   }
 
   .hero-brand-logo-frame {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
 
   .hero-brand-logo-img {
-    width: clamp(170px, 50vw, 220px);
+    width: clamp(190px, 55vw, 240px);
   }
 
   .hero-full-title {
-    font-size: clamp(1.8rem, 7.5vw, 2.35rem);
-    line-height: 1.12;
-    margin-bottom: 18px;
+    font-size: clamp(2rem, 7.8vw, 2.6rem);
+    line-height: 1.1;
+    margin-bottom: 20px;
   }
 
   .hero-full-cta-group {
@@ -5856,8 +5838,8 @@ ul, ol {
     width: auto;
     max-width: 100%;
     justify-content: center;
-    padding: 11px 20px !important;
-    font-size: 0.825rem !important;
+    padding: 12px 22px !important;
+    font-size: 0.88rem !important;
   }
 
   .section-title {
