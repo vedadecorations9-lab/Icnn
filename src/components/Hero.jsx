@@ -86,9 +86,9 @@ export default function Hero({ onExploreCategories, onViewCatalog }) {
               <button
                 type="button"
                 className="hero-primary-btn"
-                onClick={onExploreCategories}
+                onClick={onViewCatalog || onExploreCategories}
               >
-                <span>Browse Event Categories</span>
+                <span>Explore Hire Shop</span>
                 <div className="btn-icon-gold-circle">
                   <ArrowRight size={15} />
                 </div>

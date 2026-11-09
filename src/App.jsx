@@ -5,11 +5,11 @@ import { useConvexStore, useLocalStore } from './hooks/useProductsData';
 import { useConvexCategoriesStore, useLocalCategoriesStore } from './hooks/useCategoriesData';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import CategoriesShowcase from './components/CategoriesShowcase';
-import FeaturedProductsCarousel from './components/FeaturedProductsCarousel';
 import BentoPromos from './components/BentoPromos';
 import HowItWorks from './components/HowItWorks';
-import ProductGrid from './components/ProductGrid';
+import Lookbook from './components/Lookbook';
+import Reviews from './components/Reviews';
+import ShopPage from './components/ShopPage';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import WishlistDrawer from './components/WishlistDrawer';
@@ -270,35 +270,14 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
       <main>
         {currentView === 'home' ? (
           /* =================================================================
-             HOME PAGE: SHOWCASES ONLY CATEGORIES (LEADING TO ITEMS)
+             HOME PAGE: CLEAN EDITORIAL LUXURY SHOWCASE
+             (Product listings and category cards shifted to dedicated Shop Page)
              ================================================================= */
           <>
-            {/* Hero Banner with High Contrast Editorial Content */}
+            {/* Hero Banner with Direct CTA to Hire Shop */}
             <Hero
-              onExploreCategories={() => {
-                const el = document.getElementById('categories-section');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onExploreCategories={() => handleNavigateCatalog('all')}
               onViewCatalog={() => handleNavigateCatalog('all')}
-            />
-
-            {/* Core Home Showcase: Rich Category Cards leading to Items (Vertical Scroll + Smooth Emerge) */}
-            <CategoriesShowcase
-              categories={categories}
-              products={products}
-              onExploreCategory={(catId) => handleNavigateCatalog(catId)}
-              onViewAllItems={() => handleNavigateCatalog('all')}
-            />
-
-            {/* This Season's Must-Haves: Horizontal Side-by-Side Product Carousel */}
-            <FeaturedProductsCarousel
-              products={products}
-              formatPrice={formatPrice}
-              wishlist={wishlist}
-              onToggleWishlist={handleToggleWishlist}
-              onAddToCart={handleAddToCart}
-              onOpenQuickView={(id) => setQuickViewId(id)}
-              onViewAll={() => handleNavigateCatalog('all')}
             />
 
             {/* 3-Column Promo Bento Banners: The 3 Pillars of Icon */}
@@ -310,12 +289,30 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
             <HowItWorks
               onExploreCatalog={() => handleNavigateCatalog('all')}
             />
+
+            {/* Interactive Lookbook: Styled Event Setups with Hotspots */}
+            <Lookbook
+              onOpenQuickView={(id) => {
+                closeAllDrawers();
+                setQuickViewId(id);
+              }}
+              onAddToCart={handleAddToCart}
+              formatPrice={formatPrice}
+            />
+
+            {/* Client Reviews: 5-Star Social Proof from Brisbane Hosts */}
+            <Reviews
+              onOpenReviewModal={() => {
+                closeAllDrawers();
+                setIsReviewOpen(true);
+              }}
+            />
           </>
         ) : (
           /* =================================================================
-             DEDICATED SEPARATE ITEMS PAGE: ALL HIRE PRODUCTS & FILTERING
+             DEDICATED SEPARATE SHOP PAGE: WINK-INSPIRED HIRE CATALOG & FILTERS
              ================================================================= */
-          <ProductGrid
+          <ShopPage
             products={products}
             categories={categories}
             activeCategory={activeCategory}
@@ -325,7 +322,10 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
             wishlist={wishlist}
             onToggleWishlist={handleToggleWishlist}
             onAddToCart={handleAddToCart}
-            onOpenQuickView={(id) => setQuickViewId(id)}
+            onOpenQuickView={(id) => {
+              closeAllDrawers();
+              setQuickViewId(id);
+            }}
           />
         )}
       </main>

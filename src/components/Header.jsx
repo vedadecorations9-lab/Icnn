@@ -120,17 +120,17 @@ export default function Header({
           <nav className="nav-zone-center hide-mobile" aria-label="Main Navigation">
             <ul className="nav-menu-list">
               
-              {/* 1. Dedicated Hire Catalog Link */}
+              {/* 1. Dedicated Hire Shop Link */}
               <li className="nav-menu-item">
                 <button
                   type="button"
-                  className="nav-link-btn"
+                  className={`nav-link-btn ${currentView === 'catalog' ? 'active' : ''}`}
                   onClick={() => {
                     onSelectCategory?.('all');
                     onNavigateCatalog?.('all');
                   }}
                 >
-                  <span>Hire catalog</span>
+                  <span>Hire shop</span>
                 </button>
               </li>
 

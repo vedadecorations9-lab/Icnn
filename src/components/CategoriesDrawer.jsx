@@ -100,7 +100,7 @@ export default function CategoriesDrawer({
                 </div>
               </button>
 
-              {/* Hire Catalog */}
+              {/* Hire Shop */}
               <button
                 type="button"
                 className={`mobile-hub-card ${currentView === 'catalog' ? 'active' : ''}`}
@@ -113,8 +113,8 @@ export default function CategoriesDrawer({
                   <Package size={19} />
                 </div>
                 <div className="mobile-hub-meta">
-                  <span className="mobile-hub-title">Hire Catalog</span>
-                  <span className="mobile-hub-sub">All Equipment</span>
+                  <span className="mobile-hub-title">Hire Shop</span>
+                  <span className="mobile-hub-sub">Browse Items</span>
                 </div>
               </button>
 
