@@ -5983,110 +5983,51 @@ ul, ol {
 
 
 /* ==========================================================================
-   HOW IT WORKS SECTION - Clean Minimalist Flow Matching Reference Graphic
+   HOW IT WORKS SECTION - Full Editorial Banner Graphic
    ========================================================================== */
 .how-it-works-ref-section {
-  padding: 80px 0 96px 0;
+  padding: 60px 0 80px 0;
   background-color: #FFFFFF;
   width: 100%;
 }
 
-.hiw-ref-header {
-  text-align: center;
-  margin-bottom: 56px;
-}
-
-.hiw-ref-title {
-  font-family: var(--font-sans);
-  font-size: clamp(2.2rem, 3.8vw, 2.85rem);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  color: #374151;
-  margin: 0;
-  line-height: 1.08;
-}
-
-.hiw-ref-pink {
-  color: #E03E8A;
-}
-
-.hiw-ref-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 48px;
+.hiw-banner-wrapper {
+  width: 100%;
   max-width: 1360px;
   margin: 0 auto;
-  align-items: start;
-}
-
-.hiw-ref-col {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 12px 42px rgba(27, 6, 26, 0.06);
+  background: #FFF5F7;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 0 16px;
-}
-
-.hiw-ref-image-wrapper {
-  width: 100%;
-  max-width: 330px;
-  height: 270px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
+  align-items: center;
+  border: 1px solid rgba(224, 62, 138, 0.12);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-.bento-desc {
-  font-size: 0.88rem;
-  color: #64748B;
-  line-height: 1.55;
-  margin: 0 0 20px 0;
+.hiw-banner-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 50px rgba(27, 6, 26, 0.1);
 }
 
-.hiw-ref-img {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
+.hiw-full-banner-img {
+  width: 100%;
   height: auto;
-  object-fit: contain;
   display: block;
-  transition: transform 0.3s ease;
-}
-
-.hiw-ref-col:hover .hiw-ref-img {
-  transform: translateY(-4px) scale(1.02);
-}
-
-.hiw-ref-col-title {
-  font-family: var(--font-sans);
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1F2937;
-  margin: 0 0 12px 0;
-  line-height: 1.35;
-}
-
-.hiw-ref-col-desc {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  color: #6B7280;
-  line-height: 1.6;
-  max-width: 330px;
-  margin: 0 auto;
+  object-fit: contain;
+  border-radius: 24px;
 }
 
 @media (max-width: 960px) {
   .how-it-works-ref-section {
-    padding: 60px 0 72px 0;
+    padding: 40px 0 56px 0;
   }
-  .hiw-ref-grid {
-    grid-template-columns: 1fr;
-    gap: 48px;
-    max-width: 480px;
+  .hiw-banner-wrapper {
+    border-radius: 16px;
   }
-  .hiw-ref-image-wrapper {
-    height: 240px;
+  .hiw-full-banner-img {
+    border-radius: 16px;
   }
 }
 
