@@ -5983,73 +5983,18 @@ ul, ol {
 
 
 /* ==========================================================================
-   HOW IT WORKS SECTION - Editorial 3-Step Illustrated Cards & Ambient BG
+   HOW IT WORKS SECTION - Aesthetic Full Section Background & Floating Cards
    ========================================================================== */
 .how-it-works-section {
   position: relative;
-  padding: clamp(70px, 9vw, 110px) 0;
-  background: linear-gradient(180deg, #FFFFFF 0%, #FDF7FA 45%, #FBF1F6 100%);
+  padding: clamp(76px, 9vw, 114px) 0;
+  background-color: #FDF2F5;
+  background-image: url('/assets/images/how_it_works_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   overflow: hidden;
   width: 100%;
-}
-
-/* Aesthetic Minimal Background Glow & Sparkles */
-.hiw-bg-ambient {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.hiw-ambient-radial-left {
-  position: absolute;
-  top: 15%;
-  left: -8%;
-  width: 480px;
-  height: 480px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(247, 209, 186, 0.32) 0%, rgba(247, 209, 186, 0) 70%);
-  filter: blur(50px);
-}
-
-.hiw-ambient-radial-right {
-  position: absolute;
-  bottom: 10%;
-  right: -6%;
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(224, 62, 138, 0.12) 0%, rgba(224, 62, 138, 0) 70%);
-  filter: blur(60px);
-}
-
-.hiw-ambient-sparkle {
-  position: absolute;
-  color: #D48B70;
-  opacity: 0.35;
-  font-size: 1.25rem;
-  user-select: none;
-}
-
-.hiw-ambient-sparkle.sparkle-1 {
-  top: 18%;
-  left: 8%;
-  font-size: 1.1rem;
-}
-
-.hiw-ambient-sparkle.sparkle-2 {
-  top: 25%;
-  right: 10%;
-  font-size: 1.4rem;
-  color: #FBBF24;
-  opacity: 0.45;
-}
-
-.hiw-ambient-sparkle.sparkle-3 {
-  bottom: 18%;
-  left: 12%;
-  font-size: 1rem;
 }
 
 .hiw-relative-container {
@@ -6074,7 +6019,7 @@ ul, ol {
 .hiw-line {
   height: 1px;
   width: clamp(40px, 8vw, 100px);
-  background: linear-gradient(90deg, transparent, rgba(212, 139, 112, 0.45), transparent);
+  background: linear-gradient(90deg, transparent, rgba(212, 139, 112, 0.55), transparent);
 }
 
 .hiw-title {
@@ -6097,7 +6042,7 @@ ul, ol {
 .hiw-subtitle {
   font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
   font-size: clamp(0.92rem, 1.2vw, 1.05rem);
-  color: #64748B;
+  color: #4B5563;
   line-height: 1.6;
   max-width: 580px;
   margin: 12px auto 0 auto;
@@ -6125,33 +6070,34 @@ ul, ol {
   transform: translateY(-4px);
 }
 
-/* Illustrated Card Frame */
+/* Floating Illustration Stage (Zero background on images - seamlessly blending with section BG) */
 .hiw-card-stage {
   width: 100%;
-  max-width: 360px;
-  border-radius: 22px;
+  max-width: 340px;
+  border-radius: 20px;
   overflow: hidden;
-  background: #FFFFFF;
-  border: 1.5px solid rgba(212, 139, 112, 0.32);
-  box-shadow: 0 10px 32px rgba(27, 6, 26, 0.05);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .hiw-step-card:hover .hiw-card-stage {
-  border-color: rgba(216, 27, 96, 0.45);
-  box-shadow: 0 18px 46px rgba(216, 27, 96, 0.12);
-  transform: scale(1.02);
+  transform: translateY(-6px) scale(1.02);
+  border: none;
+  box-shadow: none;
 }
 
 .hiw-card-img {
   width: 100%;
   height: auto;
   aspect-ratio: 300 / 247;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  border-radius: 20px;
 }
 
 /* Card Body & Metallic Number Badge */
@@ -6167,12 +6113,12 @@ ul, ol {
   height: 44px;
   border-radius: 50%;
   background: linear-gradient(135deg, #FDECE5 0%, #F7D1BA 35%, #D48B70 70%, #B3644D 100%);
-  border: 2px solid #FFFFFF;
-  box-shadow: 0 4px 14px rgba(212, 139, 112, 0.38);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 14px rgba(212, 139, 112, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 22px auto 14px auto;
+  margin: 20px auto 14px auto;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -6203,7 +6149,7 @@ ul, ol {
   font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
   font-size: 0.9rem;
   line-height: 1.58;
-  color: #64748B;
+  color: #4A5568;
   max-width: 320px;
   margin: 0 auto;
 }

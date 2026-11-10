@@ -68,15 +68,6 @@ export default function HowItWorks() {
       id="how-it-works"
       aria-label="How Event Hire Works"
     >
-      {/* Aesthetic Minimal Background Ambient Lights & Accents */}
-      <div className="hiw-bg-ambient" aria-hidden="true">
-        <div className="hiw-ambient-radial-left" />
-        <div className="hiw-ambient-radial-right" />
-        <div className="hiw-ambient-sparkle sparkle-1">✦</div>
-        <div className="hiw-ambient-sparkle sparkle-2">✧</div>
-        <div className="hiw-ambient-sparkle sparkle-3">✦</div>
-      </div>
-
       <div className="container hiw-relative-container">
         
         {/* Aesthetic Centered Section Header */}
