@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { CATEGORIES } from '../data/products';
+import AuthControls from './AuthControls';
 
 export default function Header({
   currentView = 'home',
@@ -245,6 +246,9 @@ export default function Header({
                 <rect x="3" y="14" width="7" height="7"></rect>
               </svg>
             </button>
+
+            {/* Clerk User / Auth Controls */}
+            <AuthControls />
 
             {/* Shopping Bag / Cart */}
             <button
