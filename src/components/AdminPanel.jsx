@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Menu,
   Package,
@@ -78,6 +78,28 @@ export default function AdminPanel({
   // Navigation Tabs: 'inventory' | 'overview' | 'bookings' | 'logistics'
   const [activeTab, setActiveTab] = useState('inventory');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const mainScrollRef = useRef(null);
+
+  // Guarantee native mouse wheel scrolling in Admin Panel: pause Lenis on mount and resume on unmount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.__iconLenis) {
+      window.__iconLenis.stop();
+      return () => {
+        window.__iconLenis?.start();
+      };
+    }
+  }, []);
+
+  // Prevent any wheel event from bubbling to window where external smooth-scroll libraries might intercept it
+  useEffect(() => {
+    const mainEl = mainScrollRef.current;
+    if (!mainEl) return;
+    const handleWheel = (e) => {
+      e.stopPropagation();
+    };
+    mainEl.addEventListener('wheel', handleWheel, { passive: true });
+    return () => mainEl.removeEventListener('wheel', handleWheel);
+  }, []);
 
   // Category Management State
   const [categorySearch, setCategorySearch] = useState('');
@@ -402,7 +424,7 @@ export default function AdminPanel({
   const targetDeleteProduct = products.find(p => p.id === deletingProductId);
 
   return (
-    <div className="icon-admin-portal" role="dialog" aria-modal="true" aria-label="Icon Party Hire Operations Hub">
+    <div className="icon-admin-portal" data-lenis-prevent="true" role="dialog" aria-modal="true" aria-label="Icon Party Hire Operations Hub">
 
       {/* Mobile Backdrop for Sidebar Drawer */}
       {isSidebarOpen && (
@@ -556,7 +578,7 @@ export default function AdminPanel({
       {/* =====================================================================
          2. MAIN WORKSPACE CONTENT AREA
          ===================================================================== */}
-      <main className="admin-portal-main">
+      <main className="admin-portal-main" ref={mainScrollRef} data-lenis-prevent="true">
 
         {/* Top Floating App Bar */}
         <header className="admin-topbar">

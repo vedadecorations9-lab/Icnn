@@ -206,10 +206,20 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
   const quickViewProduct = quickViewId ? products.find(p => p.id === quickViewId) : null;
   const totalCartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
+  // Pause Lenis smooth scroll while Admin Operations Portal is open to ensure 100% native mouse wheel scrolling
+  useEffect(() => {
+    if (isAdminOpen && window.__iconLenis) {
+      window.__iconLenis.stop();
+      return () => {
+        window.__iconLenis?.start();
+      };
+    }
+  }, [isAdminOpen]);
+
   // If Admin Panel is Open, render full Admin Operations Portal
   if (isAdminOpen) {
     return (
-      <div className="icon-admin-app">
+      <div className="icon-admin-app" data-lenis-prevent="true">
         <AdminPanel
           onClose={() => setIsAdminOpen(false)}
           products={products}
