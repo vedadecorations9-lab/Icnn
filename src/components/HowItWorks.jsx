@@ -1,4 +1,4 @@
-import React, { useRef, useState, useLayoutEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -38,8 +38,10 @@ export default function HowItWorks() {
   const sectionRef = useRef(null);
   const gridRef = useRef(null);
   const [activeStep, setActiveStep] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const pauseTimeoutRef = useRef(null);
 
-  // GSAP animation for desktop
+  // GSAP entrance animation for desktop
   useLayoutEffect(() => {
     const section = sectionRef.current;
     const grid = gridRef.current;
@@ -68,7 +70,62 @@ export default function HowItWorks() {
     return () => ctx.revert();
   }, []);
 
-  // Update active dot/tab on mobile swipe
+  // Smooth centered scroll to a specific step
+  const scrollToStep = (idx) => {
+    if (!gridRef.current) return;
+    const el = gridRef.current;
+    const cards = el.querySelectorAll('.hiw-step-card');
+    if (cards[idx]) {
+      const card = cards[idx];
+      const targetLeft = card.offsetLeft - (el.clientWidth - card.clientWidth) / 2;
+      el.scrollTo({
+        left: Math.max(0, targetLeft),
+        behavior: 'smooth'
+      });
+      setActiveStep(idx);
+    }
+  };
+
+  // Pause auto-rotation momentarily when user manually interacts
+  const handleUserInteraction = (stepIndex) => {
+    setIsPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => {
+      setIsPaused(false);
+    }, 6000);
+
+    if (typeof stepIndex === 'number') {
+      scrollToStep(stepIndex);
+    }
+  };
+
+  // Auto-advance loop (continuously transitions between steps on a timer)
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setActiveStep((prev) => {
+        const next = (prev + 1) % STEPS.length;
+        if (gridRef.current && window.innerWidth <= 768) {
+          const el = gridRef.current;
+          const cards = el.querySelectorAll('.hiw-step-card');
+          if (cards[next]) {
+            const card = cards[next];
+            const targetLeft = card.offsetLeft - (el.clientWidth - card.clientWidth) / 2;
+            el.scrollTo({
+              left: Math.max(0, targetLeft),
+              behavior: 'smooth'
+            });
+          }
+        }
+        return next;
+      });
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  // Update active dot/tab when user manually swipes
   const handleScroll = () => {
     if (!gridRef.current || window.innerWidth > 768) return;
     const el = gridRef.current;
@@ -76,20 +133,6 @@ export default function HowItWorks() {
     const current = Math.round(el.scrollLeft / cardWidth);
     if (current !== activeStep && current >= 0 && current < STEPS.length) {
       setActiveStep(current);
-    }
-  };
-
-  const scrollToStep = (idx) => {
-    if (!gridRef.current) return;
-    const el = gridRef.current;
-    const cards = el.querySelectorAll('.hiw-step-card');
-    if (cards[idx]) {
-      cards[idx].scrollIntoView({
-        behavior: 'smooth',
-        inline: 'center',
-        block: 'nearest'
-      });
-      setActiveStep(idx);
     }
   };
 
@@ -115,7 +158,7 @@ export default function HowItWorks() {
             From reserving your equipment to white-glove delivery and packdown, we make your celebration effortless.
           </p>
 
-          {/* Interactive Step Switcher Tabs (Mobile Only) */}
+          {/* Interactive Auto-Advancing Step Tabs (Mobile Only) */}
           <div className="hiw-mobile-stepper show-mobile" role="tablist" aria-label="Step progress">
             {STEPS.map((step, idx) => (
               <button
@@ -124,7 +167,7 @@ export default function HowItWorks() {
                 role="tab"
                 aria-selected={activeStep === idx}
                 className={`hiw-stepper-btn ${activeStep === idx ? 'is-active' : ''}`}
-                onClick={() => scrollToStep(idx)}
+                onClick={() => handleUserInteraction(idx)}
               >
                 <span className="hiw-stepper-num">{step.step}</span>
                 <span className="hiw-stepper-label">{step.short}</span>
@@ -133,14 +176,20 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        {/* 3 Step Cards — Horizontal Snap Carousel on Mobile, 3-Col Grid on Desktop */}
+        {/* 3 Step Cards — Auto-advancing Carousel on Mobile, 3-Col Grid on Desktop */}
         <div
           className="hiw-grid"
           ref={gridRef}
           onScroll={handleScroll}
+          onTouchStart={() => handleUserInteraction()}
+          onMouseDown={() => handleUserInteraction()}
         >
           {STEPS.map((step, idx) => (
-            <article key={idx} className="hiw-step-card">
+            <article
+              key={idx}
+              className={`hiw-step-card ${activeStep === idx ? 'is-active' : ''}`}
+              onClick={() => handleUserInteraction(idx)}
+            >
               
               {/* Illustration Card Image Stage */}
               <div className="hiw-card-stage">
@@ -178,7 +227,7 @@ export default function HowItWorks() {
               key={idx}
               type="button"
               className={`hiw-dot-btn ${activeStep === idx ? 'is-active' : ''}`}
-              onClick={() => scrollToStep(idx)}
+              onClick={() => handleUserInteraction(idx)}
               aria-label={`Go to step ${idx + 1}`}
             />
           ))}

@@ -6568,7 +6568,25 @@ ul, ol {
   .hiw-stepper-btn.is-active {
     background: #1B061A !important;
     color: #FFFFFF !important;
-    box-shadow: 0 2px 8px rgba(27, 6, 26, 0.25) !important;
+    box-shadow: 0 4px 14px rgba(27, 6, 26, 0.25) !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .hiw-stepper-btn.is-active::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    height: 2.5px !important;
+    width: 100% !important;
+    background: linear-gradient(90deg, #D81B60, #F7D1BA) !important;
+    animation: hiwProgress 3.5s linear infinite !important;
+  }
+
+  @keyframes hiwProgress {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(0%); }
   }
 
   .hiw-stepper-btn .hiw-stepper-num {
@@ -6620,6 +6638,12 @@ ul, ol {
     box-sizing: border-box !important;
     text-align: center !important;
     transform: none !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+  }
+
+  .hiw-step-card.is-active {
+    border-color: rgba(216, 27, 96, 0.32) !important;
+    box-shadow: 0 10px 30px -4px rgba(216, 27, 96, 0.14) !important;
   }
 
   .hiw-step-card:hover {
