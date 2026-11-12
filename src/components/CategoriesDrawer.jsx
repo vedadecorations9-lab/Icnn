@@ -2,9 +2,7 @@ import React from 'react';
 import {
   Home,
   ShoppingBag,
-  Sparkles,
   Truck,
-  Heart,
   Phone,
   MapPin,
   ShieldCheck,
@@ -217,33 +215,6 @@ export default function CategoriesDrawer({
                 </div>
               </button>
 
-              {/* How It Works */}
-              <button
-                type="button"
-                className="mobile-pure-nav-item"
-                onClick={() => {
-                  onClose();
-                  if (currentView !== 'home') {
-                    onNavigateHome?.();
-                  }
-                  setTimeout(() => {
-                    const el = document.getElementById('how-it-works');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }, 120);
-                }}
-              >
-                <div className="mobile-nav-item-left">
-                  <div className="mobile-nav-icon-wrap">
-                    <Sparkles size={20} />
-                  </div>
-                  <div className="mobile-nav-item-text">
-                    <span className="mobile-nav-title">How It Works</span>
-                    <span className="mobile-nav-desc">4 simple booking, delivery & setup steps</span>
-                  </div>
-                </div>
-                <ChevronRight size={18} className="mobile-nav-chevron" />
-              </button>
-
               {/* Track Delivery */}
               <button
                 type="button"
@@ -264,30 +235,6 @@ export default function CategoriesDrawer({
                 </div>
                 <div className="mobile-nav-item-right">
                   <span className="mobile-nav-pill-badge live">Live Status</span>
-                  <ChevronRight size={18} className="mobile-nav-chevron" />
-                </div>
-              </button>
-
-              {/* Saved Wishlist */}
-              <button
-                type="button"
-                className="mobile-pure-nav-item"
-                onClick={() => {
-                  onClose();
-                  onOpenWishlist?.();
-                }}
-              >
-                <div className="mobile-nav-item-left">
-                  <div className="mobile-nav-icon-wrap">
-                    <Heart size={20} />
-                  </div>
-                  <div className="mobile-nav-item-text">
-                    <span className="mobile-nav-title">Saved Wishlist</span>
-                    <span className="mobile-nav-desc">Your favorite equipment list</span>
-                  </div>
-                </div>
-                <div className="mobile-nav-item-right">
-                  {wishlistCount > 0 && <span className="mobile-nav-counter-badge">{wishlistCount}</span>}
                   <ChevronRight size={18} className="mobile-nav-chevron" />
                 </div>
               </button>

@@ -10510,146 +10510,11 @@ html.lenis, html.lenis body {
   box-shadow: 0 -8px 24px rgba(27, 6, 26, 0.05) !important;
 }
 
-.cart-voucher-section {
-  margin-bottom: 14px !important;
-  padding-bottom: 14px !important;
-  border-bottom: 1px solid rgba(27, 6, 26, 0.06) !important;
-}
-
-.voucher-section-title {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  font-size: 0.6875rem !important;
-  font-weight: 800 !important;
-  color: #8E7A8A !important;
-  letter-spacing: 0.06em !important;
-  margin-bottom: 8px !important;
-}
-
-.voucher-input-group {
-  display: flex !important;
-  gap: 8px !important;
-  width: 100% !important;
-}
-
-.voucher-input-field {
-  flex: 1 !important;
-  height: 40px !important;
-  padding: 0 14px !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(27, 6, 26, 0.14) !important;
-  background: #FAF7F9 !important;
-  font-size: 0.875rem !important;
-  color: #1B061A !important;
-  outline: none !important;
-  text-transform: uppercase !important;
-}
-
-.voucher-input-field:focus {
-  border-color: #D81B60 !important;
-  background: #FFFFFF !important;
-}
-
-.voucher-apply-btn {
-  padding: 0 16px !important;
-  height: 40px !important;
-  border-radius: 12px !important;
-  background: #1B061A !important;
-  color: #FFFFFF !important;
-  font-size: 0.8125rem !important;
-  font-weight: 700 !important;
-  border: none !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-}
-
-.voucher-apply-btn:active {
-  background: #D81B60 !important;
-}
-
-.quick-coupon-chips-row {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  flex-wrap: wrap !important;
-  margin-top: 8px !important;
-}
-
-.quick-coupon-label {
-  font-size: 0.65rem !important;
-  color: #8E7A8A !important;
-  font-weight: 600 !important;
-}
-
-.quick-coupon-chip {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  padding: 3px 8px !important;
-  border-radius: 999px !important;
-  background: rgba(216, 27, 96, 0.06) !important;
-  border: 1px solid rgba(216, 27, 96, 0.2) !important;
-  color: #D81B60 !important;
-  font-size: 0.65rem !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-}
-
-.quick-coupon-chip:active {
-  background: #D81B60 !important;
-  color: #FFFFFF !important;
-}
-
-.applied-coupon-pill-card {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  padding: 10px 12px !important;
-  background: rgba(5, 150, 105, 0.08) !important;
-  border: 1px solid rgba(5, 150, 105, 0.25) !important;
-  border-radius: 12px !important;
-}
-
-.applied-coupon-left {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-}
-
-.coupon-check-icon {
-  color: #059669 !important;
-  flex-shrink: 0 !important;
-}
-
-.coupon-code-badge {
-  font-size: 0.8125rem !important;
-  color: #059669 !important;
-  margin-right: 6px !important;
-}
-
-.coupon-desc-tag {
-  font-size: 0.6875rem !important;
-  color: #065F46 !important;
-}
-
-.remove-coupon-btn {
-  background: transparent !important;
-  border: none !important;
-  color: #DC2626 !important;
-  font-size: 0.72rem !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  text-decoration: underline !important;
-  padding: 4px 6px !important;
-}
-
-/* Financial Summary */
+/* Financial Summary Breakdown (Zero coupon/promo codes) */
 .cart-financial-summary {
   display: flex !important;
   flex-direction: column !important;
-  gap: 7px !important;
+  gap: 9px !important;
   margin-bottom: 16px !important;
 }
 
@@ -10657,8 +10522,12 @@ html.lenis, html.lenis body {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  font-size: 0.8125rem !important;
+  font-size: 0.84rem !important;
   color: #6E5D6A !important;
+}
+
+.summary-label {
+  font-weight: 500 !important;
 }
 
 .summary-val {
@@ -10669,16 +10538,18 @@ html.lenis, html.lenis body {
 .summary-val.free-tag {
   color: #059669 !important;
   font-weight: 800 !important;
-}
-
-.summary-val.discount {
-  color: #059669 !important;
-  font-weight: 800 !important;
+  background: rgba(5, 150, 105, 0.08) !important;
+  padding: 2px 8px !important;
+  border-radius: 999px !important;
+  font-size: 0.75rem !important;
 }
 
 .summary-row.bond-row {
-  font-size: 0.75rem !important;
+  font-size: 0.78rem !important;
   color: #B3644D !important;
+  background: rgba(212, 139, 112, 0.08) !important;
+  padding: 6px 10px !important;
+  border-radius: 8px !important;
 }
 
 .summary-row.bond-row .summary-val {
@@ -10688,25 +10559,40 @@ html.lenis, html.lenis body {
 .summary-divider {
   height: 1px !important;
   background: rgba(27, 6, 26, 0.08) !important;
-  margin: 4px 0 !important;
+  margin: 6px 0 !important;
 }
 
 .summary-row.total-row {
-  font-size: 1.05rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-top: 4px !important;
+}
+
+.total-title-block {
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .total-title {
   font-family: 'Playfair Display', serif !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
   color: #1B061A !important;
-  font-size: 1.05rem !important;
+  font-size: 1.15rem !important;
+}
+
+.total-subtext {
+  font-size: 0.65rem !important;
+  color: #8E7A8A !important;
+  margin-top: 1px !important;
 }
 
 .total-price {
-  font-size: 1.35rem !important;
+  font-size: 1.45rem !important;
   font-weight: 900 !important;
   color: #D81B60 !important;
   font-family: 'Outfit', sans-serif !important;
+  letter-spacing: -0.01em !important;
 }
 
 /* Checkout CTA */
@@ -10742,6 +10628,32 @@ html.lenis, html.lenis body {
   color: #8E7A8A !important;
   margin-top: 10px !important;
   text-align: center !important;
+}
+
+@media (max-width: 600px) {
+  .cart-drawer-shell {
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+  .cart-items-scrollable-body {
+    padding: 12px 14px !important;
+  }
+  .cart-item-card-pro {
+    padding: 12px !important;
+    gap: 12px !important;
+  }
+  .cart-item-media {
+    width: 68px !important;
+    height: 68px !important;
+  }
+  .cart-drawer-pro-footer {
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)) 16px !important;
+  }
+  .cart-checkout-cta-btn {
+    padding: 13px 18px !important;
+    font-size: 0.92rem !important;
+  }
 }
 
 /* 3. Wishlist Drawer Header Polish */
