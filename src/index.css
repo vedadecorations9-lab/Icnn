@@ -6631,9 +6631,9 @@ ul, ol {
 }
 
 .clean-footer-links-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .clean-footer-links-row a {
@@ -6681,12 +6681,12 @@ ul, ol {
 .clean-footer-bottom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  text-align: center;
   padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
-  flex-wrap: wrap;
   gap: 12px;
 }
 
