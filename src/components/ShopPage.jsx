@@ -46,7 +46,7 @@ export default function ShopPage({
 
   // Scroll to top on mount or when category changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   }, [selectedCat]);
 
   const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;

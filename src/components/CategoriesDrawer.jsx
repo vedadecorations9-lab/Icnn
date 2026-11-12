@@ -1,20 +1,129 @@
 import React from 'react';
-import { CATEGORIES } from '../data/products';
 import {
   Home,
-  Package,
   ShoppingBag,
-  Heart,
-  Truck,
-  Settings,
-  ArrowRight,
   Sparkles,
-  X,
+  Truck,
+  Heart,
   Phone,
   MapPin,
   ShieldCheck,
-  ChevronRight
+  X,
+  ChevronRight,
+  User,
+  LogIn,
+  ArrowRight
 } from 'lucide-react';
+import { useUser, UserButton, SignInButton } from '@clerk/react';
+
+const PUBLISHABLE_KEY =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+function ClerkDrawerProfile({ onClose, onNavigateAuth }) {
+  if (!PUBLISHABLE_KEY) {
+    return (
+      <button
+        type="button"
+        className="mobile-auth-cta-card"
+        onClick={() => {
+          onClose();
+          onNavigateAuth?.('sign-in');
+        }}
+      >
+        <div className="mobile-auth-icon-box">
+          <LogIn size={20} />
+        </div>
+        <div className="mobile-auth-meta">
+          <span className="mobile-auth-title">Sign In / Create Account</span>
+          <span className="mobile-auth-sub">Manage your Brisbane event bookings</span>
+        </div>
+        <ChevronRight size={18} className="mobile-nav-arrow" />
+      </button>
+    );
+  }
+
+  try {
+    const { isLoaded, isSignedIn, user } = useUser();
+
+    if (!isLoaded) {
+      return (
+        <div className="mobile-auth-loading-pill">
+          <span className="mobile-auth-spinner" />
+          <span>Checking account status...</span>
+        </div>
+      );
+    }
+
+    if (isSignedIn) {
+      const displayName = user?.firstName || user?.fullName || user?.primaryEmailAddress?.emailAddress?.split('@')[0] || 'Client';
+      return (
+        <div className="mobile-auth-signedin-card">
+          <div className="mobile-user-row">
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: {
+                    width: 42,
+                    height: 42,
+                    border: '2px solid rgba(216, 27, 96, 0.4)',
+                    boxShadow: '0 4px 12px rgba(27, 6, 26, 0.1)'
+                  }
+                }
+              }}
+            />
+            <div className="mobile-user-details">
+              <span className="mobile-user-greeting">Welcome back,</span>
+              <span className="mobile-user-name">{displayName}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <SignInButton mode="modal">
+        <button
+          type="button"
+          className="mobile-auth-cta-card"
+          onClick={() => {
+            onClose();
+          }}
+        >
+          <div className="mobile-auth-icon-box">
+            <User size={20} />
+          </div>
+          <div className="mobile-auth-meta">
+            <span className="mobile-auth-title">Sign In / Create Account</span>
+            <span className="mobile-auth-sub">Track quotes, bonds & bookings</span>
+          </div>
+          <ChevronRight size={18} className="mobile-nav-arrow" />
+        </button>
+      </SignInButton>
+    );
+  } catch (err) {
+    return (
+      <button
+        type="button"
+        className="mobile-auth-cta-card"
+        onClick={() => {
+          onClose();
+          onNavigateAuth?.('sign-in');
+        }}
+      >
+        <div className="mobile-auth-icon-box">
+          <LogIn size={20} />
+        </div>
+        <div className="mobile-auth-meta">
+          <span className="mobile-auth-title">Sign In / Register</span>
+          <span className="mobile-auth-sub">Manage your hire reservations</span>
+        </div>
+        <ChevronRight size={18} className="mobile-nav-arrow" />
+      </button>
+    );
+  }
+}
 
 export default function CategoriesDrawer({
   isOpen,
@@ -27,26 +136,22 @@ export default function CategoriesDrawer({
   onOpenCart,
   onOpenWishlist,
   onOpenTrackOrder,
-  onOpenAdmin,
-  categories = CATEGORIES,
-  onSelectCategory
+  onNavigateAuth
 }) {
   if (!isOpen) return null;
 
-  const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;
-
   return (
     <>
-      {/* Blurred Backdrop */}
+      {/* High-priority Backdrop */}
       <div className="modal-backdrop active mobile-menu-backdrop" onClick={onClose} />
 
-      {/* Slide Drawer from Left */}
+      {/* Slide Drawer from Left with high z-index (sits safely above the floating navbar) */}
       <aside
         className="slide-drawer active mobile-nav-drawer"
         style={{ right: 'auto', left: 0, transform: 'translateX(0)' }}
         aria-label="Mobile Navigation Menu"
       >
-        {/* Drawer Header with Brand Logo */}
+        {/* Drawer Header with Brand Logo & Close Action */}
         <div className="mobile-drawer-header">
           <div
             className="mobile-drawer-brand"
@@ -62,7 +167,7 @@ export default function CategoriesDrawer({
               alt="Icon Party Hire Brisbane"
               className="mobile-drawer-logo"
             />
-            <span className="mobile-drawer-tagline">Brisbane Event Hire</span>
+            <span className="mobile-drawer-tagline">Brisbane Luxury Event Hire</span>
           </div>
           <button
             type="button"
@@ -74,195 +179,182 @@ export default function CategoriesDrawer({
           </button>
         </div>
 
-        {/* Scrollable Drawer Body */}
+        {/* Scrollable Drawer Body — STRICTLY NAVBAR CONTENT ONLY (NO CATEGORIES, NO ADMIN PANEL) */}
         <div className="mobile-drawer-body">
 
-          {/* 1. PRIMARY STORE NAVIGATION (Shifted from Mobile Bottom Bar) */}
+          {/* 1. Profile / Sign In Section */}
+          <div className="mobile-drawer-auth-block">
+            <ClerkDrawerProfile onClose={onClose} onNavigateAuth={onNavigateAuth} />
+          </div>
+
+          {/* 2. Pure Primary Navigation Menu */}
           <div className="mobile-drawer-section">
-            <div className="mobile-drawer-section-label">NAVIGATION</div>
+            <div className="mobile-drawer-section-label">EXPLORE STOREFRONT</div>
 
-            <div className="mobile-hub-grid">
-              {/* Home */}
-              <button
-                type="button"
-                className={`mobile-hub-card ${currentView === 'home' ? 'active' : ''}`}
-                onClick={() => {
-                  onClose();
-                  onNavigateHome?.();
-                }}
-              >
-                <div className="mobile-hub-icon-box">
-                  <Home size={19} />
-                </div>
-                <div className="mobile-hub-meta">
-                  <span className="mobile-hub-title">Home</span>
-                  <span className="mobile-hub-sub">Showcase</span>
-                </div>
-              </button>
-
+            <nav className="mobile-pure-nav-list" aria-label="Mobile Navigation Links">
+              
               {/* Hire Shop */}
               <button
                 type="button"
-                className={`mobile-hub-card ${currentView === 'catalog' ? 'active' : ''}`}
+                className={`mobile-pure-nav-item ${currentView === 'catalog' ? 'active' : ''}`}
                 onClick={() => {
                   onClose();
                   onNavigateCatalog?.('all');
                 }}
               >
-                <div className="mobile-hub-icon-box">
-                  <Package size={19} />
+                <div className="mobile-nav-item-left">
+                  <div className="mobile-nav-icon-wrap primary">
+                    <ShoppingBag size={20} />
+                  </div>
+                  <div className="mobile-nav-item-text">
+                    <span className="mobile-nav-title">Hire Shop</span>
+                    <span className="mobile-nav-desc">Browse commercial equipment catalog</span>
+                  </div>
                 </div>
-                <div className="mobile-hub-meta">
-                  <span className="mobile-hub-title">Hire Shop</span>
-                  <span className="mobile-hub-sub">Browse Items</span>
+                <div className="mobile-nav-item-right">
+                  <span className="mobile-nav-pill-badge">All Gear</span>
+                  <ChevronRight size={18} className="mobile-nav-chevron" />
                 </div>
               </button>
 
-              {/* Hire Bag / Cart */}
+              {/* How It Works */}
               <button
                 type="button"
-                className="mobile-hub-card"
+                className="mobile-pure-nav-item"
                 onClick={() => {
                   onClose();
-                  onOpenCart?.();
+                  if (currentView !== 'home') {
+                    onNavigateHome?.();
+                  }
+                  setTimeout(() => {
+                    const el = document.getElementById('how-it-works');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }, 120);
                 }}
               >
-                <div className="mobile-hub-icon-box">
-                  <ShoppingBag size={19} />
-                  {cartCount > 0 && <span className="mobile-hub-badge">{cartCount}</span>}
+                <div className="mobile-nav-item-left">
+                  <div className="mobile-nav-icon-wrap">
+                    <Sparkles size={20} />
+                  </div>
+                  <div className="mobile-nav-item-text">
+                    <span className="mobile-nav-title">How It Works</span>
+                    <span className="mobile-nav-desc">4 simple booking, delivery & setup steps</span>
+                  </div>
                 </div>
-                <div className="mobile-hub-meta">
-                  <span className="mobile-hub-title">Hire Bag</span>
-                  <span className="mobile-hub-sub">{cartCount > 0 ? `${cartCount} items` : 'View cart'}</span>
+                <ChevronRight size={18} className="mobile-nav-chevron" />
+              </button>
+
+              {/* Track Delivery */}
+              <button
+                type="button"
+                className="mobile-pure-nav-item"
+                onClick={() => {
+                  onClose();
+                  onOpenTrackOrder?.();
+                }}
+              >
+                <div className="mobile-nav-item-left">
+                  <div className="mobile-nav-icon-wrap">
+                    <Truck size={20} />
+                  </div>
+                  <div className="mobile-nav-item-text">
+                    <span className="mobile-nav-title">Track Delivery</span>
+                    <span className="mobile-nav-desc">Live dispatch & delivery status</span>
+                  </div>
+                </div>
+                <div className="mobile-nav-item-right">
+                  <span className="mobile-nav-pill-badge live">Live Status</span>
+                  <ChevronRight size={18} className="mobile-nav-chevron" />
                 </div>
               </button>
 
               {/* Saved Wishlist */}
               <button
                 type="button"
-                className="mobile-hub-card"
+                className="mobile-pure-nav-item"
                 onClick={() => {
                   onClose();
                   onOpenWishlist?.();
                 }}
               >
-                <div className="mobile-hub-icon-box">
-                  <Heart size={19} />
-                  {wishlistCount > 0 && <span className="mobile-hub-badge">{wishlistCount}</span>}
-                </div>
-                <div className="mobile-hub-meta">
-                  <span className="mobile-hub-title">Saved Wishlist</span>
-                  <span className="mobile-hub-sub">{wishlistCount > 0 ? `${wishlistCount} saved` : 'Favorites'}</span>
-                </div>
-              </button>
-
-              {/* Track Delivery */}
-              <button
-                type="button"
-                className="mobile-hub-card"
-                onClick={() => {
-                  onClose();
-                  onOpenTrackOrder?.();
-                }}
-              >
-                <div className="mobile-hub-icon-box">
-                  <Truck size={19} />
-                </div>
-                <div className="mobile-hub-meta">
-                  <span className="mobile-hub-title">Track Delivery</span>
-                  <span className="mobile-hub-sub">Live Status</span>
-                </div>
-              </button>
-
-              {/* Operations Admin HQ */}
-              <button
-                type="button"
-                className="mobile-hub-card admin-hub-card"
-                onClick={() => {
-                  onClose();
-                  onOpenAdmin?.();
-                }}
-              >
-                <div className="mobile-hub-icon-box">
-                  <Settings size={19} />
-                </div>
-                <div className="mobile-hub-meta">
-                  <span className="mobile-hub-title">Operations HQ</span>
-                  <span className="mobile-hub-sub">Admin Portal</span>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* 2. BROWSE BY CATEGORY */}
-          <div className="mobile-drawer-section">
-            <div className="mobile-drawer-section-label">
-              <span>HIRE CATEGORIES</span>
-              <span className="mobile-category-count-badge">{activeCategories.length} Categories</span>
-            </div>
-
-            <div className="mobile-categories-stack">
-              {activeCategories.map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  className="mobile-category-row"
-                  onClick={() => {
-                    onClose();
-                    onSelectCategory ? onSelectCategory(cat.id) : onNavigateCatalog?.(cat.id);
-                  }}
-                >
-                  <div className="mobile-cat-left">
-                    <img
-                      src={cat.image}
-                      alt={cat.label}
-                      className="mobile-cat-thumb"
-                      onError={(e) => {
-                        e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
-                      }}
-                    />
-                    <div className="mobile-cat-info">
-                      <span className="mobile-cat-name">{cat.label}</span>
-                      <span className="mobile-cat-price">From ${cat.startingPrice} AUD</span>
-                    </div>
+                <div className="mobile-nav-item-left">
+                  <div className="mobile-nav-icon-wrap">
+                    <Heart size={20} />
                   </div>
-                  <ChevronRight size={17} className="mobile-cat-chevron" />
-                </button>
-              ))}
+                  <div className="mobile-nav-item-text">
+                    <span className="mobile-nav-title">Saved Wishlist</span>
+                    <span className="mobile-nav-desc">Your favorite equipment list</span>
+                  </div>
+                </div>
+                <div className="mobile-nav-item-right">
+                  {wishlistCount > 0 && <span className="mobile-nav-counter-badge">{wishlistCount}</span>}
+                  <ChevronRight size={18} className="mobile-nav-chevron" />
+                </div>
+              </button>
 
-              {/* View All Button */}
+              {/* Hire Bag */}
               <button
                 type="button"
-                className="mobile-view-all-cta"
+                className="mobile-pure-nav-item"
                 onClick={() => {
                   onClose();
-                  onSelectCategory ? onSelectCategory('all') : onNavigateCatalog?.('all');
+                  onOpenCart?.();
                 }}
               >
-                <div className="cta-inner">
-                  <Sparkles size={16} />
-                  <span>View All Equipment ({activeCategories.length} Categories)</span>
+                <div className="mobile-nav-item-left">
+                  <div className="mobile-nav-icon-wrap">
+                    <ShoppingBag size={20} />
+                  </div>
+                  <div className="mobile-nav-item-text">
+                    <span className="mobile-nav-title">Hire Bag</span>
+                    <span className="mobile-nav-desc">Review selected gear & checkout</span>
+                  </div>
                 </div>
-                <ArrowRight size={16} />
+                <div className="mobile-nav-item-right">
+                  {cartCount > 0 && <span className="mobile-nav-counter-badge cart">{cartCount}</span>}
+                  <ChevronRight size={18} className="mobile-nav-chevron" />
+                </div>
               </button>
-            </div>
+
+              {/* Home */}
+              <button
+                type="button"
+                className={`mobile-pure-nav-item ${currentView === 'home' ? 'active' : ''}`}
+                onClick={() => {
+                  onClose();
+                  onNavigateHome?.();
+                }}
+              >
+                <div className="mobile-nav-item-left">
+                  <div className="mobile-nav-icon-wrap">
+                    <Home size={20} />
+                  </div>
+                  <div className="mobile-nav-item-text">
+                    <span className="mobile-nav-title">Home</span>
+                    <span className="mobile-nav-desc">Icon party hire showcase</span>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="mobile-nav-chevron" />
+              </button>
+
+            </nav>
           </div>
 
-          {/* 3. WAREHOUSE & SUPPORT FOOTER */}
+          {/* 3. Brisbane Logistics Bay & Direct Support */}
           <div className="mobile-drawer-footer">
             <div className="mobile-footer-pill">
-              <MapPin size={14} className="footer-icon-pink" />
+              <MapPin size={15} className="footer-icon-pink" />
               <span>Murrumba Downs Dispatch Bay · Greater Brisbane</span>
             </div>
 
             <a href="tel:0423313460" className="mobile-footer-call-btn">
-              <Phone size={15} />
+              <Phone size={16} />
               <span>Call Dispatch: 0423 313 460</span>
             </a>
 
             <div className="mobile-footer-security">
               <ShieldCheck size={14} />
-              <span>100% Bond Security · Stripe Verified Booking</span>
+              <span>100% Bond Security · Stripe Verified Equipment Hire</span>
             </div>
           </div>
 

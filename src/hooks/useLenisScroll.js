@@ -6,27 +6,40 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * useLenisScroll
+ * Provides butter-smooth inertia scrolling for desktop pointer devices.
+ * CRITICAL (mobile-native rule): Touch devices (smartphones and tablets) must
+ * NEVER be hijacked by virtual scroll libraries. On mobile/touch devices, Lenis
+ * is disabled so the browser retains 100% native 120Hz hardware-accelerated momentum scrolling.
+ */
 export function useLenisScroll(dependency) {
   const lenisRef = useRef(null);
 
   useEffect(() => {
-    // Check if device is touch-primary (mobile/tablet) to prevent touch hijacking
+    // Detect mobile touch devices or narrow viewport
     const isTouch = typeof window !== 'undefined' && (
+      window.innerWidth <= 768 ||
       window.matchMedia('(pointer: coarse)').matches ||
       'ontouchstart' in window ||
       navigator.maxTouchPoints > 0
     );
 
-    // 1. Initialize Lenis Smooth Scroll with zero touch-hijacking & single RAF
+    // On touch devices: completely skip Lenis to prevent scroll-locking
+    if (isTouch) {
+      delete window.__iconLenis;
+      return;
+    }
+
+    // 1. Initialize Lenis Smooth Scroll on desktop only
     const lenis = new Lenis({
       duration: 1.05,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // smooth natural deceleration
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      smoothTouch: false, // Never hijack native mobile touch scrolling
-      touchMultiplier: 0, // Ensure mobile retains 120Hz native momentum
-      autoRaf: false,     // Critical: disable Lenis internal loop to prevent double-RAF with GSAP ticker
+      smoothTouch: false,
+      autoRaf: false,
       infinite: false,
     });
 
@@ -42,7 +55,6 @@ export function useLenisScroll(dependency) {
     };
 
     gsap.ticker.add(tickerCallback);
-    // Enable lag smoothing to prevent violent jumps on minor frame drop
     gsap.ticker.lagSmoothing(500, 33);
 
     // 4. Initial ScrollTrigger Refresh

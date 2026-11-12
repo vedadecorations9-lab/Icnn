@@ -424,10 +424,7 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
           closeAllDrawers();
           setIsTrackOrderOpen(true);
         }}
-        onOpenAdmin={() => {
-          closeAllDrawers();
-          setIsAdminOpen(true);
-        }}
+        onNavigateAuth={handleNavigateAuth}
         categories={categories}
         onSelectCategory={(catId) => {
           setIsCategoriesOpen(false);

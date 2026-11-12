@@ -248,8 +248,10 @@ export default function Header({
               </svg>
             </button>
 
-            {/* Clerk User / Auth Controls */}
-            <AuthControls onNavigateAuth={onNavigateAuth} />
+            {/* Clerk User / Auth Controls (Desktop Navbar) */}
+            <div className="hide-mobile">
+              <AuthControls onNavigateAuth={onNavigateAuth} />
+            </div>
 
             {/* Shopping Bag / Cart */}
             <button
