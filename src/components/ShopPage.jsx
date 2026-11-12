@@ -704,7 +704,7 @@ export default function ShopPage({
                               
                               <button
                                 type="button"
-                                className={`shop-card-heart-btn ${isWish ? 'is-active' : ''}`}
+                                className={`shop-card-heart-btn hide-mobile ${isWish ? 'is-active' : ''}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   onToggleWishlist?.(product.id);
