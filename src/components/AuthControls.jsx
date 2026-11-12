@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Show, SignInButton, UserButton } from '@clerk/react';
+import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
-export default function AuthControls() {
+export default function AuthControls({ onNavigateAuth }) {
   const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
   const isProdKey = Boolean(PUBLISHABLE_KEY && PUBLISHABLE_KEY.startsWith('pk_live_'));
 
@@ -19,20 +19,44 @@ export default function AuthControls() {
 
   if (!PUBLISHABLE_KEY) {
     return (
-      <button
-        type="button"
-        className="nav-auth-btn"
-        onClick={() => {
-          alert(
-            'Clerk Publishable Key is missing!\n\n' +
-            '• On Vercel: Add VITE_CLERK_PUBLISHABLE_KEY in Project Settings -> Environment Variables, then click "Redeploy" in Deployments.\n\n' +
-            '• Locally: Add VITE_CLERK_PUBLISHABLE_KEY=pk_test_... in a .env.local file in your project folder.'
-          );
-        }}
-        title="Sign in with Clerk"
-      >
-        <span>Sign in</span>
-      </button>
+      <div className="nav-auth-buttons-group">
+        <button
+          type="button"
+          className="nav-auth-btn"
+          onClick={() => {
+            if (onNavigateAuth) {
+              onNavigateAuth('sign-in');
+            } else {
+              alert(
+                'Clerk Publishable Key is missing!\n\n' +
+                '• On Vercel: Add VITE_CLERK_PUBLISHABLE_KEY in Project Settings -> Environment Variables, then click "Redeploy" in Deployments.\n\n' +
+                '• Locally: Add VITE_CLERK_PUBLISHABLE_KEY=pk_test_... in a .env.local file in your project folder.'
+              );
+            }
+          }}
+          title="Sign in with Clerk"
+        >
+          <span>Sign in</span>
+        </button>
+        <button
+          type="button"
+          className="nav-auth-btn nav-signup-btn hide-mobile"
+          onClick={() => {
+            if (onNavigateAuth) {
+              onNavigateAuth('sign-up');
+            } else {
+              alert(
+                'Clerk Publishable Key is missing!\n\n' +
+                '• On Vercel: Add VITE_CLERK_PUBLISHABLE_KEY in Project Settings -> Environment Variables, then click "Redeploy" in Deployments.\n\n' +
+                '• Locally: Add VITE_CLERK_PUBLISHABLE_KEY=pk_test_... in a .env.local file in your project folder.'
+              );
+            }
+          }}
+          title="Create an Icon account"
+        >
+          <span>Sign up</span>
+        </button>
+      </div>
     );
   }
 
@@ -71,11 +95,18 @@ export default function AuthControls() {
         />
       </Show>
       <Show when="signed-out">
-        <SignInButton mode="modal">
-          <button type="button" className="nav-auth-btn">
-            <span>Sign in</span>
-          </button>
-        </SignInButton>
+        <div className="nav-auth-buttons-group">
+          <SignInButton mode="modal">
+            <button type="button" className="nav-auth-btn">
+              <span>Sign in</span>
+            </button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <button type="button" className="nav-auth-btn nav-signup-btn hide-mobile">
+              <span>Sign up</span>
+            </button>
+          </SignUpButton>
+        </div>
       </Show>
     </div>
   );

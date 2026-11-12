@@ -20,7 +20,8 @@ export default function Header({
   onOpenWishlist,
   onOpenTrackOrder,
   onOpenAdmin,
-  onOpenMobileMenu
+  onOpenMobileMenu,
+  onNavigateAuth
 }) {
   const [searchVal, setSearchVal] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
@@ -248,7 +249,7 @@ export default function Header({
             </button>
 
             {/* Clerk User / Auth Controls */}
-            <AuthControls />
+            <AuthControls onNavigateAuth={onNavigateAuth} />
 
             {/* Shopping Bag / Cart */}
             <button

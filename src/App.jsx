@@ -18,6 +18,7 @@ import TrackOrderModal from './components/TrackOrderModal';
 import ReviewModal from './components/ReviewModal';
 import AdminPanel from './components/AdminPanel';
 import MobileBottomBar from './components/MobileBottomBar';
+import AuthPage from './components/AuthPage';
 import Toast from './components/Toast';
 import { Agentation } from 'agentation';
 import { useLenisScroll } from './hooks/useLenisScroll';
@@ -45,9 +46,29 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
     handleResetCategories
   } = categoriesStore;
 
-  // Navigation View: 'home' (Categories on Home) vs 'catalog' (Dedicated Separate Items Page)
-  const [currentView, setCurrentView] = useState('home');
+  // Navigation View: 'home', 'catalog', 'sign-in', 'sign-up'
+  const [currentView, setCurrentView] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase();
+      if (path.includes('sign-up')) return 'sign-up';
+      if (path.includes('sign-in')) return 'sign-in';
+      if (path.includes('catalog') || path.includes('shop')) return 'catalog';
+    }
+    return 'home';
+  });
   useLenisScroll(currentView);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase();
+      if (path.includes('sign-up')) setCurrentView('sign-up');
+      else if (path.includes('sign-in')) setCurrentView('sign-in');
+      else if (path.includes('catalog') || path.includes('shop')) setCurrentView('catalog');
+      else setCurrentView('home');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // --- Persistent State (Default to AUD for Brisbane, QLD) ---
   const [currency, setCurrencyState] = useState(() => {
@@ -187,6 +208,11 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
   const handleNavigateHome = () => {
     closeAllDrawers();
     setCurrentView('home');
+    try {
+      if (window.location.pathname !== '/') {
+        window.history.pushState(null, '', '/');
+      }
+    } catch {}
     if (window.__iconLenis) {
       window.__iconLenis.scrollTo(0, { immediate: true });
     }
@@ -197,6 +223,23 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
     closeAllDrawers();
     setActiveCategory(categoryKey);
     setCurrentView('catalog');
+    try {
+      if (!window.location.pathname.includes('catalog') && !window.location.pathname.includes('shop')) {
+        window.history.pushState(null, '', '/shop');
+      }
+    } catch {}
+    if (window.__iconLenis) {
+      window.__iconLenis.scrollTo(0, { immediate: true });
+    }
+    window.scrollTo(0, 0);
+  };
+
+  const handleNavigateAuth = (mode = 'sign-up') => {
+    closeAllDrawers();
+    setCurrentView(mode);
+    try {
+      window.history.pushState(null, '', mode === 'sign-up' ? '/sign-up' : '/sign-in');
+    } catch {}
     if (window.__iconLenis) {
       window.__iconLenis.scrollTo(0, { immediate: true });
     }
@@ -273,10 +316,17 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
           setIsAdminOpen(true);
         }}
         onOpenMobileMenu={handleOpenCategories}
+        onNavigateAuth={handleNavigateAuth}
       />
 
       <main>
-        {currentView === 'home' ? (
+        {currentView === 'sign-in' || currentView === 'sign-up' ? (
+          <AuthPage
+            mode={currentView}
+            onBackHome={handleNavigateHome}
+            onSwitchMode={(mode) => handleNavigateAuth(mode)}
+          />
+        ) : currentView === 'home' ? (
           /* =================================================================
              HOME PAGE: CLEAN EDITORIAL LUXURY SHOWCASE
              (Product listings and category cards shifted to dedicated Shop Page)
