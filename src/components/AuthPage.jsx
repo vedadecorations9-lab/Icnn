@@ -1,7 +1,10 @@
 import React from 'react';
 import { SignIn, SignUp } from '@clerk/react';
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const PUBLISHABLE_KEY =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default function AuthPage({ mode = 'sign-up', onBackHome, onSwitchMode }) {
   return (
@@ -134,3 +137,4 @@ export default function AuthPage({ mode = 'sign-up', onBackHome, onSwitchMode })
     </div>
   );
 }
+

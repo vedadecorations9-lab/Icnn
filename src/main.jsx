@@ -7,7 +7,10 @@ import { ConvexProvider } from 'convex/react';
 import { convex } from './convexClient';
 import { ClerkProvider } from '@clerk/react';
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const PUBLISHABLE_KEY =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 let content = convex ? (
   <ConvexProvider client={convex}>
