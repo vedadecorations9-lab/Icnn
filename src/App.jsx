@@ -21,6 +21,7 @@ import AdminAuthGuard from './components/AdminAuthGuard';
 import MobileBottomBar from './components/MobileBottomBar';
 import AuthPage from './components/AuthPage';
 import Toast from './components/Toast';
+import ConvexSafeBoundary from './components/ConvexSafeBoundary';
 import { Agentation } from 'agentation';
 import { useLenisScroll } from './hooks/useLenisScroll';
 
@@ -516,7 +517,11 @@ function LocalFallbackApp() {
 
 export default function App() {
   if (isConvexConfigured) {
-    return <ConvexConnectedApp />;
+    return (
+      <ConvexSafeBoundary fallback={<LocalFallbackApp />}>
+        <ConvexConnectedApp />
+      </ConvexSafeBoundary>
+    );
   }
   return <LocalFallbackApp />;
 }

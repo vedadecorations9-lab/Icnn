@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import './index.css';
 import './styles/admin-portal.css';
 import { ConvexProvider } from 'convex/react';
@@ -30,7 +31,9 @@ if (PUBLISHABLE_KEY) {
 
 const rootContent = (
   <React.StrictMode>
-    {content}
+    <ErrorBoundary>
+      {content}
+    </ErrorBoundary>
   </React.StrictMode>
 );
 

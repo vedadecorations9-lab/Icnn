@@ -110,3 +110,4 @@ export default function AdminAuthGuard({ children, onClose }) {
   // 4. Authorized admin — render full panel
   return children;
 }
+

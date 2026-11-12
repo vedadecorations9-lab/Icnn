@@ -6,29 +6,29 @@ import { PRODUCTS } from '../data/products';
 
 // 1. Hook used when Convex Cloud URL is connected via Vercel
 export function useConvexStore(initialProducts = PRODUCTS, onToast) {
-  const convexItems = useQuery(api.products.list);
-  const addMutation = useMutation(api.products.add);
-  const updateMutation = useMutation(api.products.update);
-  const removeMutation = useMutation(api.products.remove);
-  const updateStockMutation = useMutation(api.products.updateStock);
-  const seedMutation = useMutation(api.products.seedDefault);
+  const convexItems = useQuery(api.products?.list || 'products:list');
+  const addMutation = useMutation(api.products?.add || 'products:add');
+  const updateMutation = useMutation(api.products?.update || 'products:update');
+  const removeMutation = useMutation(api.products?.remove || 'products:remove');
+  const updateStockMutation = useMutation(api.products?.updateStock || 'products:updateStock');
+  const seedMutation = useMutation(api.products?.seedDefault || 'products:seedDefault');
 
   const hasSeededRef = useRef(false);
 
   // Auto-seed default 22 products into Convex if database is empty on first run
   useEffect(() => {
-    if (convexItems && convexItems.length === 0 && !hasSeededRef.current) {
+    if (convexItems && Array.isArray(convexItems) && convexItems.length === 0 && !hasSeededRef.current && typeof seedMutation === 'function') {
       hasSeededRef.current = true;
       seedMutation({ initialProducts })
         .then(() => {
           onToast?.('Initialized Convex cloud database with Brisbane hire catalog', 'gold');
         })
-        .catch((err) => console.error('Convex seeding error:', err));
+        .catch((err) => console.warn('Convex seeding note:', err?.message || err));
     }
   }, [convexItems, initialProducts, seedMutation, onToast]);
 
   // If Convex has loaded items, use them; otherwise fallback while loading
-  const products = convexItems && convexItems.length > 0 ? convexItems : initialProducts;
+  const products = (Array.isArray(convexItems) && convexItems.length > 0) ? convexItems : initialProducts;
 
   const handleAdd = async (newProd) => {
     try {

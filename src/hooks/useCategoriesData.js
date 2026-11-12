@@ -16,17 +16,17 @@ export function useConvexCategoriesStore(initialCategories = CATEGORIES, onToast
 
   // Auto-seed default 10 categories into Convex if database is empty on first run
   useEffect(() => {
-    if (convexItems && convexItems.length === 0 && !hasSeededRef.current && seedMutation) {
+    if (convexItems && Array.isArray(convexItems) && convexItems.length === 0 && !hasSeededRef.current && typeof seedMutation === 'function') {
       hasSeededRef.current = true;
       seedMutation({ initialCategories })
         .then(() => {
           onToast?.('Initialized Convex cloud database with Brisbane hire categories', 'gold');
         })
-        .catch((err) => console.error('Convex categories seeding error:', err));
+        .catch((err) => console.warn('Convex categories seeding note:', err?.message || err));
     }
   }, [convexItems, initialCategories, seedMutation, onToast]);
 
-  const categories = convexItems && convexItems.length > 0 ? convexItems : initialCategories;
+  const categories = (Array.isArray(convexItems) && convexItems.length > 0) ? convexItems : initialCategories;
 
   const handleAddCategory = async (newCat) => {
     try {

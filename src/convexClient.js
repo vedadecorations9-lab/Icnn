@@ -1,13 +1,24 @@
 import { ConvexReactClient } from 'convex/react';
 
-const convexUrl =
+const rawUrl =
   import.meta.env.VITE_CONVEX_URL ||
   import.meta.env.CONVEX_URL ||
   import.meta.env.NEXT_PUBLIC_CONVEX_URL ||
   '';
 
-export const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
+const convexUrl = typeof rawUrl === 'string' ? rawUrl.trim() : '';
 
-export const isConvexConfigured = Boolean(convexUrl);
+let client = null;
+if (convexUrl && (convexUrl.startsWith('https://') || convexUrl.startsWith('http://'))) {
+  try {
+    client = new ConvexReactClient(convexUrl);
+  } catch (err) {
+    console.warn('[Convex] Failed to instantiate ConvexReactClient:', err);
+    client = null;
+  }
+}
+
+export const convex = client;
+export const isConvexConfigured = Boolean(client);
 export const activeConvexUrl = convexUrl;
 
