@@ -5600,18 +5600,10 @@ ul, ol {
   }
 
   .mobile-drawer-logo {
-    height: 28px !important;
+    height: 38px !important;
+    max-height: 42px !important;
     width: auto !important;
     object-fit: contain !important;
-  }
-
-  .mobile-drawer-tagline {
-    font-size: 0.625rem !important;
-    font-weight: 700 !important;
-    color: #D81B60 !important;
-    letter-spacing: 0.08em !important;
-    text-transform: uppercase !important;
-    margin-top: 2px !important;
   }
 
   .mobile-drawer-close-btn {

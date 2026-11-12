@@ -2,15 +2,11 @@ import React from 'react';
 import {
   Home,
   ShoppingBag,
-  Truck,
   Phone,
-  MapPin,
-  ShieldCheck,
   X,
   ChevronRight,
   User,
-  LogIn,
-  ArrowRight
+  LogIn
 } from 'lucide-react';
 import { useUser, UserButton, SignInButton } from '@clerk/react';
 
@@ -128,12 +124,9 @@ export default function CategoriesDrawer({
   onClose,
   currentView = 'home',
   cartCount = 0,
-  wishlistCount = 0,
   onNavigateHome,
   onNavigateCatalog,
   onOpenCart,
-  onOpenWishlist,
-  onOpenTrackOrder,
   onNavigateAuth
 }) {
   if (!isOpen) return null;
@@ -165,7 +158,6 @@ export default function CategoriesDrawer({
               alt="Icon Party Hire Brisbane"
               className="mobile-drawer-logo"
             />
-            <span className="mobile-drawer-tagline">Brisbane Luxury Event Hire</span>
           </div>
           <button
             type="button"
@@ -177,7 +169,7 @@ export default function CategoriesDrawer({
           </button>
         </div>
 
-        {/* Scrollable Drawer Body — STRICTLY NAVBAR CONTENT ONLY (NO CATEGORIES, NO ADMIN PANEL) */}
+        {/* Scrollable Drawer Body — Streamlined Navbar Navigation */}
         <div className="mobile-drawer-body">
 
           {/* 1. Profile / Sign In Section */}
@@ -211,30 +203,6 @@ export default function CategoriesDrawer({
                 </div>
                 <div className="mobile-nav-item-right">
                   <span className="mobile-nav-pill-badge">All Gear</span>
-                  <ChevronRight size={18} className="mobile-nav-chevron" />
-                </div>
-              </button>
-
-              {/* Track Delivery */}
-              <button
-                type="button"
-                className="mobile-pure-nav-item"
-                onClick={() => {
-                  onClose();
-                  onOpenTrackOrder?.();
-                }}
-              >
-                <div className="mobile-nav-item-left">
-                  <div className="mobile-nav-icon-wrap">
-                    <Truck size={20} />
-                  </div>
-                  <div className="mobile-nav-item-text">
-                    <span className="mobile-nav-title">Track Delivery</span>
-                    <span className="mobile-nav-desc">Live dispatch & delivery status</span>
-                  </div>
-                </div>
-                <div className="mobile-nav-item-right">
-                  <span className="mobile-nav-pill-badge live">Live Status</span>
                   <ChevronRight size={18} className="mobile-nav-chevron" />
                 </div>
               </button>
@@ -287,22 +255,12 @@ export default function CategoriesDrawer({
             </nav>
           </div>
 
-          {/* 3. Brisbane Logistics Bay & Direct Support */}
+          {/* 3. Direct Support Call */}
           <div className="mobile-drawer-footer">
-            <div className="mobile-footer-pill">
-              <MapPin size={15} className="footer-icon-pink" />
-              <span>Murrumba Downs Dispatch Bay · Greater Brisbane</span>
-            </div>
-
-            <a href="tel:0423313460" className="mobile-footer-call-btn">
+            <a href="tel:0439592472" className="mobile-footer-call-btn">
               <Phone size={16} />
-              <span>Call Dispatch: 0423 313 460</span>
+              <span>Call 0439 592 472</span>
             </a>
-
-            <div className="mobile-footer-security">
-              <ShieldCheck size={14} />
-              <span>100% Bond Security · Stripe Verified Equipment Hire</span>
-            </div>
           </div>
 
         </div>
