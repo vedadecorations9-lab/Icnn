@@ -13,13 +13,25 @@ export default defineConfig(({ mode }) => {
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
     '';
 
+  const convexUrl =
+    env.VITE_CONVEX_URL ||
+    env.CONVEX_URL ||
+    env.NEXT_PUBLIC_CONVEX_URL ||
+    process.env.VITE_CONVEX_URL ||
+    process.env.CONVEX_URL ||
+    process.env.NEXT_PUBLIC_CONVEX_URL ||
+    '';
+
   return {
     plugins: [react()],
     envPrefix: ['VITE_', 'CONVEX_', 'NEXT_PUBLIC_', 'CLERK_'],
     define: {
       'import.meta.env.VITE_CLERK_PUBLISHABLE_KEY': JSON.stringify(clerkKey),
       'import.meta.env.CLERK_PUBLISHABLE_KEY': JSON.stringify(clerkKey),
-      'import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(clerkKey)
+      'import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(clerkKey),
+      'import.meta.env.VITE_CONVEX_URL': JSON.stringify(convexUrl),
+      'import.meta.env.CONVEX_URL': JSON.stringify(convexUrl),
+      'import.meta.env.NEXT_PUBLIC_CONVEX_URL': JSON.stringify(convexUrl)
     },
     server: {
       port: 5173,
