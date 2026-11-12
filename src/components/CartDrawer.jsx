@@ -1,15 +1,12 @@
 import React from 'react';
 import {
-  ShoppingBag,
   X,
   Trash2,
   Plus,
   Minus,
-  ShieldCheck,
-  Truck,
   ArrowRight,
-  Sparkles,
-  MapPin
+  ShieldCheck,
+  ShoppingBag
 } from 'lucide-react';
 
 export default function CartDrawer({
@@ -20,8 +17,7 @@ export default function CartDrawer({
   onUpdateQty,
   onRemoveItem,
   onCheckout,
-  formatPrice,
-  onToast
+  formatPrice
 }) {
   if (!isOpen) return null;
 
@@ -43,7 +39,6 @@ export default function CartDrawer({
   const isFreeDelivery = rawSubtotalAUD >= thresholdAUD;
   const deliveryAUD = isFreeDelivery ? 0 : (cart.length > 0 ? 35 : 0);
   const grandTotalAUD = Math.max(0, rawSubtotalAUD + deliveryAUD);
-  const deliveryPercent = Math.min(100, Math.round((rawSubtotalAUD / thresholdAUD) * 100));
 
   return (
     <>
@@ -53,116 +48,101 @@ export default function CartDrawer({
       {/* Slide Drawer from Right (sits safely above the floating navbar at z-index 2600) */}
       <aside className="slide-drawer active cart-drawer-shell" aria-label="Event Hire Bag">
         
-        {/* Drawer Header with Title, Count & Close */}
-        <div className="cart-drawer-top-header">
-          <div className="cart-header-title-wrap">
-            <div className="cart-header-icon-box">
-              <ShoppingBag size={20} />
-            </div>
-            <div>
-              <h3 className="cart-header-title">Your Hire Bag</h3>
-              <span className="cart-header-subtitle">
-                {cartItemsWithDetails.length} {cartItemsWithDetails.length === 1 ? 'equipment item' : 'equipment items'} for Brisbane hire
-              </span>
-            </div>
+        {/* Minimal Luxury Drawer Header */}
+        <div className="cart-minimal-header">
+          <div className="cart-minimal-title-group">
+            <h3 className="cart-minimal-title">Hire Bag</h3>
+            <span className="cart-minimal-count-pill">{cartItemsWithDetails.length}</span>
           </div>
           <button
             type="button"
-            className="cart-close-pill-btn"
+            className="cart-minimal-close-btn"
             onClick={onClose}
             aria-label="Close Hire Bag"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
-        {/* Free Greater Brisbane Delivery Progress Bar */}
-        <div className="cart-shipping-meter-card">
-          <div className="cart-shipping-meter-info">
-            <Truck size={16} className="meter-truck-icon" />
+        {/* Minimal Delivery Banner (Compact 1-line whisper) */}
+        {cartItemsWithDetails.length > 0 && (
+          <div className="cart-minimal-delivery-bar">
             {isFreeDelivery ? (
-              <span className="meter-text unlocked">
-                <strong>Free Greater Brisbane Delivery Unlocked!</strong>
+              <span className="cart-delivery-unlocked-text">
+                ✨ Free Greater Brisbane delivery unlocked
               </span>
             ) : (
-              <span className="meter-text">
-                Add <strong>{formatPrice(thresholdAUD - rawSubtotalAUD)}</strong> more for <strong>FREE Delivery</strong> ($250+)
+              <span className="cart-delivery-tier-text">
+                Add <strong>{formatPrice(thresholdAUD - rawSubtotalAUD)}</strong> for free Brisbane delivery ($250+)
               </span>
             )}
           </div>
-          <div className="cart-meter-track">
-            <div
-              className={`cart-meter-progress ${isFreeDelivery ? 'unlocked' : ''}`}
-              style={{ width: `${deliveryPercent}%` }}
-            />
-          </div>
-        </div>
+        )}
 
         {/* Scrollable Cart Items List */}
         <div className="cart-items-scrollable-body">
           {cartItemsWithDetails.length > 0 ? (
-            <div className="cart-items-deck">
+            <div className="cart-items-minimal-deck">
               {cartItemsWithDetails.map(item => (
-                <div key={item.id} className="cart-item-card-pro">
-                  <div className="cart-item-media">
+                <div key={item.id} className="cart-item-minimal-card">
+                  {/* Media Thumbnail */}
+                  <div className="cart-item-minimal-thumb">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="cart-item-img-pro"
                       onError={(e) => {
                         e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
                       }}
                     />
                   </div>
 
-                  <div className="cart-item-content-pro">
-                    <div className="cart-item-header-pro">
-                      <h4 className="cart-item-name-pro">{item.name}</h4>
+                  {/* Info Column */}
+                  <div className="cart-item-minimal-info">
+                    <div className="cart-item-minimal-top-row">
+                      <h4 className="cart-item-minimal-name">{item.name}</h4>
                       <button
                         type="button"
-                        className="cart-item-trash-btn"
+                        className="cart-item-minimal-del"
                         onClick={() => onRemoveItem(item.id)}
-                        aria-label={`Remove ${item.name} from bag`}
+                        aria-label={`Remove ${item.name}`}
+                        title="Remove item"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={13} />
                       </button>
                     </div>
 
-                    <div className="cart-item-price-pro">
-                      <span className="price-bold">{formatPrice(item.calculatedPrice)}</span>
-                      <span className="price-hire-tag">/ hire day</span>
+                    <div className="cart-item-minimal-meta">
+                      <span className="cart-item-minimal-rate">{formatPrice(item.calculatedPrice)}/day</span>
+                      <span className="cart-item-minimal-sep">·</span>
+                      <span className="cart-item-minimal-bond">+${item.bondAUD || 30} bond</span>
                     </div>
 
-                    <div className="cart-item-bond-badge">
-                      <ShieldCheck size={13} />
-                      <span>${item.bondAUD || 30} AUD refundable bond held</span>
-                    </div>
-
-                    {/* Stepper Quantity Control */}
-                    <div className="cart-item-footer-pro">
-                      <div className="cart-stepper-control">
+                    <div className="cart-item-minimal-bottom-row">
+                      {/* Compact Micro-Stepper */}
+                      <div className="cart-minimal-stepper">
                         <button
                           type="button"
-                          className="stepper-btn minus"
+                          className="cart-stepper-btn minus"
                           onClick={() => onUpdateQty(item.id, -1)}
                           aria-label="Decrease quantity"
                         >
-                          <Minus size={14} />
+                          <Minus size={11} />
                         </button>
-                        <span className="stepper-value">{item.qty}</span>
+                        <span className="cart-stepper-qty">{item.qty}</span>
                         <button
                           type="button"
-                          className="stepper-btn plus"
+                          className="cart-stepper-btn plus"
                           onClick={() => onUpdateQty(item.id, 1)}
                           aria-label="Increase quantity"
                         >
-                          <Plus size={14} />
+                          <Plus size={11} />
                         </button>
                       </div>
 
-                      <div className="cart-item-line-total">
-                        Total: <strong>{formatPrice(item.calculatedPrice * item.qty)}</strong>
-                      </div>
+                      {/* Line Item Total */}
+                      <span className="cart-minimal-line-total">
+                        {formatPrice(item.calculatedPrice * item.qty)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -171,71 +151,66 @@ export default function CartDrawer({
           ) : (
             <div className="cart-empty-lux-box">
               <div className="cart-empty-icon-wrap">
-                <ShoppingBag size={38} />
+                <ShoppingBag size={32} />
               </div>
               <h4>Your Hire Bag is Empty</h4>
-              <p>Explore commercial gazebos, flower walls, cocktail bar tables, plinths, and party effects.</p>
+              <p>Explore commercial marquees, flower walls, cocktail bar tables, plinths, and party effects.</p>
               <button
                 type="button"
                 className="cart-empty-explore-btn"
                 onClick={onClose}
               >
                 <span>Browse Hire Equipment</span>
-                <ArrowRight size={16} />
+                <ArrowRight size={15} />
               </button>
             </div>
           )}
         </div>
 
-        {/* Footer with Transparent Financial Breakdown (Zero coupon/promo codes) */}
+        {/* Minimal Luxury Footer */}
         {cartItemsWithDetails.length > 0 && (
-          <div className="cart-drawer-pro-footer">
-            
-            {/* FINANCIAL SUMMARY BREAKDOWN */}
-            <div className="cart-financial-summary">
-              <div className="summary-row">
-                <span className="summary-label">Equipment Hire Subtotal</span>
-                <span className="summary-val">{formatPrice(rawSubtotalAUD)}</span>
+          <div className="cart-minimal-footer">
+            <div className="cart-minimal-summary">
+              <div className="cart-summary-line">
+                <span>Equipment Subtotal</span>
+                <span className="cart-summary-num">{formatPrice(rawSubtotalAUD)}</span>
               </div>
-
-              <div className="summary-row">
-                <span className="summary-label">Greater Brisbane Delivery & Setup</span>
-                <span className={`summary-val ${isFreeDelivery ? 'free-tag' : ''}`}>
-                  {isFreeDelivery ? 'FREE ($250+ Tier)' : formatPrice(deliveryAUD)}
+              <div className="cart-summary-line">
+                <span>Brisbane Delivery & Setup</span>
+                <span className={`cart-summary-num ${isFreeDelivery ? 'free' : ''}`}>
+                  {isFreeDelivery ? 'FREE' : formatPrice(deliveryAUD)}
                 </span>
               </div>
-
-              <div className="summary-row bond-row">
-                <span className="summary-label">Refundable Security Bond (Held on Card)</span>
-                <span className="summary-val bond">${totalBondAUD} AUD</span>
+              <div className="cart-summary-line subtle">
+                <span>Refundable Bond (Held on Card)</span>
+                <span className="cart-summary-num">${totalBondAUD} AUD</span>
               </div>
 
-              <div className="summary-divider" />
+              <div className="cart-minimal-hairline" />
 
-              <div className="summary-row total-row">
-                <div className="total-title-block">
-                  <span className="total-title">Total Hire Estimate</span>
-                  <span className="total-subtext">Bond released upon pack-down inspection</span>
+              <div className="cart-summary-total-line">
+                <div className="cart-total-title-block">
+                  <span className="cart-total-title">Total Estimate</span>
+                  <span className="cart-total-note">Bond released post-event</span>
                 </div>
-                <span className="total-price">{formatPrice(grandTotalAUD)}</span>
+                <span className="cart-total-figure">{formatPrice(grandTotalAUD)}</span>
               </div>
             </div>
 
-            {/* CHECKOUT CTA BUTTON */}
+            {/* Primary Action Button */}
             <button
               type="button"
-              className="cart-checkout-cta-btn"
+              className="cart-minimal-checkout-btn"
               onClick={onCheckout}
             >
-              <span>Proceed to Hire Reservation</span>
-              <ArrowRight size={18} />
+              <span>Proceed to Booking</span>
+              <ArrowRight size={16} />
             </button>
 
-            <div className="cart-footer-reassurance">
-              <ShieldCheck size={14} />
-              <span>Instant Card Authorisation · Murrumba Downs Dispatch Bay · 100% Bond Security</span>
+            <div className="cart-minimal-trust-note">
+              <ShieldCheck size={13} />
+              <span>100% Bond Security · Stripe Verified Booking</span>
             </div>
-
           </div>
         )}
 
