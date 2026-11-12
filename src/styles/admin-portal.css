@@ -1578,8 +1578,21 @@
 
   /* Header Topbar on Mobile */
   .admin-topbar {
-    padding: 10px 14px;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 10px !important;
+    padding-left: calc(14px + env(safe-area-inset-left, 0px)) !important;
+    padding-right: calc(14px + env(safe-area-inset-right, 0px)) !important;
     gap: 8px;
+  }
+
+  /* Prevent 16px input zoom on mobile in Admin Portal */
+  input, select, textarea, .admin-search-input, .admin-input {
+    font-size: 16px !important;
+  }
+
+  button, [role="button"], .admin-btn, .admin-tab-pill {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .admin-topbar-left {
@@ -2221,7 +2234,7 @@
   }
 
   .admin-tab-content {
-    padding: 12px 12px 30px 12px !important;
+    padding: 12px 12px calc(30px + env(safe-area-inset-bottom, 0px)) 12px !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
