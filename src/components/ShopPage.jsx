@@ -676,8 +676,8 @@ export default function ShopPage({
                             {product.name}
                           </h2>
 
-                          {/* Subtitle / Spec Line */}
-                          <p className="shop-card-spec-desc">
+                          {/* Subtitle / Spec Line (Hidden on mobile for sleek minimalism) */}
+                          <p className="shop-card-spec-desc hide-mobile">
                             {product.dimensions || product.material || (pills.length > 0 ? pills.slice(0, 2).join(' · ') : 'Commercial event hire grade')}
                           </p>
 
@@ -731,9 +731,9 @@ export default function ShopPage({
                                 title="Add to hire bag"
                               >
                                 {isJustAdded ? (
-                                  <Check size={16} strokeWidth={2.5} />
+                                  <Check size={14} strokeWidth={2.5} />
                                 ) : (
-                                  <ShoppingBag size={17} strokeWidth={1.75} />
+                                  <ShoppingBag size={15} strokeWidth={2} />
                                 )}
                               </button>
 
