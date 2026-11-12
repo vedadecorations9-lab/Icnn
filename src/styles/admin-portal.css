@@ -2576,3 +2576,187 @@
   color: #10B981;
   font-weight: 700;
 }
+
+/* ==========================================================================
+   ADMIN AUTHENTICATION GATE SCREEN
+   ========================================================================== */
+.admin-gate-screen {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 25%, #2D0C2A 0%, #1B061A 60%, #120311 100%);
+  padding: 24px;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+}
+
+.admin-gate-card {
+  width: 100%;
+  max-width: 460px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(212, 139, 112, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: adminGateCardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes adminGateCardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.admin-gate-icon-wrap {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.admin-gate-icon-wrap.lock {
+  background: rgba(216, 27, 96, 0.08);
+  color: #D81B60;
+  border: 1.5px solid rgba(216, 27, 96, 0.2);
+}
+
+.admin-gate-icon-wrap.warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #D97706;
+  border: 1.5px solid rgba(245, 158, 11, 0.25);
+}
+
+.admin-gate-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #D81B60;
+  background: rgba(216, 27, 96, 0.08);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.admin-gate-tag.error {
+  color: #DC2626;
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.admin-gate-card h2 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #1B061A;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+}
+
+.admin-gate-card p {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #64748B;
+  margin: 0 0 28px 0;
+}
+
+.admin-gate-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-gate-primary-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #D81B60 0%, #C2185B 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(216, 27, 96, 0.3);
+}
+
+.admin-gate-primary-btn:hover {
+  background: linear-gradient(135deg, #E03E8A 0%, #D81B60 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 22px rgba(216, 27, 96, 0.42);
+}
+
+.admin-gate-primary-btn.outline {
+  background: #FFF;
+  color: #DC2626;
+  border: 1.5px solid rgba(220, 38, 38, 0.3);
+  box-shadow: none;
+}
+
+.admin-gate-primary-btn.outline:hover {
+  background: rgba(220, 38, 38, 0.05);
+  border-color: #DC2626;
+}
+
+.admin-gate-secondary-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-gate-secondary-btn:hover {
+  background: #F8FAFC;
+  color: #1B061A;
+  border-color: #CBD5E1;
+}
+
+.admin-gate-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(216, 27, 96, 0.15);
+  border-top-color: #D81B60;
+  border-radius: 50%;
+  animation: adminGateSpin 0.75s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes adminGateSpin {
+  to { transform: rotate(360deg); }
+}
+
+.admin-gate-loading-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748B;
+  margin: 0;
+}

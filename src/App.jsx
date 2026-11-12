@@ -17,6 +17,7 @@ import CheckoutModal from './components/CheckoutModal';
 import TrackOrderModal from './components/TrackOrderModal';
 import ReviewModal from './components/ReviewModal';
 import AdminPanel from './components/AdminPanel';
+import AdminAuthGuard from './components/AdminAuthGuard';
 import MobileBottomBar from './components/MobileBottomBar';
 import AuthPage from './components/AuthPage';
 import Toast from './components/Toast';
@@ -263,22 +264,24 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
   if (isAdminOpen) {
     return (
       <div className="icon-admin-app" data-lenis-prevent="true">
-        <AdminPanel
-          onClose={() => setIsAdminOpen(false)}
-          products={products}
-          categories={categories}
-          isRealtime={isRealtime}
-          onAddProduct={handleAdd}
-          onUpdateProduct={handleUpdate}
-          onDeleteProduct={handleDelete}
-          onUpdateProductStock={handleUpdateStock}
-          onResetProducts={handleReset}
-          onAddCategory={handleAddCategory}
-          onUpdateCategory={handleUpdateCategory}
-          onDeleteCategory={handleDeleteCategory}
-          onResetCategories={handleResetCategories}
-          onToast={addToast}
-        />
+        <AdminAuthGuard onClose={() => setIsAdminOpen(false)}>
+          <AdminPanel
+            onClose={() => setIsAdminOpen(false)}
+            products={products}
+            categories={categories}
+            isRealtime={isRealtime}
+            onAddProduct={handleAdd}
+            onUpdateProduct={handleUpdate}
+            onDeleteProduct={handleDelete}
+            onUpdateProductStock={handleUpdateStock}
+            onResetProducts={handleReset}
+            onAddCategory={handleAddCategory}
+            onUpdateCategory={handleUpdateCategory}
+            onDeleteCategory={handleDeleteCategory}
+            onResetCategories={handleResetCategories}
+            onToast={addToast}
+          />
+        </AdminAuthGuard>
         <Toast toasts={toasts} />
       </div>
     );
