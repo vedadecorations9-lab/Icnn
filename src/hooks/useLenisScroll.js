@@ -25,9 +25,14 @@ export function useLenisScroll(dependency) {
       navigator.maxTouchPoints > 0
     );
 
-    // On touch devices: completely skip Lenis to prevent scroll-locking
+    // On touch devices: completely skip Lenis to preserve 100% native momentum scrolling
     if (isTouch) {
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.remove('lenis', 'lenis-stopped', 'lenis-smooth', 'lenis-scrolling');
+        document.body.classList.remove('lenis', 'lenis-stopped', 'lenis-smooth', 'lenis-scrolling');
+      }
       delete window.__iconLenis;
+      ScrollTrigger.refresh();
       return;
     }
 

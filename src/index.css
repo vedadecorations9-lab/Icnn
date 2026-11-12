@@ -84,6 +84,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -92,9 +93,18 @@ body {
   color: var(--color-text-main);
   font-size: 1rem;
   line-height: 1.55;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
-  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+#root,
+.icon-app {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  overflow-x: clip;
 }
 
 /* ==========================================================================
@@ -429,6 +439,10 @@ ul, ol {
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid rgba(216, 27, 96, 0.2);
+}
+
+.mobile-brand-center {
+  display: none !important;
 }
 
 .luxury-brand-text {
@@ -5922,11 +5936,11 @@ ul, ol {
     text-align: center !important;
   }
 
-  /* Subpages and modals clear floating navbar */
+  /* Subpages and modals clear floating navbar with generous breathing room */
   .catalog-dedicated-page,
   .shop-page-wrapper,
   .auth-page-container {
-    padding-top: calc(84px + env(safe-area-inset-top, 0px)) !important;
+    padding-top: calc(96px + env(safe-area-inset-top, 0px)) !important;
   }
 
   /* Floating Luxury Island Pill Navbar on Mobile */
@@ -6019,24 +6033,23 @@ ul, ol {
   }
 
   /* Center Brand Logo - True Optical Centering (Zero overlap) */
-  .luxury-brand-lockup {
-    position: absolute !important;
-    left: 50% !important;
-    top: 50% !important;
-    transform: translate(-50%, -50%) !important;
+  .mobile-brand-center {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    z-index: 1 !important;
-    pointer-events: auto !important;
-    max-width: 130px !important;
+    flex: 1 !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    padding: 0 6px !important;
+    z-index: 2 !important;
   }
 
-  .luxury-brand-navbar-img {
+  .mobile-brand-navbar-img {
     height: 28px !important;
     max-height: 28px !important;
     width: auto !important;
-    max-width: 125px !important;
+    max-width: 140px !important;
     object-fit: contain !important;
     filter: drop-shadow(0 2px 6px rgba(27, 6, 26, 0.08)) !important;
   }
@@ -6965,8 +6978,10 @@ html.lenis, html.lenis body {
   overscroll-behavior: contain;
 }
 
-.lenis.lenis-stopped {
-  overflow: hidden;
+@media (min-width: 769px) {
+  html.lenis.lenis-stopped {
+    overflow: hidden;
+  }
 }
 
 .lenis.lenis-scrolling iframe {
@@ -10072,7 +10087,7 @@ html.lenis, html.lenis body {
 
 @media (max-width: 600px) {
   .shop-page-wrapper {
-    padding-top: 76px;
+    padding-top: calc(96px + env(safe-area-inset-top, 0px)) !important;
   }
   .shop-hero-card {
     border-radius: 16px;

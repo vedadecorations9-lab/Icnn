@@ -87,7 +87,7 @@ export default function Header({
 
         <div className="luxury-navbar-inner">
           
-          {/* LEFT ZONE: Mobile Menu Toggle + Brand Lockup */}
+          {/* LEFT ZONE: Mobile Menu Toggle (Mobile) + Brand Lockup (Desktop) */}
           <div className="nav-zone-left">
             <button
               className="nav-mobile-btn show-mobile"
@@ -101,9 +101,9 @@ export default function Header({
               </svg>
             </button>
 
-            {/* Brand Logo Lockup */}
+            {/* Desktop Brand Logo Lockup */}
             <div
-              className="luxury-brand-lockup"
+              className="luxury-brand-lockup hide-mobile"
               onClick={() => onNavigateHome?.()}
               role="button"
               tabIndex={0}
@@ -116,6 +116,22 @@ export default function Header({
                 className="luxury-brand-navbar-img"
               />
             </div>
+          </div>
+
+          {/* MOBILE TRUE CENTER: Pure Brand Logo (Centered with zero button collision) */}
+          <div
+            className="mobile-brand-center show-mobile"
+            onClick={() => onNavigateHome?.()}
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            aria-label="Icon Party Hire Brisbane Home"
+          >
+            <img
+              src="/assets/images/icon_logo_navbar.webp"
+              alt="Icon Party Hire Brisbane"
+              className="mobile-brand-navbar-img"
+            />
           </div>
 
           {/* CENTER ZONE: Essential 3 Subpages (Uncongested, Breathing) */}
