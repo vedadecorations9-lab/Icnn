@@ -11098,3 +11098,174 @@ html.lenis, html.lenis body {
     padding: 0 !important;
   }
 }
+
+/* ==========================================================================
+   21. THE ICON EXPERIENCE (BENTO PROMOS) - MOBILE AUTO-ADVANCE SNAP CAROUSEL
+   ========================================================================== */
+.bento-mobile-stepper {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .promo-bento-section {
+    padding: 32px 0 24px 0 !important;
+    overflow: hidden !important;
+  }
+
+  .bento-section-header {
+    margin-bottom: 14px !important;
+    text-align: center !important;
+  }
+
+  .bento-header-copy {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .bento-main-title {
+    font-size: 1.65rem !important;
+    line-height: 1.2 !important;
+    margin-top: 4px !important;
+  }
+
+  .bento-header-sub {
+    font-size: 0.8125rem !important;
+    max-width: 90% !important;
+    margin: 6px auto 14px auto !important;
+  }
+
+  /* Interactive Auto-Advancing Stepper Tabs */
+  .bento-mobile-stepper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 auto 12px auto !important;
+    max-width: 330px !important;
+    width: 100% !important;
+  }
+
+  .bento-stepper-btn {
+    flex: 1 !important;
+    background: rgba(216, 27, 96, 0.05) !important;
+    border: 1px solid rgba(216, 27, 96, 0.12) !important;
+    border-radius: 10px !important;
+    padding: 6px 6px 7px 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 5px !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .bento-stepper-btn.is-active {
+    background: #FFFFFF !important;
+    border-color: #D81B60 !important;
+    box-shadow: 0 4px 14px rgba(216, 27, 96, 0.14) !important;
+  }
+
+  .bento-stepper-label {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    color: #64748B !important;
+    transition: color 0.25s ease !important;
+  }
+
+  .bento-stepper-btn.is-active .bento-stepper-label {
+    color: #D81B60 !important;
+  }
+
+  .bento-stepper-bar {
+    width: 100% !important;
+    height: 3px !important;
+    background: rgba(216, 27, 96, 0.1) !important;
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  .bento-stepper-fill {
+    display: block !important;
+    height: 100% !important;
+    width: 0% !important;
+    background: linear-gradient(90deg, #D81B60, #E03E8A) !important;
+    border-radius: 9999px !important;
+    transition: width 0.2s ease !important;
+  }
+
+  .bento-stepper-btn.is-active .bento-stepper-fill {
+    width: 100% !important;
+  }
+
+  .bento-stepper-btn.is-active .bento-stepper-fill.is-animating {
+    animation: bentoProgressFill 3.5s linear forwards !important;
+  }
+
+  /* Bento Grid Mobile Horizontal Snap Track */
+  .bento-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 12px !important;
+    padding: 6px 16px 16px 16px !important;
+    scrollbar-width: none !important;
+  }
+
+  .bento-grid::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .bento-card {
+    flex: 0 0 84vw !important;
+    max-width: 325px !important;
+    min-width: 260px !important;
+    scroll-snap-align: center !important;
+    min-height: 220px !important;
+    padding: 22px 18px 20px 18px !important;
+    border-radius: 20px !important;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+  }
+
+  .bento-card.bento-card-active {
+    box-shadow: 0 10px 30px rgba(216, 27, 96, 0.12) !important;
+  }
+
+  .bento-header {
+    max-width: 62% !important;
+  }
+
+  .bento-title {
+    font-size: 1.35rem !important;
+    margin-bottom: 6px !important;
+    line-height: 1.2 !important;
+  }
+
+  .bento-desc {
+    font-size: 0.78rem !important;
+    line-height: 1.45 !important;
+    margin: 0 0 14px 0 !important;
+  }
+
+  .bento-cta {
+    font-size: 0.84rem !important;
+  }
+
+  .bento-art-container {
+    width: 120px !important;
+    height: 120px !important;
+    bottom: -8px !important;
+    right: -8px !important;
+  }
+}
+
+@keyframes bentoProgressFill {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
