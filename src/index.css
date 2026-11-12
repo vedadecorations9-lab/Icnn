@@ -6500,17 +6500,209 @@ ul, ol {
   margin: 0 auto;
 }
 
-@media (max-width: 900px) {
+/* Base hide for mobile controls on desktop */
+.hiw-mobile-stepper,
+.hiw-mobile-dots {
+  display: none;
+}
+
+@media (max-width: 768px) {
   .how-it-works-section {
-    padding: 60px 0 72px 0;
+    padding: 44px 0 48px 0 !important;
   }
-  .hiw-grid {
-    grid-template-columns: 1fr;
-    gap: 44px;
-    max-width: 380px;
+
+  .hiw-header {
+    margin-bottom: 22px !important;
   }
+
+  .hiw-title {
+    font-size: clamp(1.75rem, 6.2vw, 2.2rem) !important;
+  }
+
+  .hiw-subtitle {
+    font-size: 0.8125rem !important;
+    line-height: 1.48 !important;
+    max-width: 92% !important;
+    margin: 8px auto 16px auto !important;
+  }
+
   .hiw-kicker-line {
-    gap: 12px;
+    gap: 12px !important;
+  }
+
+  .hiw-line {
+    width: 32px !important;
+  }
+
+  /* Interactive Step Navigation Tabs (One-touch step switching) */
+  .hiw-mobile-stepper {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    padding: 4px 6px !important;
+    background: rgba(255, 255, 255, 0.76) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(216, 27, 96, 0.15) !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 4px 16px rgba(27, 6, 26, 0.05) !important;
+    margin-top: 6px !important;
+  }
+
+  .hiw-stepper-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    padding: 6px 12px !important;
+    border-radius: 9999px !important;
+    border: none !important;
+    background: transparent !important;
+    color: #4A5568 !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .hiw-stepper-btn.is-active {
+    background: #1B061A !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 8px rgba(27, 6, 26, 0.25) !important;
+  }
+
+  .hiw-stepper-btn .hiw-stepper-num {
+    font-size: 0.6875rem !important;
+    font-weight: 800 !important;
+    color: #D81B60 !important;
+    font-family: var(--font-display, 'Playfair Display', serif) !important;
+    font-style: italic !important;
+  }
+
+  .hiw-stepper-btn.is-active .hiw-stepper-num {
+    color: #F7D1BA !important;
+  }
+
+  .hiw-stepper-btn .hiw-stepper-label {
+    letter-spacing: 0.02em !important;
+  }
+
+  /* Compact Horizontal Snap-Scroll Track (Saves ~1,250px vertical scroll bloat) */
+  .hiw-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 14px !important;
+    padding: 4px 14px 14px 14px !important;
+    margin: 0 -14px !important;
+    scrollbar-width: none !important;
+    max-width: none !important;
+  }
+
+  .hiw-grid::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Sleek Compact Step Card */
+  .hiw-step-card {
+    flex: 0 0 82vw !important;
+    max-width: 320px !important;
+    scroll-snap-align: center !important;
+    background: rgba(255, 255, 255, 0.90) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(216, 27, 96, 0.12) !important;
+    border-radius: 20px !important;
+    padding: 14px 14px 16px 14px !important;
+    box-shadow: 0 8px 26px -6px rgba(27, 6, 26, 0.08) !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    transform: none !important;
+  }
+
+  .hiw-step-card:hover {
+    transform: none !important;
+  }
+
+  /* Compact Illustration Media Stage */
+  .hiw-card-stage {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 140px !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    background: #FAF5F8 !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .hiw-card-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    aspect-ratio: auto !important;
+    border-radius: 14px !important;
+  }
+
+  /* Compact Body Details */
+  .hiw-card-body {
+    padding: 0 4px !important;
+  }
+
+  .hiw-number-badge {
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 auto 8px auto !important;
+    box-shadow: 0 2px 8px rgba(212, 139, 112, 0.3) !important;
+  }
+
+  .hiw-number-badge span {
+    font-size: 0.95rem !important;
+  }
+
+  .hiw-step-title {
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .hiw-step-desc {
+    font-size: 0.78rem !important;
+    line-height: 1.45 !important;
+    color: #4A5568 !important;
+    max-width: 100% !important;
+  }
+
+  /* Interactive Pagination Dots Indicator */
+  .hiw-mobile-dots {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    margin-top: 14px !important;
+  }
+
+  .hiw-dot-btn {
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    background: rgba(216, 27, 96, 0.22) !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .hiw-dot-btn.is-active {
+    width: 22px !important;
+    border-radius: 9999px !important;
+    background: #D81B60 !important;
+    box-shadow: 0 2px 8px rgba(216, 27, 96, 0.35) !important;
   }
 }
 
