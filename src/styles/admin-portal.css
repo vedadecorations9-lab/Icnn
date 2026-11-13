@@ -3251,25 +3251,30 @@
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at 50% 25%, #2D0C2A 0%, #1B061A 60%, #120311 100%);
-  padding: 24px;
+  padding: 20px;
   position: fixed;
   inset: 0;
   z-index: 9999;
   font-family: var(--font-admin);
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .admin-gate-card {
   width: 100%;
-  max-width: 460px;
+  max-width: 440px;
+  max-height: 94vh;
+  overflow-y: auto;
   background: #FFFFFF;
   border-radius: 24px;
-  padding: 40px 32px;
+  padding: 34px 28px;
   text-align: center;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(212, 139, 112, 0.25);
   display: flex;
   flex-direction: column;
   align-items: center;
   animation: adminGateCardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
 @keyframes adminGateCardIn {
@@ -3284,25 +3289,43 @@
 }
 
 .admin-gate-icon-wrap {
+  position: relative;
   width: 68px;
   height: 68px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  overflow: hidden;
 }
 
 .admin-gate-icon-wrap.lock {
   background: rgba(216, 27, 96, 0.08);
   color: #D81B60;
-  border: 1.5px solid rgba(216, 27, 96, 0.2);
+  border: 1.5px solid rgba(216, 27, 96, 0.25);
+  box-shadow: 0 4px 18px rgba(216, 27, 96, 0.2);
 }
 
 .admin-gate-icon-wrap.warning {
   background: rgba(245, 158, 11, 0.1);
   color: #D97706;
   border: 1.5px solid rgba(245, 158, 11, 0.25);
+}
+
+.admin-gate-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.admin-gate-fallback-icon {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
 }
 
 .admin-gate-tag {
@@ -3314,7 +3337,7 @@
   background: rgba(216, 27, 96, 0.08);
   padding: 4px 12px;
   border-radius: 999px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .admin-gate-tag.error {
@@ -3323,18 +3346,208 @@
 }
 
 .admin-gate-card h2 {
-  font-size: 1.45rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: #1B061A;
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
   letter-spacing: -0.02em;
 }
 
 .admin-gate-card p {
-  font-size: 0.9rem;
-  line-height: 1.55;
+  font-size: 0.88rem;
+  line-height: 1.5;
   color: #64748B;
-  margin: 0 0 28px 0;
+  margin: 0 0 16px 0;
+}
+
+/* Master Password Form Styles */
+.admin-gate-passcode-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 4px 0 6px 0;
+  box-sizing: border-box;
+}
+
+.admin-gate-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.admin-gate-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.admin-gate-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.admin-gate-input-wrap:focus-within {
+  border-color: #D81B60;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.12);
+}
+
+.admin-gate-input-wrap.has-error {
+  border-color: #EF4444;
+  background: #FEF2F2;
+}
+
+.admin-gate-input-icon {
+  position: absolute;
+  left: 14px;
+  color: #94A3B8;
+  pointer-events: none;
+}
+
+.admin-gate-input {
+  width: 100%;
+  padding: 11px 40px 11px 40px;
+  border: none;
+  background: transparent;
+  font-size: 0.92rem;
+  color: #0F172A;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.admin-gate-eye-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+
+.admin-gate-eye-btn:hover {
+  color: #1E293B;
+}
+
+.admin-gate-error-banner {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #B91C1C;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  animation: adminGateCardIn 0.2s ease;
+  box-sizing: border-box;
+}
+
+.admin-gate-hint {
+  font-size: 0.74rem;
+  color: #94A3B8;
+  margin: 2px 0 0 0;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Divider */
+.admin-gate-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  margin: 16px 0 14px 0;
+}
+
+.admin-gate-divider-line {
+  flex: 1;
+  height: 1px;
+  background: #E2E8F0;
+}
+
+.admin-gate-divider-text {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94A3B8;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* Google Sign In Button */
+.admin-gate-google-btn {
+  width: 100%;
+  padding: 11px 18px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.admin-gate-google-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Owner Passcode Override Box on Access Denied Screen */
+.admin-gate-override-box {
+  width: 100%;
+  background: #FDF7FA;
+  border: 1.5px dashed rgba(216, 27, 96, 0.28);
+  border-radius: 16px;
+  padding: 18px 16px;
+  margin: 14px 0 10px 0;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.admin-gate-override-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1B061A;
+  margin-bottom: 4px;
+}
+
+.admin-gate-override-desc {
+  font-size: 0.78rem;
+  color: #64748B;
+  line-height: 1.45;
+  margin: 0 0 12px 0 !important;
 }
 
 .admin-gate-actions {
@@ -3346,12 +3559,12 @@
 
 .admin-gate-primary-btn {
   width: 100%;
-  padding: 12px 20px;
+  padding: 11px 18px;
   background: linear-gradient(135deg, #D81B60 0%, #C2185B 100%);
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -3359,13 +3572,18 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 16px rgba(216, 27, 96, 0.3);
+  box-shadow: 0 4px 16px rgba(216, 27, 96, 0.28);
 }
 
-.admin-gate-primary-btn:hover {
+.admin-gate-primary-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #E03E8A 0%, #D81B60 100%);
   transform: translateY(-1.5px);
-  box-shadow: 0 6px 22px rgba(216, 27, 96, 0.42);
+  box-shadow: 0 6px 20px rgba(216, 27, 96, 0.38);
+}
+
+.admin-gate-primary-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .admin-gate-primary-btn.outline {

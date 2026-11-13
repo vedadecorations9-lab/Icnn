@@ -90,6 +90,14 @@ export default function AdminPanel({
   const mainScrollRef = useRef(null);
   const todayDateStr = useMemo(() => new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }), []);
 
+  const handleExitPortal = () => {
+    try {
+      sessionStorage.removeItem('icon_admin_passcode_auth');
+      localStorage.removeItem('icon_admin_passcode_auth');
+    } catch {}
+    onClose?.();
+  };
+
   // Guarantee native mouse wheel scrolling in Admin Panel: pause Lenis on mount and resume on unmount
   useEffect(() => {
     if (typeof window !== 'undefined' && window.__iconLenis) {
@@ -706,7 +714,7 @@ export default function AdminPanel({
           <button
             type="button"
             className="admin-exit-btn"
-            onClick={onClose}
+            onClick={handleExitPortal}
             title="Exit admin panel and return to live website"
           >
             <LogOut size={16} />
@@ -837,7 +845,7 @@ export default function AdminPanel({
             <button
               type="button"
               className="admin-btn-close-store"
-              onClick={onClose}
+              onClick={handleExitPortal}
               title="Return to customer website"
             >
               <X size={16} />

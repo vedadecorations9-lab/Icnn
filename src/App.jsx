@@ -332,6 +332,10 @@ function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast })
   const handleCloseAdmin = () => {
     setIsAdminOpen(false);
     try {
+      sessionStorage.removeItem('icon_admin_passcode_auth');
+      localStorage.removeItem('icon_admin_passcode_auth');
+    } catch {}
+    try {
       if (window.location.pathname.includes('admin') || window.location.hash.includes('admin')) {
         window.history.pushState(null, '', '/');
       }
