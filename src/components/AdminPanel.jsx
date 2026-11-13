@@ -29,7 +29,10 @@ import {
   Phone,
   Mail,
   List,
-  LayoutGrid
+  LayoutGrid,
+  LogOut,
+  Bell,
+  MessageSquare
 } from 'lucide-react';
 import { CATEGORIES, BRISBANE_STORE_INFO, INITIAL_ORDERS } from '../data/products';
 
@@ -82,6 +85,7 @@ export default function AdminPanel({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState('table'); // 'table' | 'grid'
   const mainScrollRef = useRef(null);
+  const todayDateStr = useMemo(() => new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }), []);
 
   // Guarantee native mouse wheel scrolling in Admin Panel: pause Lenis on mount and resume on unmount
   useEffect(() => {
@@ -550,13 +554,15 @@ export default function AdminPanel({
           </button>
         </nav>
 
-        {/* Footer Actions */}
+        {/* Footer Actions (Matching Niond Image Style) */}
         <div className="admin-sidebar-footer">
-          <div className="admin-session-badge">
-            <span className="session-status-dot" />
-            <div className="session-text-stack">
-              <span className="session-role">Admin Operations HQ</span>
-              <span className="session-meta">Brisbane Fleet · 4503</span>
+          <div className="niond-user-profile-card">
+            <div className="niond-user-avatar-frame">
+              <span className="niond-avatar-text">IP</span>
+            </div>
+            <div className="niond-user-text-stack">
+              <span className="niond-user-name">Icon Operations</span>
+              <span className="niond-user-role">Brisbane Fleet HQ</span>
             </div>
           </div>
 
@@ -566,7 +572,8 @@ export default function AdminPanel({
             onClick={onClose}
             title="Exit admin panel and return to live website"
           >
-            <span>← Return to Storefront</span>
+            <LogOut size={16} />
+            <span>Return to Store</span>
           </button>
 
           <button
@@ -604,59 +611,54 @@ export default function AdminPanel({
             </button>
 
             <div>
-              <div className="admin-breadcrumbs">
-                <span>Icon Party Hire</span>
-                <ChevronRight size={13} />
-                <span className="crumb-active">
-                  {activeTab === 'inventory' && 'Equipment Items (CRUD Hub)'}
-                  {activeTab === 'categories' && 'Category Cards Management'}
-                  {activeTab === 'overview' && 'Operations Dashboard'}
-                  {activeTab === 'bookings' && 'Weekend Party Bookings'}
-                  {activeTab === 'logistics' && 'Brisbane Warehouse Hub'}
-                </span>
-              </div>
-              <h2 className="admin-page-title">
-                {activeTab === 'inventory' && (
-                  <>
-                    <span className="hide-mobile">Commercial Equipment Items</span>
-                    <span className="show-mobile">Equipment</span>
-                  </>
-                )}
-                {activeTab === 'categories' && (
-                  <>
-                    <span className="hide-mobile">Storefront Category Cards</span>
-                    <span className="show-mobile">Categories</span>
-                  </>
-                )}
-                {activeTab === 'overview' && (
-                  <>
-                    <span className="hide-mobile">Event Fleet & Revenue Overview</span>
-                    <span className="show-mobile">Overview</span>
-                  </>
-                )}
-                {activeTab === 'bookings' && (
-                  <>
-                    <span className="hide-mobile">Customer Bookings & Dispatches</span>
-                    <span className="show-mobile">Bookings</span>
-                  </>
-                )}
-                {activeTab === 'logistics' && (
-                  <>
-                    <span className="hide-mobile">Warehouse & Fleet Logistics</span>
-                    <span className="show-mobile">Logistics</span>
-                  </>
-                )}
+              <h2 className="niond-page-title">
+                {activeTab === 'inventory' && 'Commercial Equipment'}
+                {activeTab === 'categories' && 'Storefront Categories'}
+                {activeTab === 'overview' && 'Operations Dashboard'}
+                {activeTab === 'bookings' && 'Party Bookings'}
+                {activeTab === 'logistics' && 'Warehouse & Fleet'}
               </h2>
+              <span className="niond-page-date">{todayDateStr}</span>
             </div>
           </div>
 
           <div className="admin-topbar-right">
+            {/* Realtime Cloud Status */}
             <div
               className={`admin-cloud-indicator-badge ${isRealtime ? 'live' : 'offline'}`}
               title={isRealtime ? 'Convex Cloud Sync is active and streaming real-time catalog updates' : 'Local storage fallback. Set VITE_CONVEX_URL in Vercel to sync across all devices.'}
             >
               <span className="badge-pulse-indicator" />
               <span className="cloud-badge-text">{isRealtime ? 'Convex Live' : 'Local Mode'}</span>
+            </div>
+
+            {/* Quick Action Circle Buttons (Matching Attached Design) */}
+            <button
+              type="button"
+              className="niond-circle-btn hide-mobile"
+              title="Operational Messages"
+              onClick={() => onToast?.('Operations dispatch channel active for Brisbane', 'gold')}
+            >
+              <MessageSquare size={17} />
+            </button>
+            <button
+              type="button"
+              className="niond-circle-btn hide-mobile"
+              title="Notifications"
+              onClick={() => onToast?.('Fleet run-sheets ready for weekend delivery', 'gold')}
+            >
+              <Bell size={17} />
+            </button>
+
+            {/* User Profile Lockup (Matching Attached Design) */}
+            <div className="niond-top-profile hide-mobile">
+              <div className="niond-top-avatar">
+                <span>IP</span>
+              </div>
+              <div className="niond-top-text">
+                <span className="niond-top-name">Icon Operations</span>
+                <span className="niond-top-role">Fleet Manager</span>
+              </div>
             </div>
 
             {activeTab === 'inventory' && (
@@ -690,7 +692,7 @@ export default function AdminPanel({
               title="Return to customer website"
             >
               <X size={16} />
-              <span className="hide-mobile">Exit Admin</span>
+              <span className="hide-mobile">Exit</span>
             </button>
           </div>
         </header>
@@ -699,54 +701,50 @@ export default function AdminPanel({
         {activeTab === 'inventory' && (
           <div className="admin-tab-content">
             
-            {/* Quick Metrics Bar */}
-            <div className="admin-kpi-strip">
-              <div className="kpi-mini-card">
-                <div className="kpi-mini-top">
-                  <div className="kpi-mini-icon-box magenta">
-                    <Package size={17} />
-                  </div>
-                  <span className="kpi-trend-pill positive">Active Catalog</span>
+            {/* Signature Pastel Metric Cards (Matching Attached Image) */}
+            <div className="admin-kpi-strip niond-pastel-grid">
+              {/* Card 1: Pastel Purple / Lavender */}
+              <div className="niond-pastel-card purple">
+                <div className="niond-card-pill">
+                  <span className="pill-dot" />
+                  <span>Total Equipment</span>
                 </div>
-                <span className="kpi-label">Commercial Models</span>
-                <span className="kpi-val">{stats.totalItems} <span className="kpi-unit">SKUs</span></span>
+                <div className="niond-card-val">{stats.totalItems} SKUs</div>
+                <div className="niond-card-sub">Commercial Brisbane catalog</div>
               </div>
 
-              <div className="kpi-mini-card">
-                <div className="kpi-mini-top">
-                  <div className="kpi-mini-icon-box emerald">
-                    <Layers size={17} />
-                  </div>
-                  <span className="kpi-trend-pill positive">Available Fleet</span>
+              {/* Card 2: Pastel Baby Blue */}
+              <div className="niond-pastel-card blue">
+                <div className="niond-card-pill">
+                  <span className="pill-dot" />
+                  <span>Warehouse Units</span>
                 </div>
-                <span className="kpi-label">Warehouse Stock</span>
-                <span className="kpi-val">{stats.totalUnits} <span className="kpi-unit">Units</span></span>
+                <div className="niond-card-val">{stats.totalUnits} Units</div>
+                <div className="niond-card-sub">Stock ready in Murrumba Downs</div>
               </div>
 
-              <div className="kpi-mini-card">
-                <div className="kpi-mini-top">
-                  <div className="kpi-mini-icon-box amber">
-                    <AlertTriangle size={17} />
-                  </div>
-                  <span className={`kpi-trend-pill ${stats.lowStockCount > 0 ? 'warning' : 'neutral'}`}>
-                    {stats.lowStockCount > 0 ? 'Restock Alert' : 'Healthy Stock'}
-                  </span>
+              {/* Card 3: Pastel Mint Green */}
+              <div className="niond-pastel-card green">
+                <div className="niond-card-pill">
+                  <span className="pill-dot" />
+                  <span>Fleet Health</span>
                 </div>
-                <span className="kpi-label">Low Stock Alerts</span>
-                <span className={`kpi-val ${stats.lowStockCount > 0 ? 'text-amber-500' : ''}`}>
-                  {stats.lowStockCount} <span className="kpi-unit">Items</span>
-                </span>
+                <div className="niond-card-val">
+                  {stats.lowStockCount === 0 ? '100% Ready' : `${stats.lowStockCount} Low`}
+                </div>
+                <div className="niond-card-sub">
+                  {stats.lowStockCount > 0 ? `${stats.lowStockCount} models need restocking` : 'All items at healthy stock levels'}
+                </div>
               </div>
 
-              <div className="kpi-mini-card">
-                <div className="kpi-mini-top">
-                  <div className="kpi-mini-icon-box gold">
-                    <DollarSign size={17} />
-                  </div>
-                  <span className="kpi-trend-pill positive">1–4 Days AUD</span>
+              {/* Card 4: Pastel Peach */}
+              <div className="niond-pastel-card peach">
+                <div className="niond-card-pill">
+                  <span className="pill-dot" />
+                  <span>Fleet Asset Value</span>
                 </div>
-                <span className="kpi-label">Fleet Asset Value</span>
-                <span className="kpi-val text-pink-600">${stats.totalCatalogValue.toLocaleString()} <span className="kpi-unit">AUD</span></span>
+                <div className="niond-card-val">${stats.totalCatalogValue.toLocaleString()} AUD</div>
+                <div className="niond-card-sub">Total inventory valuation</div>
               </div>
             </div>
 
@@ -1278,64 +1276,44 @@ export default function AdminPanel({
         {activeTab === 'categories' && (
           <div className="admin-tab-content">
             
-            {/* KPI Strip for Categories */}
-            <div className="admin-kpi-strip">
-              <div className="admin-kpi-card">
-                <div className="kpi-icon-wrap" style={{ background: 'rgba(216, 27, 96, 0.12)', color: '#D81B60' }}>
-                  <Layers size={22} />
+            {/* KPI Strip for Categories (Matching Niond Pastel Cards) */}
+            <div className="admin-kpi-strip niond-pastel-grid">
+              <div className="niond-pastel-card purple">
+                <div className="niond-card-pill">
+                  <span className="pill-dot" />
+                  <span>Store Categories</span>
                 </div>
-                <div className="kpi-info">
-                  <span className="kpi-label">Active Storefront Categories</span>
-                  <div className="kpi-val-row">
-                    <span className="kpi-value">{activeCategories.length}</span>
-                    <span className="kpi-badge gold">Live in Store</span>
-                  </div>
-                  <span className="kpi-subtext">5-col desktop & 2-col mobile cards</span>
-                </div>
+                <div className="niond-card-val">{activeCategories.length} Categories</div>
+                <div className="niond-card-sub">Active storefront showcase cards</div>
               </div>
 
-              <div className="admin-kpi-card">
-                <div className="kpi-icon-wrap" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10B981' }}>
-                  <Package size={22} />
+              <div className="niond-pastel-card blue">
+                <div className="niond-card-pill">
+                  <span className="pill-dot" />
+                  <span>Assigned Products</span>
                 </div>
-                <div className="kpi-info">
-                  <span className="kpi-label">Equipment Items Assigned</span>
-                  <div className="kpi-val-row">
-                    <span className="kpi-value">{products.length}</span>
-                    <span className="kpi-badge green">Catalog Ready</span>
-                  </div>
-                  <span className="kpi-subtext">Distributed across {activeCategories.length} categories</span>
-                </div>
+                <div className="niond-card-val">{products.length} Products</div>
+                <div className="niond-card-sub">Assigned across all categories</div>
               </div>
 
-              <div className="admin-kpi-card">
-                <div className="kpi-icon-wrap" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#F59E0B' }}>
-                  <DollarSign size={22} />
+              <div className="niond-pastel-card green">
+                <div className="niond-card-pill">
+                  <span className="pill-dot" />
+                  <span>Entry Hire Rate</span>
                 </div>
-                <div className="kpi-info">
-                  <span className="kpi-label">Lowest Entry Hire Price</span>
-                  <div className="kpi-val-row">
-                    <span className="kpi-value">
-                      ${Math.min(...activeCategories.map(c => c.startingPrice || 5))} AUD
-                    </span>
-                    <span className="kpi-badge gold">Starting From</span>
-                  </div>
-                  <span className="kpi-subtext">Displayed on category badges</span>
+                <div className="niond-card-val">
+                  ${Math.min(...activeCategories.map(c => c.startingPrice || 5))} AUD
                 </div>
+                <div className="niond-card-sub">Starting hire rate / 1–4 days</div>
               </div>
 
-              <div className="admin-kpi-card">
-                <div className="kpi-icon-wrap" style={{ background: 'rgba(59, 130, 246, 0.12)', color: '#3B82F6' }}>
-                  <Shield size={22} />
+              <div className="niond-pastel-card peach">
+                <div className="niond-card-pill">
+                  <span className="pill-dot" />
+                  <span>Catalog Guard</span>
                 </div>
-                <div className="kpi-info">
-                  <span className="kpi-label">Category Guard Protection</span>
-                  <div className="kpi-val-row">
-                    <span className="kpi-value">Active</span>
-                    <span className="kpi-badge green">Zero Orphans</span>
-                  </div>
-                  <span className="kpi-subtext">Prevents accidental deletion of active items</span>
-                </div>
+                <div className="niond-card-val">Active · Zero Orphans</div>
+                <div className="niond-card-sub">Protects live inventory items</div>
               </div>
             </div>
 
@@ -1492,48 +1470,42 @@ export default function AdminPanel({
               </div>
             </div>
 
-            {/* Metric Cards Row */}
-            <div className="overview-cards-row">
-              <div className="overview-metric-card">
-                <div className="metric-card-top">
-                  <div>
-                    <span className="metric-title">Weekend Hire Revenue</span>
-                    <span className="metric-sub">38 confirmed party hires</span>
-                  </div>
-                  <div className="metric-icon-bubble gold">
-                    <DollarSign size={20} />
-                  </div>
+            {/* 4 Signature Niond Pastel Metric Cards */}
+            <div className="niond-pastel-grid">
+              <div className="niond-pastel-card purple">
+                <div className="niond-card-pill">
+                  <span className="pill-dot"></span>
+                  <span>Weekend Revenue</span>
                 </div>
-                <div className="metric-val">$8,420 AUD</div>
-                <div className="metric-trend positive">↑ +21.4% vs previous weekend</div>
+                <div className="niond-card-val">$8,420 AUD</div>
+                <div className="niond-card-sub">38 confirmed party hires · +21.4% vs last week</div>
               </div>
 
-              <div className="overview-metric-card">
-                <div className="metric-card-top">
-                  <div>
-                    <span className="metric-title">Security Bonds Held</span>
-                    <span className="metric-sub">Held via Stripe AU</span>
-                  </div>
-                  <div className="metric-icon-bubble blue">
-                    <Shield size={20} />
-                  </div>
+              <div className="niond-pastel-card blue">
+                <div className="niond-card-pill">
+                  <span className="pill-dot"></span>
+                  <span>Security Bonds Held</span>
                 </div>
-                <div className="metric-val">$4,250 AUD</div>
-                <div className="metric-trend neutral">100% automated post-return release</div>
+                <div className="niond-card-val">$4,250 AUD</div>
+                <div className="niond-card-sub">Held via Stripe AU · 100% automated release</div>
               </div>
 
-              <div className="overview-metric-card">
-                <div className="metric-card-top">
-                  <div>
-                    <span className="metric-title">Equipment Fleet Capacity</span>
-                    <span className="metric-sub">Gazebos, Silk Walls & Plinths</span>
-                  </div>
-                  <div className="metric-icon-bubble pink">
-                    <Package size={20} />
-                  </div>
+              <div className="niond-pastel-card green">
+                <div className="niond-card-pill">
+                  <span className="pill-dot"></span>
+                  <span>Fleet Booked Capacity</span>
                 </div>
-                <div className="metric-val">94% Booked</div>
-                <div className="metric-trend warning">Near peak Saturday capacity</div>
+                <div className="niond-card-val">94% Booked</div>
+                <div className="niond-card-sub">Gazebos, Silk Walls & Plinths · Saturday Peak</div>
+              </div>
+
+              <div className="niond-pastel-card peach">
+                <div className="niond-card-pill">
+                  <span className="pill-dot"></span>
+                  <span>Active Weekend Bookings</span>
+                </div>
+                <div className="niond-card-val">{bookings.length} Hires</div>
+                <div className="niond-card-sub">All dispatches scheduled & verified</div>
               </div>
             </div>
 

@@ -17,3 +17,4 @@ if (hasDeployKey) {
 
 console.log('📦 [Vite] Building frontend bundle...');
 execSync('npx vite build', { stdio: 'inherit' });
+
