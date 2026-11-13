@@ -252,7 +252,7 @@ export default function ProductGrid({
                         <span className="price-prefix">From</span>
                         <div className="price-value-row">
                           <span className="price-curr-val">{formatPrice(product.priceAUD)}</span>
-                          <span className="price-term">/day</span>
+                          <span className="price-term">/ 1–4 days</span>
                         </div>
                         {product.bondAUD && (
                           <span className="price-bond-note">+${product.bondAUD} bond</span>

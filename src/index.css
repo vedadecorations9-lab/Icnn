@@ -11269,3 +11269,215 @@ html.lenis, html.lenis body {
   0% { width: 0%; }
   100% { width: 100%; }
 }
+
+/* ==========================================================================
+   22. MOBILE HOW IT WORKS WITHOUT IMAGES (ICON-DRIVEN CLEAN TIMELINE)
+   ========================================================================== */
+.hiw-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.hiw-icon-disc {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(216, 27, 96, 0.08);
+  color: #D81B60;
+  border: 1.5px solid rgba(216, 27, 96, 0.2);
+  transition: all 0.3s ease;
+}
+
+.hiw-step-card:hover .hiw-icon-disc {
+  background: #D81B60;
+  color: #FFFFFF;
+  transform: scale(1.08);
+}
+
+@media (max-width: 768px) {
+  .hiw-card-stage {
+    display: none !important;
+  }
+
+  .hiw-step-card {
+    min-height: auto !important;
+    padding: 18px 18px 20px 18px !important;
+  }
+
+  .hiw-card-top-row {
+    margin-bottom: 8px !important;
+    gap: 8px !important;
+  }
+
+  .hiw-number-badge {
+    margin: 0 !important;
+  }
+
+  .hiw-icon-disc {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+/* ==========================================================================
+   23. CHECKOUT MODAL: FULFILLMENT SELECTOR (BRISBANE DELIVERY VS PICKUP)
+   ========================================================================== */
+.fulfillment-toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 600px) {
+  .fulfillment-toggle-group {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.fulfillment-option-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(216, 27, 96, 0.15);
+  background: #FFFFFF;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.fulfillment-option-card:hover {
+  border-color: rgba(216, 27, 96, 0.4);
+  background: #FFF9FC;
+}
+
+.fulfillment-option-card.selected {
+  border-color: #D81B60;
+  background: linear-gradient(135deg, #FFF5F9 0%, #FFFFFF 100%);
+  box-shadow: 0 4px 14px rgba(216, 27, 96, 0.12);
+}
+
+.fulfillment-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(216, 27, 96, 0.08);
+  color: #D81B60;
+  flex-shrink: 0;
+}
+
+.fulfillment-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.fulfillment-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1B061A;
+}
+
+.fulfillment-sub {
+  font-size: 0.6875rem;
+  color: #7D6B79;
+}
+
+.fulfillment-radio-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(216, 27, 96, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fulfillment-option-card.selected .fulfillment-radio-dot {
+  border-color: #D81B60;
+}
+
+.dot-inner {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #D81B60;
+}
+
+.fulfillment-pickup-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #FFF5F9;
+  border: 1px dashed rgba(216, 27, 96, 0.3);
+  margin-bottom: 14px;
+  font-size: 0.78rem;
+  color: #553C4D;
+  line-height: 1.45;
+}
+
+.fulfillment-pickup-banner strong {
+  color: #D81B60;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.order-summary-pill-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.order-type-tag, .order-period-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #FDF2F7;
+  color: #D81B60;
+  border: 1px solid rgba(216, 27, 96, 0.15);
+}
+
+/* ==========================================================================
+   24. UNIFIED DESKTOP NAVBAR ACCOUNT BUTTON
+   ========================================================================== */
+.nav-auth-unified-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 8px 16px !important;
+  font-size: 0.8125rem !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, rgba(216, 27, 96, 0.08) 0%, rgba(212, 139, 112, 0.12) 100%) !important;
+  color: #D81B60 !important;
+  border: 1.5px solid rgba(216, 27, 96, 0.24) !important;
+  transition: all 0.2s ease !important;
+}
+
+.nav-auth-unified-btn:hover {
+  background: linear-gradient(135deg, #D81B60 0%, #C2185B 100%) !important;
+  color: #FFFFFF !important;
+  border-color: #D81B60 !important;
+  box-shadow: 0 4px 14px rgba(216, 27, 96, 0.25) !important;
+  transform: translateY(-1px) !important;
+}

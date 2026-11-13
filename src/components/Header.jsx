@@ -170,17 +170,6 @@ export default function Header({
                   <span>How it works</span>
                 </a>
               </li>
-
-              {/* 3. Track Delivery */}
-              <li className="nav-menu-item">
-                <button
-                  type="button"
-                  className="nav-link-btn"
-                  onClick={() => onOpenTrackOrder?.()}
-                >
-                  <span>Track delivery</span>
-                </button>
-              </li>
             </ul>
           </nav>
 

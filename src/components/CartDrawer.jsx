@@ -62,6 +62,21 @@ export default function CartDrawer({
           </button>
         </div>
 
+        {/* Minimal Delivery Banner (Compact 1-line whisper) */}
+        {cartItemsWithDetails.length > 0 && (
+          <div className="cart-minimal-delivery-bar">
+            {isFreeDelivery ? (
+              <span className="cart-delivery-unlocked-text">
+                ✨ Free Greater Brisbane delivery unlocked
+              </span>
+            ) : (
+              <span className="cart-delivery-tier-text">
+                Add <strong>{formatPrice(thresholdAUD - rawSubtotalAUD)}</strong> for free Brisbane delivery ($250+)
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Scrollable Cart Items List */}
         <div className="cart-items-scrollable-body">
           {cartItemsWithDetails.length > 0 ? (
@@ -95,9 +110,7 @@ export default function CartDrawer({
                     </div>
 
                     <div className="cart-item-minimal-meta">
-                      <span className="cart-item-minimal-rate">{formatPrice(item.calculatedPrice)}/day</span>
-                      <span className="cart-item-minimal-sep">·</span>
-                      <span className="cart-item-minimal-bond">+${item.bondAUD || 30} bond</span>
+                      <span className="cart-item-minimal-rate">{formatPrice(item.calculatedPrice)} / 1–4 days</span>
                     </div>
 
                     <div className="cart-item-minimal-bottom-row">
@@ -160,9 +173,13 @@ export default function CartDrawer({
               </div>
               <div className="cart-summary-line">
                 <span>Brisbane Delivery & Setup</span>
+                <span className={`cart-summary-num ${isFreeDelivery ? 'free' : ''}`}>
+                  {isFreeDelivery ? 'FREE' : formatPrice(deliveryAUD)}
+                </span>
                 <span className="cart-summary-num">{formatPrice(deliveryAUD)}</span>
               </div>
               <div className="cart-summary-line subtle">
+                <span>Refundable Bond (Held on Card)</span>
                 <span>Refundable Security Bond</span>
                 <span className="cart-summary-num">${totalBondAUD} AUD</span>
               </div>
@@ -190,6 +207,7 @@ export default function CartDrawer({
 
             <div className="cart-minimal-trust-note">
               <ShieldCheck size={13} />
+              <span>100% Bond Security · Stripe Verified Booking</span>
               <span>100% Bond Security · Verified Hire Booking</span>
             </div>
           </div>

@@ -43,18 +43,6 @@ export default function SubNav({ onOpenCategories, onFilterCategory, onOpenTrack
           </li>
           <li><a href="#artisan-heritage" className="nav-link">Artisan Stories</a></li>
           <li><a href="#lookbook-section" className="nav-link">Inspiration</a></li>
-          <li>
-            <a
-              href="#track-order"
-              className="nav-link"
-              onClick={(e) => {
-                e.preventDefault();
-                onOpenTrackOrder();
-              }}
-            >
-              Track Order
-            </a>
-          </li>
         </ul>
 
       </div>

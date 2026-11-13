@@ -61,7 +61,7 @@ export default function Lookbook({ onOpenQuickView, onAddToCart, formatPrice }) 
               />
               <div className="lookbook-card-info">
                 <h4 className="lookbook-card-title">Commercial 6x3m pop-up gazebo</h4>
-                <div className="lookbook-card-price">{formatPrice(85)} <span style={{ fontSize: '0.8rem', color: '#E8A28E' }}>/ day</span></div>
+                <div className="lookbook-card-price">{formatPrice(85)} <span style={{ fontSize: '0.8rem', color: '#E8A28E' }}>/ 1–4 days</span></div>
               </div>
               <button
                 className="btn-primary"

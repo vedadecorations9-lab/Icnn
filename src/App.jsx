@@ -5,6 +5,7 @@ import { useConvexStore, useLocalStore } from './hooks/useProductsData';
 import { useConvexCategoriesStore, useLocalCategoriesStore } from './hooks/useCategoriesData';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import CategoriesShowcase from './components/CategoriesShowcase';
 import BentoPromos from './components/BentoPromos';
 import HowItWorks from './components/HowItWorks';
 import ShopPage from './components/ShopPage';
@@ -236,6 +237,26 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
     window.scrollTo(0, 0);
   };
 
+  const handleScrollToCategories = () => {
+    closeAllDrawers();
+    if (currentView !== 'home') {
+      setCurrentView('home');
+      try {
+        window.history.pushState(null, '', '/');
+      } catch {}
+    }
+    setTimeout(() => {
+      const el = document.getElementById('categories-section');
+      if (el) {
+        if (window.__iconLenis) {
+          window.__iconLenis.scrollTo(el, { offset: -70, duration: 1.1 });
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 60);
+  };
+
   const handleNavigateAuth = (mode = 'sign-up') => {
     closeAllDrawers();
     setCurrentView(mode);
@@ -336,10 +357,18 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
              (Product listings and category cards shifted to dedicated Shop Page)
              ================================================================= */
           <>
-            {/* Hero Banner with Direct CTA to Hire Shop */}
+            {/* Hero Banner with Direct CTA to Categories */}
             <Hero
-              onExploreCategories={() => handleNavigateCatalog('all')}
+              onExploreCategories={handleScrollToCategories}
               onViewCatalog={() => handleNavigateCatalog('all')}
+            />
+
+            {/* Event Categories Showcase */}
+            <CategoriesShowcase
+              categories={categories}
+              products={products}
+              onExploreCategory={(catId) => handleNavigateCatalog(catId)}
+              onViewAllItems={() => handleNavigateCatalog('all')}
             />
 
             {/* 3-Column Promo Bento Banners: The 3 Pillars of Icon */}

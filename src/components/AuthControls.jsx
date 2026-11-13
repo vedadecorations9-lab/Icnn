@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react';
+import { Show, SignInButton, UserButton } from '@clerk/react';
+import { User } from 'lucide-react';
 
 const PUBLISHABLE_KEY =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
@@ -25,7 +26,7 @@ export default function AuthControls({ onNavigateAuth }) {
       <div className="nav-auth-buttons-group">
         <button
           type="button"
-          className="nav-auth-btn"
+          className="nav-auth-btn nav-auth-unified-btn"
           onClick={() => {
             if (onNavigateAuth) {
               onNavigateAuth('sign-in');
@@ -37,27 +38,10 @@ export default function AuthControls({ onNavigateAuth }) {
               );
             }
           }}
-          title="Sign in with Clerk"
+          title="Sign in or create an account"
         >
-          <span>Sign in</span>
-        </button>
-        <button
-          type="button"
-          className="nav-auth-btn nav-signup-btn hide-mobile"
-          onClick={() => {
-            if (onNavigateAuth) {
-              onNavigateAuth('sign-up');
-            } else {
-              alert(
-                'Clerk Publishable Key is missing!\n\n' +
-                '• On Vercel: Add VITE_CLERK_PUBLISHABLE_KEY in Project Settings -> Environment Variables, then click "Redeploy" in Deployments.\n\n' +
-                '• Locally: Add VITE_CLERK_PUBLISHABLE_KEY=pk_test_... in a .env.local file in your project folder.'
-              );
-            }
-          }}
-          title="Create an Icon account"
-        >
-          <span>Sign up</span>
+          <User size={14} />
+          <span>Sign In / Create Account</span>
         </button>
       </div>
     );
@@ -67,7 +51,7 @@ export default function AuthControls({ onNavigateAuth }) {
     return (
       <button
         type="button"
-        className="nav-auth-btn"
+        className="nav-auth-btn nav-auth-unified-btn"
         onClick={() => {
           alert(
             'Clerk Warning: You are using a Production Key (pk_live_...) on localhost.\n\n' +
@@ -76,7 +60,8 @@ export default function AuthControls({ onNavigateAuth }) {
         }}
         title="Production key on localhost"
       >
-        <span>Sign in (Live Key)</span>
+        <User size={14} />
+        <span>Sign In (Live Key)</span>
       </button>
     );
   }
@@ -100,15 +85,15 @@ export default function AuthControls({ onNavigateAuth }) {
       <Show when="signed-out">
         <div className="nav-auth-buttons-group">
           <SignInButton mode="modal">
-            <button type="button" className="nav-auth-btn">
-              <span>Sign in</span>
+            <button
+              type="button"
+              className="nav-auth-btn nav-auth-unified-btn"
+              title="Sign in or create an account"
+            >
+              <User size={14} />
+              <span>Sign In / Create Account</span>
             </button>
           </SignInButton>
-          <SignUpButton mode="modal">
-            <button type="button" className="nav-auth-btn nav-signup-btn hide-mobile">
-              <span>Sign up</span>
-            </button>
-          </SignUpButton>
         </div>
       </Show>
     </div>

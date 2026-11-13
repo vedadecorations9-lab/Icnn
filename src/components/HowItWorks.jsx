@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ShoppingBag, ClipboardCheck, Truck } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -8,15 +9,17 @@ const STEPS = [
   {
     step: '01',
     short: 'Select',
+    icon: ShoppingBag,
     image: '/assets/images/how-it-works-step1.webp',
     fallback: '/assets/images/how-it-works-step1.jpg',
     alt: 'Step 1: Select your equipment online at Icon Party Hire',
     title: 'Select your equipment',
-    description: 'Add equipment to your quote and check live availability. Book & pay for your event 24/7 with zero hassle.'
+    description: 'Add equipment to your quote and check live availability. Book your event 24/7 with zero hassle.'
   },
   {
     step: '02',
     short: 'Confirm',
+    icon: ClipboardCheck,
     image: '/assets/images/how-it-works-step2.webp',
     fallback: '/assets/images/how-it-works-step2.jpg',
     alt: 'Step 2: We confirm the details and schedule dispatch',
@@ -26,6 +29,7 @@ const STEPS = [
   {
     step: '03',
     short: 'Deliver',
+    icon: Truck,
     image: '/assets/images/how-it-works-step3.webp',
     fallback: '/assets/images/how-it-works-step3.jpg',
     alt: 'Step 3: We deliver, build & collect at your venue',
@@ -184,40 +188,48 @@ export default function HowItWorks() {
           onTouchStart={() => handleUserInteraction()}
           onMouseDown={() => handleUserInteraction()}
         >
-          {STEPS.map((step, idx) => (
-            <article
-              key={idx}
-              className={`hiw-step-card ${activeStep === idx ? 'is-active' : ''}`}
-              onClick={() => handleUserInteraction(idx)}
-            >
-              
-              {/* Illustration Card Image Stage */}
-              <div className="hiw-card-stage">
-                <picture>
-                  <source srcSet={step.image} type="image/webp" />
-                  <img
-                    src={step.fallback}
-                    alt={step.alt}
-                    className="hiw-card-img"
-                    loading="lazy"
-                    width="300"
-                    height="247"
-                  />
-                </picture>
-              </div>
-
-              {/* Step Meta: Rose-Gold Step Number Badge + Text */}
-              <div className="hiw-card-body">
-                <div className="hiw-number-badge" aria-label={`Step ${step.step}`}>
-                  <span>{step.step}</span>
-                </div>
+          {STEPS.map((step, idx) => {
+            const StepIcon = step.icon;
+            return (
+              <article
+                key={idx}
+                className={`hiw-step-card ${activeStep === idx ? 'is-active' : ''}`}
+                onClick={() => handleUserInteraction(idx)}
+              >
                 
-                <h3 className="hiw-step-title">{step.title}</h3>
-                <p className="hiw-step-desc">{step.description}</p>
-              </div>
+                {/* Illustration Card Image Stage (Desktop Only - completely removed on mobile) */}
+                <div className="hiw-card-stage hide-mobile">
+                  <picture>
+                    <source srcSet={step.image} type="image/webp" />
+                    <img
+                      src={step.fallback}
+                      alt={step.alt}
+                      className="hiw-card-img"
+                      loading="lazy"
+                      width="300"
+                      height="247"
+                    />
+                  </picture>
+                </div>
 
-            </article>
-          ))}
+                {/* Step Meta: Rose-Gold Step Number Badge + Icon + Text */}
+                <div className="hiw-card-body">
+                  <div className="hiw-card-top-row">
+                    <div className="hiw-number-badge" aria-label={`Step ${step.step}`}>
+                      <span>{step.step}</span>
+                    </div>
+                    <div className="hiw-icon-disc">
+                      <StepIcon size={17} />
+                    </div>
+                  </div>
+                  
+                  <h3 className="hiw-step-title">{step.title}</h3>
+                  <p className="hiw-step-desc">{step.description}</p>
+                </div>
+
+              </article>
+            );
+          })}
         </div>
 
         {/* Pagination Dots (Mobile Only) */}

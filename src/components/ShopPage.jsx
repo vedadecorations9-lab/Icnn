@@ -166,44 +166,7 @@ export default function ShopPage({
     <div className="shop-page-wrapper" aria-label="Icon Party Hire Equipment Shop">
       
       {/* =========================================================================
-         1. TOP EDITORIAL BANNER (Exact Wink Reference Match: Clean, Quiet Luxury)
-         ========================================================================= */}
-      <section className="shop-hero-card-section">
-        <div className="container">
-          <div className="shop-hero-card">
-            
-            {/* Left Side: Soft Studio Celebration Visual */}
-            <div className="shop-hero-media">
-              <img
-                src="/assets/images/shop_hero_banner.jpg"
-                alt="Icon Party Hire Celebration Service"
-                className="shop-hero-img"
-              />
-            </div>
-
-            {/* Right Side: Pure Typography (Zero Pills, Quiet Luxury) */}
-            <div className="shop-hero-copy">
-              <span className="shop-hero-kicker">- Collections</span>
-
-              <h1 className="shop-hero-title">
-                Explore The Complete Collection of{' '}
-                {selectedCat === 'all' ? 'Icon Party Hire' : currentCategoryMeta.label}
-              </h1>
-
-              <p className="shop-hero-desc">
-                {selectedCat === 'all'
-                  ? "Don't miss out on premium commercial event hire equipment for your next celebration."
-                  : currentCategoryMeta.description ||
-                    "Commercial party equipment serviced and delivered across Greater Brisbane."}
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-         2. BREADCRUMBS & SECTION TITLE BAR
+         1. BREADCRUMBS & SECTION TITLE BAR
          ========================================================================= */}
       <section className="shop-subnav-strip">
         <div className="container">
@@ -369,7 +332,7 @@ export default function ShopPage({
                 {/* Filter Group: Price Range Slider */}
                 <div className="filter-group-block">
                   <div className="filter-group-header-between">
-                    <h4 className="filter-group-heading">Daily Hire Rate</h4>
+                    <h4 className="filter-group-heading">Hire Rate (1–4 Days)</h4>
                     <span className="price-range-indicator">Up to ${priceMax} AUD</span>
                   </div>
 
@@ -690,7 +653,7 @@ export default function ShopPage({
                                 <span className="price-main-figure">
                                   {formatPrice ? formatPrice(product.priceAUD) : `$${product.priceAUD}`}
                                 </span>
-                                <span className="price-term-tag">/day</span>
+                                <span className="price-term-tag">/ 1–4 days</span>
                               </div>
                               {product.bondAUD && (
                                 <span className="price-bond-sub">
@@ -815,7 +778,7 @@ export default function ShopPage({
               {/* Price Range */}
               <div className="drawer-section">
                 <div className="filter-group-header-between">
-                  <h4>Daily Rate Limit</h4>
+                  <h4>Rate Limit (1–4 Days)</h4>
                   <span className="price-range-indicator">Up to ${priceMax} AUD</span>
                 </div>
                 <input

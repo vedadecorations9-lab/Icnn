@@ -33,7 +33,7 @@ export default function QuickViewModal({
             <h2 className="quickview-title">{product.name}</h2>
             <div className="quickview-price-row">
               <span className="quickview-current-price">{formatPrice(priceVal)}</span>
-              <span style={{ fontSize: '0.875rem', color: 'var(--color-rose-gold)', fontWeight: 600 }}>/ Event Hire</span>
+              <span style={{ fontSize: '0.875rem', color: 'var(--color-rose-gold)', fontWeight: 600 }}>/ 1–4 Days</span>
               {product.originalAUD && (
                 <span className="quickview-original-price">${product.originalAUD} AUD</span>
               )}
@@ -42,7 +42,7 @@ export default function QuickViewModal({
             <p className="quickview-desc">{product.description}</p>
             
             <div className="spec-list">
-              <div><span className="spec-item-label">Hire period:</span> <div className="spec-item-val">{product.hirePeriod || '24–72h weekend hire'}</div></div>
+              <div><span className="spec-item-label">Hire period:</span> <div className="spec-item-val">{product.hirePeriod || '1–4 Days Hire'}</div></div>
               <div><span className="spec-item-label">Refundable bond:</span> <div className="spec-item-val">${product.bondAUD || 50} AUD</div></div>
               <div><span className="spec-item-label">Construction:</span> <div className="spec-item-val">{product.material}</div></div>
               <div><span className="spec-item-label">Warehouse SKU:</span> <div className="spec-item-val">{product.sku}</div></div>
