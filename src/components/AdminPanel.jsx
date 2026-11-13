@@ -448,7 +448,7 @@ export default function AdminPanel({
           <div className="admin-brand-lockup">
             <div className="admin-brand-logo-frame">
               <img
-                src="/assets/images/logo.webp"
+                src="/assets/images/icon_logo.png"
                 alt="Icon Party Hire Circular Logo"
                 className="admin-brand-logo-img"
               />
