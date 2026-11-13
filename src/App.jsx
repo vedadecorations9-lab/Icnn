@@ -7,7 +7,6 @@ import { useConvexCategoriesStore, useLocalCategoriesStore } from './hooks/useCa
 import { useConvexBookingsStore, useLocalBookingsStore } from './hooks/useBookingsData';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import CategoriesShowcase from './components/CategoriesShowcase';
 import BentoPromos from './components/BentoPromos';
 import HowItWorks from './components/HowItWorks';
 import ShopPage from './components/ShopPage';
@@ -475,18 +474,10 @@ function AppContent({
              (Product listings and category cards shifted to dedicated Shop Page)
              ================================================================= */
           <>
-            {/* Hero Banner with Direct CTA to Categories */}
+            {/* Hero Banner with Direct CTA to Dedicated Hire Shop */}
             <Hero
-              onExploreCategories={handleScrollToCategories}
+              onExploreCategories={() => handleNavigateCatalog('all')}
               onViewCatalog={() => handleNavigateCatalog('all')}
-            />
-
-            {/* Event Categories Showcase */}
-            <CategoriesShowcase
-              categories={categories}
-              products={products}
-              onExploreCategory={(catId) => handleNavigateCatalog(catId)}
-              onViewAllItems={() => handleNavigateCatalog('all')}
             />
 
             {/* 3-Column Promo Bento Banners: The 3 Pillars of Icon */}
