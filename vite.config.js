@@ -33,6 +33,22 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.CONVEX_URL': JSON.stringify(convexUrl),
       'import.meta.env.NEXT_PUBLIC_CONVEX_URL': JSON.stringify(convexUrl)
     },
+    build: {
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('@clerk')) return 'vendor-clerk';
+              if (id.includes('convex')) return 'vendor-convex';
+              if (id.includes('gsap') || id.includes('lenis')) return 'vendor-motion';
+              if (id.includes('lucide-react')) return 'vendor-icons';
+              if (id.includes('react') || id.includes('react-dom')) return 'vendor-react';
+            }
+          }
+        }
+      }
+    },
     server: {
       port: 5173,
       open: false
