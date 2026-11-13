@@ -19,7 +19,16 @@ export default function CheckoutModal({ isOpen, onClose, onCompleteOrder }) {
     if (e && e.preventDefault) e.preventDefault();
     const generated = `IPH-AU-${Math.floor(10000 + Math.random() * 90000)}`;
     setOrderId(generated);
-    onCompleteOrder();
+    onCompleteOrder?.({
+      id: generated,
+      customerName: fullName || 'Customer Reservation',
+      phone: phone || '+61 400 000 000',
+      city: `${suburb || 'Brisbane'}, ${postcode || 'QLD'}`,
+      eventDate: eventDate || 'Upcoming Weekend',
+      eventType: eventType || 'Party & Event Celebration',
+      carrier: fulfillmentType === 'delivery' ? 'Icon Van 1 (Brisbane Delivery)' : 'Customer Pickup (Murrumba Downs Warehouse)',
+      status: 'Confirmed'
+    });
     setStep(2);
   };
 

@@ -67,6 +67,9 @@ export default function AdminPanel({
   onClose,
   products = [],
   categories = [],
+  bookings: propBookings,
+  onUpdateBookingStatus: propUpdateBookingStatus,
+  onAddBooking: propAddBooking,
   isRealtime = false,
   onAddProduct,
   onUpdateProduct,
@@ -259,16 +262,115 @@ export default function AdminPanel({
 
   const [formData, setFormData] = useState(initialFormState);
 
-  // Real Event Bookings State
-  const [bookings, setBookings] = useState(INITIAL_ORDERS);
-  const [bookingFilter, setBookingFilter] = useState('all');
+  // Real Event Bookings State (Synchronized with Cloud / LocalStorage)
+  const [localBookings, setLocalBookings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('icon_event_bookings');
+      return saved ? JSON.parse(saved) : INITIAL_ORDERS;
+    } catch {
+      return INITIAL_ORDERS;
+    }
+  });
 
-  // Handle Booking Status
+  const bookings = propBookings && propBookings.length >= 0 ? propBookings : localBookings;
+  const [bookingFilter, setBookingFilter] = useState('all');
+  const [isCreateBookingModalOpen, setIsCreateBookingModalOpen] = useState(false);
+
+  // Booking Form State for Manual Admin Order Initiation
+  const initialBookingFormState = {
+    customerName: '',
+    phone: '',
+    email: '',
+    city: 'New Farm, Brisbane QLD',
+    eventDate: 'This Saturday, 2:00 PM',
+    eventType: 'Birthday Celebration',
+    items: '',
+    totalAUD: 280,
+    carrier: 'Icon Van 1 (Brisbane Delivery)',
+    paymentStatus: 'Paid ($100 Bond Held)'
+  };
+  const [bookingFormData, setBookingFormData] = useState(initialBookingFormState);
+
+  // Handle Booking Status Updates (Delivered, Dispatched, Confirmed, Returned)
   const handleBookingStatusChange = (bookingId, newStatus) => {
-    setBookings(prev =>
-      prev.map(b => (b.id === bookingId ? { ...b, status: newStatus } : b))
-    );
-    onToast?.(`Booking ${bookingId} updated to "${newStatus}"`, 'gold');
+    if (propUpdateBookingStatus) {
+      propUpdateBookingStatus(bookingId, newStatus);
+    } else {
+      setLocalBookings(prev => {
+        const updated = prev.map(b => (b.id === bookingId ? { ...b, status: newStatus } : b));
+        try {
+          localStorage.setItem('icon_event_bookings', JSON.stringify(updated));
+        } catch (e) {
+          console.error(e);
+        }
+        return updated;
+      });
+
+      if (newStatus.toLowerCase() === 'delivered') {
+        onToast?.(`Order #${bookingId} marked as DELIVERED successfully! Fulfillment logged.`, 'success');
+      } else if (newStatus.toLowerCase() === 'dispatched') {
+        onToast?.(`Order #${bookingId} marked as DISPATCHED for delivery run.`, 'gold');
+      } else {
+        onToast?.(`Order #${bookingId} updated to "${newStatus}"`, 'info');
+      }
+    }
+  };
+
+  // Open Manual Order Modal
+  const handleOpenBookingCreate = () => {
+    setBookingFormData({
+      ...initialBookingFormState,
+      items: products.length > 0 ? `${products[0].name} (x1)` : 'Event Equipment Hire Package'
+    });
+    setIsCreateBookingModalOpen(true);
+  };
+
+  // Submit Manual Order Initiation
+  const handleSubmitBookingCreate = (e) => {
+    e.preventDefault();
+    if (!bookingFormData.customerName.trim()) {
+      onToast?.('Please enter a customer name', 'warning');
+      return;
+    }
+
+    const generatedId = `IPH-AU-${Math.floor(10000 + Math.random() * 90000)}`;
+    const itemsArray = bookingFormData.items
+      ? bookingFormData.items.split(',').map(s => s.trim()).filter(Boolean)
+      : ['Party Equipment Package'];
+
+    const newBooking = {
+      id: generatedId,
+      customerName: bookingFormData.customerName.trim(),
+      phone: bookingFormData.phone.trim() || '+61 400 000 000',
+      email: bookingFormData.email.trim() || 'customer@partyhire.com.au',
+      city: bookingFormData.city.trim() || 'Brisbane QLD',
+      eventDate: bookingFormData.eventDate.trim() || 'Upcoming Weekend',
+      eventType: bookingFormData.eventType.trim() || 'Party Hire Event',
+      items: itemsArray,
+      totalAUD: Number(bookingFormData.totalAUD) || 200,
+      status: 'Confirmed',
+      carrier: bookingFormData.carrier,
+      tracking: `IPH-DEL-${Math.floor(10000 + Math.random() * 90000)}`,
+      date: 'Just now',
+      paymentStatus: bookingFormData.paymentStatus || 'Paid ($100 Bond Held)'
+    };
+
+    if (propAddBooking) {
+      propAddBooking(newBooking);
+    } else {
+      setLocalBookings(prev => {
+        const updated = [newBooking, ...prev];
+        try {
+          localStorage.setItem('icon_event_bookings', JSON.stringify(updated));
+        } catch (err) {
+          console.error(err);
+        }
+        return updated;
+      });
+      onToast?.(`New Order #${generatedId} initiated successfully!`, 'success');
+    }
+
+    setIsCreateBookingModalOpen(false);
   };
 
   // Open Create Modal
@@ -427,6 +529,41 @@ export default function AdminPanel({
 
     return { totalItems, totalUnits, lowStockCount, totalCatalogValue };
   }, [products]);
+
+  // Real Dynamic Bookings & Revenue Calculations (Zero Fake Data)
+  const bookingStats = useMemo(() => {
+    const totalBookingsCount = bookings.length;
+    const confirmedBookings = bookings.filter(b => (b.status || '').toLowerCase() === 'confirmed');
+    const dispatchedBookings = bookings.filter(b => (b.status || '').toLowerCase() === 'dispatched');
+    const deliveredBookings = bookings.filter(b => (b.status || '').toLowerCase() === 'delivered');
+    const returnedBookings = bookings.filter(b => (b.status || '').toLowerCase() === 'returned');
+
+    // Real Gross Hire Income (Sum of actual bookings in system)
+    const totalIncomeAUD = bookings.reduce((sum, b) => sum + (Number(b.totalAUD) || 0), 0);
+
+    // Real Security Bonds Held (Sum of security bonds from active, non-returned bookings)
+    const totalBondsAUD = bookings
+      .filter(b => (b.status || '').toLowerCase() !== 'returned')
+      .reduce((sum, b) => {
+        if (b.bondAUD) return sum + Number(b.bondAUD);
+        const match = (b.paymentStatus || '').match(/\$(\d+)/);
+        return sum + (match ? Number(match[1]) : 100);
+      }, 0);
+
+    return {
+      totalBookingsCount,
+      confirmedBookings,
+      dispatchedBookings,
+      deliveredBookings,
+      returnedBookings,
+      totalIncomeAUD,
+      totalBondsAUD,
+      confirmedCount: confirmedBookings.length,
+      dispatchedCount: dispatchedBookings.length,
+      deliveredCount: deliveredBookings.length,
+      returnedCount: returnedBookings.length
+    };
+  }, [bookings]);
 
   const targetDeleteProduct = products.find(p => p.id === deletingProductId);
 
@@ -682,6 +819,18 @@ export default function AdminPanel({
                 <Plus size={16} />
                 <span className="hide-mobile">Add Category</span>
                 <span className="show-mobile">Add</span>
+              </button>
+            )}
+
+            {activeTab === 'bookings' && (
+              <button
+                type="button"
+                className="admin-btn-primary"
+                onClick={handleOpenBookingCreate}
+              >
+                <Plus size={16} />
+                <span className="hide-mobile">Initiate Order</span>
+                <span className="show-mobile">Order</span>
               </button>
             )}
 
@@ -1437,19 +1586,33 @@ export default function AdminPanel({
         {activeTab === 'overview' && (
           <div className="admin-tab-content">
             
-            {/* Courier Banner */}
+            {/* Real-time Fleet Logistics & Delivery Progress Banner */}
             <div className="dispatch-hero-banner">
               <div className="dispatch-hero-copy">
-                <span className="dispatch-badge">Today's fleet runs · Greater Brisbane</span>
-                <h3 className="dispatch-title">Icon Mercedes Sprinter & Tail-Lift Truck Fleet</h3>
+                <span className="dispatch-badge">Live Fleet Logistics · Greater Brisbane</span>
+                <h3 className="dispatch-title">
+                  {bookingStats.dispatchedCount > 0
+                    ? `${bookingStats.dispatchedCount} Delivery Run${bookingStats.dispatchedCount === 1 ? '' : 's'} Active in Transit`
+                    : bookingStats.deliveredCount > 0
+                    ? `${bookingStats.deliveredCount} Event Order${bookingStats.deliveredCount === 1 ? '' : 's'} Delivered Successfully`
+                    : `${bookingStats.totalBookingsCount} Event Booking${bookingStats.totalBookingsCount === 1 ? '' : 's'} Staged at Dispatch Bays`}
+                </h3>
                 <p className="dispatch-desc">
-                  18 event packages staged in Murrumba Downs dispatch bays. Express setup crews active in New Farm, Paddington, Hamilton, and Gold Coast.
+                  {bookingStats.totalBookingsCount === 0
+                    ? 'No event hires currently scheduled. Customer orders placed on the website or initiated by admin appear here in real-time.'
+                    : `${bookingStats.confirmedCount} order${bookingStats.confirmedCount === 1 ? '' : 's'} confirmed & staged. ${bookingStats.dispatchedCount} active in transit with delivery drivers. ${bookingStats.deliveredCount} successfully delivered to Brisbane event venues.`}
                 </p>
                 <div className="dispatch-actions">
                   <button
                     type="button"
                     className="btn-white-solid"
-                    onClick={() => onToast?.('Printed 18 delivery manifests and run-sheets', 'gold')}
+                    onClick={() => {
+                      if (bookingStats.totalBookingsCount === 0) {
+                        onToast?.('No orders currently staged to generate manifests.', 'info');
+                      } else {
+                        onToast?.(`Generated driver run manifest for ${bookingStats.totalBookingsCount} active booking(s)`, 'gold');
+                      }
+                    }}
                   >
                     Print Driver Run Sheets
                   </button>
@@ -1458,27 +1621,29 @@ export default function AdminPanel({
                     className="btn-glass-banner"
                     onClick={() => setActiveTab('bookings')}
                   >
-                    Review All Bookings →
+                    Manage Event Bookings ({bookingStats.totalBookingsCount}) →
                   </button>
                 </div>
               </div>
 
               <div className="dispatch-kpi-badge">
                 <Truck size={36} className="text-emerald-400" />
-                <span className="kpi-num">18 / 18</span>
-                <span className="kpi-label">Setups On Schedule</span>
+                <span className="kpi-num">{bookingStats.deliveredCount} / {bookingStats.totalBookingsCount}</span>
+                <span className="kpi-label">Completed Deliveries</span>
               </div>
             </div>
 
-            {/* 4 Signature Niond Pastel Metric Cards */}
+            {/* 4 Signature Niond Pastel Metric Cards (100% Real Dynamic Calculations) */}
             <div className="niond-pastel-grid">
               <div className="niond-pastel-card purple">
                 <div className="niond-card-pill">
                   <span className="pill-dot"></span>
-                  <span>Weekend Revenue</span>
+                  <span>Gross Hire Revenue</span>
                 </div>
-                <div className="niond-card-val">$8,420 AUD</div>
-                <div className="niond-card-sub">38 confirmed party hires · +21.4% vs last week</div>
+                <div className="niond-card-val">${bookingStats.totalIncomeAUD.toLocaleString()} AUD</div>
+                <div className="niond-card-sub">
+                  {bookingStats.totalBookingsCount} real order{bookingStats.totalBookingsCount === 1 ? '' : 's'} recorded in system
+                </div>
               </div>
 
               <div className="niond-pastel-card blue">
@@ -1486,26 +1651,34 @@ export default function AdminPanel({
                   <span className="pill-dot"></span>
                   <span>Security Bonds Held</span>
                 </div>
-                <div className="niond-card-val">$4,250 AUD</div>
-                <div className="niond-card-sub">Held via Stripe AU · 100% automated release</div>
+                <div className="niond-card-val">${bookingStats.totalBondsAUD.toLocaleString()} AUD</div>
+                <div className="niond-card-sub">
+                  {bookingStats.confirmedCount + bookingStats.dispatchedCount} pending post-event return release
+                </div>
               </div>
 
               <div className="niond-pastel-card green">
                 <div className="niond-card-pill">
                   <span className="pill-dot"></span>
-                  <span>Fleet Booked Capacity</span>
+                  <span>Delivered Successfully</span>
                 </div>
-                <div className="niond-card-val">94% Booked</div>
-                <div className="niond-card-sub">Gazebos, Silk Walls & Plinths · Saturday Peak</div>
+                <div className="niond-card-val">{bookingStats.deliveredCount} Delivered</div>
+                <div className="niond-card-sub">
+                  {bookingStats.totalBookingsCount > 0
+                    ? `${Math.round((bookingStats.deliveredCount / bookingStats.totalBookingsCount) * 100)}% of scheduled orders completed`
+                    : 'Awaiting venue drop-offs'}
+                </div>
               </div>
 
               <div className="niond-pastel-card peach">
                 <div className="niond-card-pill">
                   <span className="pill-dot"></span>
-                  <span>Active Weekend Bookings</span>
+                  <span>Active In Transit</span>
                 </div>
-                <div className="niond-card-val">{bookings.length} Hires</div>
-                <div className="niond-card-sub">All dispatches scheduled & verified</div>
+                <div className="niond-card-val">{bookingStats.dispatchedCount} Dispatched</div>
+                <div className="niond-card-sub">
+                  {bookingStats.confirmedCount} confirmed & staged at warehouse bays
+                </div>
               </div>
             </div>
 
@@ -1604,19 +1777,31 @@ export default function AdminPanel({
             <div className="table-header-bar">
               <div>
                 <h3 className="card-box-title">Customer Party & Event Bookings</h3>
-                <p className="card-box-desc">Review party hires, update fulfillment dispatch status, and manage security bonds.</p>
+                <p className="card-box-desc">
+                  {bookingStats.totalBookingsCount} live booking{bookingStats.totalBookingsCount === 1 ? '' : 's'} · {bookingStats.confirmedCount} confirmed, {bookingStats.dispatchedCount} in transit, {bookingStats.deliveredCount} delivered.
+                </p>
               </div>
-              <div className="subpane-pills-row">
-                {['all', 'confirmed', 'dispatched', 'delivered'].map(f => (
-                  <button
-                    key={f}
-                    type="button"
-                    className={`subpane-pill ${bookingFilter === f ? 'active' : ''}`}
-                    onClick={() => setBookingFilter(f)}
-                  >
-                    {f.charAt(0).toUpperCase() + f.slice(1)}
-                  </button>
-                ))}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <div className="subpane-pills-row">
+                  {['all', 'confirmed', 'dispatched', 'delivered', 'returned'].map(f => (
+                    <button
+                      key={f}
+                      type="button"
+                      className={`subpane-pill ${bookingFilter === f ? 'active' : ''}`}
+                      onClick={() => setBookingFilter(f)}
+                    >
+                      {f.charAt(0).toUpperCase() + f.slice(1)}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="admin-btn-primary"
+                  onClick={handleOpenBookingCreate}
+                >
+                  <Plus size={15} />
+                  <span>Initiate Order</span>
+                </button>
               </div>
             </div>
 
@@ -1636,49 +1821,57 @@ export default function AdminPanel({
                     </tr>
                   </thead>
                   <tbody>
-                    {bookings
-                      .filter(b => bookingFilter === 'all' || b.status.toLowerCase() === bookingFilter.toLowerCase())
-                      .map(booking => (
-                        <tr key={booking.id}>
-                          <td className="font-mono font-bold text-pink-600">{booking.id}</td>
-                          <td>
-                            <strong>{booking.customerName}</strong>
-                            <div className="text-subtle-xs">{booking.phone}</div>
-                          </td>
-                          <td>
-                            <div><strong>{booking.eventType}</strong></div>
-                            <div className="text-subtle-xs">{booking.eventDate}</div>
-                            <div className="text-subtle-xs">{booking.city}</div>
-                          </td>
-                          <td>
-                            <ul className="booking-items-list">
-                              {booking.items.map((it, idx) => (
-                                <li key={idx}>• {it}</li>
-                              ))}
-                            </ul>
-                          </td>
-                          <td>
-                            <div className="carrier-tag">{booking.carrier}</div>
-                            <div className="text-subtle-xs font-mono">{booking.tracking}</div>
-                          </td>
-                          <td>
-                            <strong>${booking.totalAUD} AUD</strong>
-                            <div className="text-subtle-xs">{booking.paymentStatus}</div>
-                          </td>
-                          <td>
-                            <select
-                              value={booking.status}
-                              onChange={(e) => handleBookingStatusChange(booking.id, e.target.value)}
-                              className={`status-select-pill status-${booking.status.toLowerCase()}`}
-                            >
-                              <option value="Confirmed">Confirmed</option>
-                              <option value="Dispatched">Dispatched</option>
-                              <option value="Delivered">Delivered</option>
-                              <option value="Returned">Returned</option>
-                            </select>
-                          </td>
-                        </tr>
-                      ))}
+                    {bookings.filter(b => bookingFilter === 'all' || b.status.toLowerCase() === bookingFilter.toLowerCase()).length === 0 ? (
+                      <tr>
+                        <td colSpan="7" style={{ textAlign: 'center', padding: '36px', color: '#64748B' }}>
+                          No event bookings matching "{bookingFilter}".
+                        </td>
+                      </tr>
+                    ) : (
+                      bookings
+                        .filter(b => bookingFilter === 'all' || b.status.toLowerCase() === bookingFilter.toLowerCase())
+                        .map(booking => (
+                          <tr key={booking.id}>
+                            <td className="font-mono font-bold text-pink-600">{booking.id}</td>
+                            <td>
+                              <strong>{booking.customerName}</strong>
+                              <div className="text-subtle-xs">{booking.phone}</div>
+                            </td>
+                            <td>
+                              <div><strong>{booking.eventType}</strong></div>
+                              <div className="text-subtle-xs">{booking.eventDate}</div>
+                              <div className="text-subtle-xs">{booking.city}</div>
+                            </td>
+                            <td>
+                              <ul className="booking-items-list">
+                                {booking.items.map((it, idx) => (
+                                  <li key={idx}>• {it}</li>
+                                ))}
+                              </ul>
+                            </td>
+                            <td>
+                              <div className="carrier-tag">{booking.carrier}</div>
+                              <div className="text-subtle-xs font-mono">{booking.tracking}</div>
+                            </td>
+                            <td>
+                              <strong>${booking.totalAUD} AUD</strong>
+                              <div className="text-subtle-xs">{booking.paymentStatus}</div>
+                            </td>
+                            <td>
+                              <select
+                                value={booking.status}
+                                onChange={(e) => handleBookingStatusChange(booking.id, e.target.value)}
+                                className={`status-select-pill status-${booking.status.toLowerCase()}`}
+                              >
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Dispatched">Dispatched</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Returned">Returned</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -2415,6 +2608,156 @@ export default function AdminPanel({
                 <button type="submit" className="admin-btn-primary">
                   <Check size={16} />
                   <span>{editingCategory ? 'Save Changes' : 'Create Category Card'}</span>
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      )}
+      {/* =====================================================================
+         9. INITIATE NEW ORDER / BOOKING MODAL
+         ===================================================================== */}
+      {isCreateBookingModalOpen && (
+        <div
+          className="admin-modal-backdrop"
+          onClick={() => setIsCreateBookingModalOpen(false)}
+        >
+          <div className="admin-modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
+            <div className="admin-modal-header">
+              <div>
+                <h3 className="modal-title">Initiate New Event Booking</h3>
+                <span className="modal-sub">
+                  Record an offline party hire, phone booking, or customer order directly into Brisbane logistics.
+                </span>
+              </div>
+              <button
+                type="button"
+                className="modal-close-icon-btn"
+                onClick={() => setIsCreateBookingModalOpen(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitBookingCreate} className="admin-modal-form">
+              <div className="modal-form-grid">
+                
+                {/* Customer Name */}
+                <div className="form-group">
+                  <label className="form-label">Customer Name *</label>
+                  <input
+                    type="text"
+                    required
+                    className="form-input"
+                    placeholder="e.g. Liam Hemsworth"
+                    value={bookingFormData.customerName}
+                    onChange={(e) => setBookingFormData({ ...bookingFormData, customerName: e.target.value })}
+                  />
+                </div>
+
+                {/* Customer Phone */}
+                <div className="form-group">
+                  <label className="form-label">Phone Contact *</label>
+                  <input
+                    type="text"
+                    required
+                    className="form-input"
+                    placeholder="e.g. +61 412 345 678"
+                    value={bookingFormData.phone}
+                    onChange={(e) => setBookingFormData({ ...bookingFormData, phone: e.target.value })}
+                  />
+                </div>
+
+                {/* Event Date & Time */}
+                <div className="form-group">
+                  <label className="form-label">Event Date & Time</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. This Saturday, 2:00 PM"
+                    value={bookingFormData.eventDate}
+                    onChange={(e) => setBookingFormData({ ...bookingFormData, eventDate: e.target.value })}
+                  />
+                </div>
+
+                {/* Event Type */}
+                <div className="form-group">
+                  <label className="form-label">Event Type</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. 21st Birthday, Wedding, Corporate"
+                    value={bookingFormData.eventType}
+                    onChange={(e) => setBookingFormData({ ...bookingFormData, eventType: e.target.value })}
+                  />
+                </div>
+
+                {/* Delivery Location / Suburb */}
+                <div className="form-group full-width">
+                  <label className="form-label">Venue / Delivery Address</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. 45 River Terrace, Kangaroo Point QLD 4169"
+                    value={bookingFormData.city}
+                    onChange={(e) => setBookingFormData({ ...bookingFormData, city: e.target.value })}
+                  />
+                </div>
+
+                {/* Hired Equipment Items */}
+                <div className="form-group full-width">
+                  <label className="form-label">Hired Equipment Items (Comma-separated)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. 6x3m White Commercial Gazebo (x1), White Tiffany Resin Chairs (x40)"
+                    value={bookingFormData.items}
+                    onChange={(e) => setBookingFormData({ ...bookingFormData, items: e.target.value })}
+                  />
+                </div>
+
+                {/* Total Hire Rate ($ AUD) */}
+                <div className="form-group">
+                  <label className="form-label">Total Hire Rate ($ AUD) *</label>
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    className="form-input"
+                    value={bookingFormData.totalAUD}
+                    onChange={(e) => setBookingFormData({ ...bookingFormData, totalAUD: e.target.value })}
+                  />
+                </div>
+
+                {/* Fulfillment Carrier */}
+                <div className="form-group">
+                  <label className="form-label">Fulfillment Carrier / Dispatch</label>
+                  <select
+                    className="form-select"
+                    value={bookingFormData.carrier}
+                    onChange={(e) => setBookingFormData({ ...bookingFormData, carrier: e.target.value })}
+                  >
+                    <option value="Icon Van 1 (Brisbane Delivery)">Icon Van 1 (Brisbane Delivery)</option>
+                    <option value="Icon Van 2 (Express Courier)">Icon Van 2 (Express Courier)</option>
+                    <option value="Icon Truck 3 (Setup & Delivery)">Icon Truck 3 (Setup & Delivery)</option>
+                    <option value="Customer Pickup (Murrumba Downs Warehouse)">Customer Pickup (Murrumba Downs)</option>
+                  </select>
+                </div>
+
+              </div>
+
+              <div className="admin-modal-footer">
+                <button
+                  type="button"
+                  className="btn-outline-cancel"
+                  onClick={() => setIsCreateBookingModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="admin-btn-primary">
+                  <Check size={16} />
+                  <span>Initiate & Confirm Order</span>
                 </button>
               </div>
             </form>

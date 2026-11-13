@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { PRODUCTS, CURRENCIES, CATEGORIES } from './data/products';
+import { PRODUCTS, CURRENCIES, CATEGORIES, INITIAL_ORDERS } from './data/products';
 import { isConvexConfigured } from './convexClient';
 import { useConvexStore, useLocalStore } from './hooks/useProductsData';
 import { useConvexCategoriesStore, useLocalCategoriesStore } from './hooks/useCategoriesData';
+import { useConvexBookingsStore, useLocalBookingsStore } from './hooks/useBookingsData';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import CategoriesShowcase from './components/CategoriesShowcase';
@@ -30,7 +31,7 @@ import { useLenisScroll } from './hooks/useLenisScroll';
  * Main application interface rendered with either Convex Real-time Cloud store
  * or local state fallback depending on whether VITE_CONVEX_URL is configured in Vercel.
  */
-function AppContent({ store, categoriesStore, toasts, addToast }) {
+function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast }) {
   const {
     products,
     isRealtime,
@@ -48,6 +49,12 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
     handleDeleteCategory,
     handleResetCategories
   } = categoriesStore;
+
+  const {
+    bookings,
+    handleUpdateBookingStatus,
+    handleAddBooking
+  } = bookingsStore;
 
   // Navigation View: 'home', 'catalog', 'sign-in', 'sign-up'
   const [currentView, setCurrentView] = useState(() => {
@@ -184,9 +191,29 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
     addToast('Item removed from hire bag', 'info');
   };
 
-  const handleCompleteOrder = () => {
+  const handleCompleteOrder = (orderData) => {
+    const totalAUD = cart.reduce((sum, item) => sum + (Number(item.product?.priceAUD) || 0) * (item.quantity || 1), 0);
+    const itemNames = cart.map(item => `${item.product?.name || 'Equipment'} (x${item.quantity || 1})`);
+
+    const newBooking = {
+      id: orderData?.id || `IPH-AU-${Math.floor(10000 + Math.random() * 90000)}`,
+      customerName: orderData?.customerName || 'Customer Reservation',
+      phone: orderData?.phone || '+61 400 000 000',
+      email: orderData?.email || 'customer@eventhire.com.au',
+      city: orderData?.city || 'Brisbane QLD',
+      eventDate: orderData?.eventDate || 'Upcoming Weekend',
+      eventType: orderData?.eventType || 'Party & Event Celebration',
+      items: itemNames.length > 0 ? itemNames : ['Event Equipment Hire Package'],
+      totalAUD: totalAUD > 0 ? totalAUD : 350,
+      status: 'Confirmed',
+      carrier: orderData?.carrier || 'Icon Van 1 (Brisbane Delivery)',
+      tracking: `IPH-DEL-${Math.floor(10000 + Math.random() * 90000)}`,
+      date: 'Just now',
+      paymentStatus: 'Paid ($100 Bond Held)'
+    };
+
+    handleAddBooking(newBooking);
     setCart([]);
-    addToast('Booking confirmed! Brisbane logistics dispatch scheduled.', 'success');
   };
 
   // Wishlist Operations
@@ -320,6 +347,9 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
             onClose={handleCloseAdmin}
             products={products}
             categories={categories}
+            bookings={bookings}
+            onUpdateBookingStatus={handleUpdateBookingStatus}
+            onAddBooking={handleAddBooking}
             isRealtime={isRealtime}
             onAddProduct={handleAdd}
             onUpdateProduct={handleUpdate}
@@ -538,10 +568,12 @@ function ConvexConnectedApp() {
   };
   const store = useConvexStore(PRODUCTS, addToast);
   const categoriesStore = useConvexCategoriesStore(CATEGORIES, addToast);
+  const bookingsStore = useConvexBookingsStore(INITIAL_ORDERS, addToast);
   return (
     <AppContent
       store={store}
       categoriesStore={categoriesStore}
+      bookingsStore={bookingsStore}
       toasts={toasts}
       addToast={addToast}
     />
@@ -560,10 +592,12 @@ function LocalFallbackApp() {
   };
   const store = useLocalStore(PRODUCTS, addToast);
   const categoriesStore = useLocalCategoriesStore(CATEGORIES, addToast);
+  const bookingsStore = useLocalBookingsStore(INITIAL_ORDERS, addToast);
   return (
     <AppContent
       store={store}
       categoriesStore={categoriesStore}
+      bookingsStore={bookingsStore}
       toasts={toasts}
       addToast={addToast}
     />
