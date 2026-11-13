@@ -27,7 +27,9 @@ import {
   Clock,
   MapPin,
   Phone,
-  Mail
+  Mail,
+  List,
+  LayoutGrid
 } from 'lucide-react';
 import { CATEGORIES, BRISBANE_STORE_INFO, INITIAL_ORDERS } from '../data/products';
 
@@ -78,6 +80,7 @@ export default function AdminPanel({
   // Navigation Tabs: 'inventory' | 'overview' | 'bookings' | 'logistics'
   const [activeTab, setActiveTab] = useState('inventory');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [viewMode, setViewMode] = useState('table'); // 'table' | 'grid'
   const mainScrollRef = useRef(null);
 
   // Guarantee native mouse wheel scrolling in Admin Panel: pause Lenis on mount and resume on unmount
@@ -549,6 +552,14 @@ export default function AdminPanel({
 
         {/* Footer Actions */}
         <div className="admin-sidebar-footer">
+          <div className="admin-session-badge">
+            <span className="session-status-dot" />
+            <div className="session-text-stack">
+              <span className="session-role">Admin Operations HQ</span>
+              <span className="session-meta">Brisbane Fleet · 4503</span>
+            </div>
+          </div>
+
           <button
             type="button"
             className="admin-exit-btn"
@@ -691,29 +702,58 @@ export default function AdminPanel({
             {/* Quick Metrics Bar */}
             <div className="admin-kpi-strip">
               <div className="kpi-mini-card">
-                <span className="kpi-label">Equipment models</span>
-                <span className="kpi-val">{stats.totalItems} SKUs</span>
+                <div className="kpi-mini-top">
+                  <div className="kpi-mini-icon-box magenta">
+                    <Package size={17} />
+                  </div>
+                  <span className="kpi-trend-pill positive">Active Catalog</span>
+                </div>
+                <span className="kpi-label">Commercial Models</span>
+                <span className="kpi-val">{stats.totalItems} <span className="kpi-unit">SKUs</span></span>
               </div>
+
               <div className="kpi-mini-card">
-                <span className="kpi-label">Warehouse units</span>
-                <span className="kpi-val">{stats.totalUnits} Units</span>
+                <div className="kpi-mini-top">
+                  <div className="kpi-mini-icon-box emerald">
+                    <Layers size={17} />
+                  </div>
+                  <span className="kpi-trend-pill positive">Available Fleet</span>
+                </div>
+                <span className="kpi-label">Warehouse Stock</span>
+                <span className="kpi-val">{stats.totalUnits} <span className="kpi-unit">Units</span></span>
               </div>
+
               <div className="kpi-mini-card">
-                <span className="kpi-label">Low stock alerts</span>
+                <div className="kpi-mini-top">
+                  <div className="kpi-mini-icon-box amber">
+                    <AlertTriangle size={17} />
+                  </div>
+                  <span className={`kpi-trend-pill ${stats.lowStockCount > 0 ? 'warning' : 'neutral'}`}>
+                    {stats.lowStockCount > 0 ? 'Restock Alert' : 'Healthy Stock'}
+                  </span>
+                </div>
+                <span className="kpi-label">Low Stock Alerts</span>
                 <span className={`kpi-val ${stats.lowStockCount > 0 ? 'text-amber-500' : ''}`}>
-                  {stats.lowStockCount} Items
+                  {stats.lowStockCount} <span className="kpi-unit">Items</span>
                 </span>
               </div>
+
               <div className="kpi-mini-card">
-                <span className="kpi-label">Fleet inventory value</span>
-                <span className="kpi-val text-pink-600">${stats.totalCatalogValue.toLocaleString()} AUD</span>
+                <div className="kpi-mini-top">
+                  <div className="kpi-mini-icon-box gold">
+                    <DollarSign size={17} />
+                  </div>
+                  <span className="kpi-trend-pill positive">1–4 Days AUD</span>
+                </div>
+                <span className="kpi-label">Fleet Asset Value</span>
+                <span className="kpi-val text-pink-600">${stats.totalCatalogValue.toLocaleString()} <span className="kpi-unit">AUD</span></span>
               </div>
             </div>
 
             {/* Filter & Controls Toolbar */}
             <div className="admin-toolbar-card">
               
-              {/* Row 1: Search & Filter Inputs */}
+              {/* Row 1: Search & Filter Inputs + View Switcher */}
               <div className="toolbar-top-row">
                 <div className="toolbar-search-box">
                   <Search size={16} className="search-icon" />
@@ -760,6 +800,28 @@ export default function AdminPanel({
                     <option value="price_asc">Lowest Hire Rate</option>
                     <option value="stock_desc">Highest Stock Units</option>
                   </select>
+
+                  {/* View Mode Switcher */}
+                  <div className="admin-view-toggle hide-mobile" role="group" aria-label="View Switcher">
+                    <button
+                      type="button"
+                      className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+                      onClick={() => setViewMode('table')}
+                      title="Compact Table View"
+                    >
+                      <List size={15} />
+                      <span>Table</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                      onClick={() => setViewMode('grid')}
+                      title="Visual Bento Grid View"
+                    >
+                      <LayoutGrid size={15} />
+                      <span>Grid</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -790,171 +852,306 @@ export default function AdminPanel({
 
             </div>
 
-            {/* Inventory Data Table */}
-            <div className="admin-table-card">
-              {/* Desktop / Tablet Data Table */}
-              <div className="table-responsive-wrapper hide-mobile-table">
-                <table className="admin-data-table">
-                  <thead>
-                    <tr>
-                      <th style={{ width: '40%' }}>Equipment & SKU</th>
-                      <th>Category</th>
-                      <th>Weekend Rate</th>
-                      <th>Bond</th>
-                      <th>Warehouse Stock</th>
-                      <th>Commercial Spec</th>
-                      <th style={{ textAlign: 'right', width: '130px' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredProducts.length === 0 ? (
+            {/* Inventory Container: Table or Bento Grid */}
+            {viewMode === 'table' ? (
+              <div className="admin-table-card">
+                {/* Desktop / Tablet Data Table */}
+                <div className="table-responsive-wrapper hide-mobile-table">
+                  <table className="admin-data-table">
+                    <thead>
                       <tr>
-                        <td colSpan={7} className="table-empty-state">
-                          <AlertTriangle size={32} className="empty-icon text-amber-500" />
-                          <h4>No equipment found matching criteria</h4>
-                          <p>Try adjusting your search terms, clearing category filters, or add new equipment.</p>
-                          <button
-                            type="button"
-                            className="btn-outline-gold"
-                            onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setStockFilter('all'); }}
-                          >
-                            Reset Filters
-                          </button>
-                        </td>
+                        <th style={{ width: '40%' }}>Equipment & SKU</th>
+                        <th>Category</th>
+                        <th>Hire Rate (1–4 Days)</th>
+                        <th>Bond</th>
+                        <th>Warehouse Stock</th>
+                        <th>Commercial Spec</th>
+                        <th style={{ textAlign: 'right', width: '130px' }}>Actions</th>
                       </tr>
-                    ) : (
-                      filteredProducts.map(prod => {
-                        const price = prod.priceAUD || Math.round((prod.priceINR || 0) * 0.0185);
-                        const isLowStock = (prod.stock || 0) <= 5 && (prod.stock || 0) > 0;
-                        const isOutOfStock = (prod.stock || 0) === 0;
+                    </thead>
+                    <tbody>
+                      {filteredProducts.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="table-empty-state">
+                            <AlertTriangle size={32} className="empty-icon text-amber-500" />
+                            <h4>No equipment found matching criteria</h4>
+                            <p>Try adjusting your search terms, clearing category filters, or add new equipment.</p>
+                            <button
+                              type="button"
+                              className="btn-outline-gold"
+                              onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setStockFilter('all'); }}
+                            >
+                              Reset Filters
+                            </button>
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredProducts.map(prod => {
+                          const price = prod.priceAUD || Math.round((prod.priceINR || 0) * 0.0185);
+                          const isLowStock = (prod.stock || 0) <= 5 && (prod.stock || 0) > 0;
+                          const isOutOfStock = (prod.stock || 0) === 0;
 
-                        return (
-                          <tr key={prod.id} className="admin-table-row">
-                            
-                            {/* Equipment Identity */}
-                            <td>
-                              <div className="prod-cell-lockup">
-                                <div className="prod-cell-thumb-wrap">
-                                  <img
-                                    src={prod.image}
-                                    alt={prod.name}
-                                    className="prod-cell-thumb"
-                                    onError={(e) => {
-                                      e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
-                                    }}
-                                  />
-                                </div>
-                                <div className="prod-cell-info">
-                                  <div className="prod-cell-title-row">
-                                    <span className="prod-cell-title">{prod.name}</span>
-                                    {prod.badge && (
-                                      <span className="prod-cell-badge">{prod.badge}</span>
-                                    )}
+                          return (
+                            <tr key={prod.id} className="admin-table-row">
+                              
+                              {/* Equipment Identity */}
+                              <td>
+                                <div className="prod-cell-lockup">
+                                  <div className="prod-cell-thumb-wrap">
+                                    <img
+                                      src={prod.image}
+                                      alt={prod.name}
+                                      className="prod-cell-thumb"
+                                      onError={(e) => {
+                                        e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
+                                      }}
+                                    />
                                   </div>
-                                  <div className="prod-cell-sku">
-                                    SKU: <strong>{prod.sku || `IPH-${prod.id}`}</strong>
+                                  <div className="prod-cell-info">
+                                    <div className="prod-cell-title-row">
+                                      <span className="prod-cell-title">{prod.name}</span>
+                                      {prod.badge && (
+                                        <span className="prod-cell-badge">{prod.badge}</span>
+                                      )}
+                                    </div>
+                                    <div className="prod-cell-sku">
+                                      SKU: <strong>{prod.sku || `IPH-${prod.id}`}</strong>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </td>
+                              </td>
 
-                            {/* Category */}
-                            <td>
-                              <span className="admin-cat-badge">
-                                {prod.categoryLabel || prod.category}
-                              </span>
-                            </td>
-
-                            {/* Hire Rate */}
-                            <td>
-                              <div className="prod-cell-rate">
-                                <span className="rate-aud">${price} AUD</span>
-                                <span className="rate-period">/ weekend</span>
-                              </div>
-                            </td>
-
-                            {/* Bond */}
-                            <td>
-                              <span className="prod-cell-bond">
-                                ${prod.bondAUD || 50} AUD
-                              </span>
-                            </td>
-
-                            {/* Stock Stepper */}
-                            <td>
-                              <div className="stock-stepper-box">
-                                <button
-                                  type="button"
-                                  className="stock-step-btn"
-                                  onClick={() => onUpdateProductStock?.(prod.id, Math.max(0, (prod.stock || 0) - 1))}
-                                  disabled={(prod.stock || 0) === 0}
-                                  title="Decrease warehouse stock"
-                                >
-                                  -
-                                </button>
-                                <span className={`stock-step-count ${isOutOfStock ? 'stock-empty' : isLowStock ? 'stock-warning' : ''}`}>
-                                  {prod.stock || 0}
+                              {/* Category */}
+                              <td>
+                                <span className="admin-cat-badge">
+                                  {prod.categoryLabel || prod.category}
                                 </span>
-                                <button
-                                  type="button"
-                                  className="stock-step-btn"
-                                  onClick={() => onUpdateProductStock?.(prod.id, (prod.stock || 0) + 1)}
-                                  title="Increase warehouse stock"
-                                >
-                                  +
-                                </button>
-                              </div>
-                              {isOutOfStock && <span className="stock-pill-tag empty">Out of Stock</span>}
-                              {isLowStock && <span className="stock-pill-tag low">Low ({prod.stock})</span>}
-                            </td>
+                              </td>
 
-                            {/* Spec */}
-                            <td>
-                              <div className="prod-cell-spec">
-                                <span>{prod.dimensions || 'Commercial Spec'}</span>
-                                <span className="spec-sub">{prod.material ? prod.material.split('&')[0] : 'Event Grade'}</span>
-                              </div>
-                            </td>
+                              {/* Hire Rate */}
+                              <td>
+                                <div className="prod-cell-rate">
+                                  <span className="rate-aud">${price} AUD</span>
+                                  <span className="rate-period">/ 1–4 days</span>
+                                </div>
+                              </td>
 
-                            {/* Action Buttons */}
-                            <td style={{ textAlign: 'right' }}>
-                              <div className="action-buttons-group">
-                                <button
-                                  type="button"
-                                  className="action-btn view-btn"
-                                  onClick={() => setInspectProduct(prod)}
-                                  title="Quick View Specifications"
-                                >
-                                  <Eye size={15} />
-                                </button>
+                              {/* Bond */}
+                              <td>
+                                <span className="prod-cell-bond">
+                                  ${prod.bondAUD || 50} AUD
+                                </span>
+                              </td>
 
-                                <button
-                                  type="button"
-                                  className="action-btn edit-btn"
-                                  onClick={() => handleOpenEdit(prod)}
-                                  title="Edit Equipment Details"
-                                >
-                                  <Edit3 size={15} />
-                                </button>
+                              {/* Stock Stepper */}
+                              <td>
+                                <div className="stock-stepper-box">
+                                  <button
+                                    type="button"
+                                    className="stock-step-btn"
+                                    onClick={() => onUpdateProductStock?.(prod.id, Math.max(0, (prod.stock || 0) - 1))}
+                                    disabled={(prod.stock || 0) === 0}
+                                    title="Decrease warehouse stock"
+                                  >
+                                    -
+                                  </button>
+                                  <span className={`stock-step-count ${isOutOfStock ? 'stock-empty' : isLowStock ? 'stock-warning' : ''}`}>
+                                    {prod.stock || 0}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="stock-step-btn"
+                                    onClick={() => onUpdateProductStock?.(prod.id, (prod.stock || 0) + 1)}
+                                    title="Increase warehouse stock"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                {isOutOfStock && <span className="stock-pill-tag empty">Out of Stock</span>}
+                                {isLowStock && <span className="stock-pill-tag low">Low ({prod.stock})</span>}
+                              </td>
 
-                                <button
-                                  type="button"
-                                  className="action-btn delete-btn"
-                                  onClick={() => setDeletingProductId(prod.id)}
-                                  title="Delete Equipment"
-                                >
-                                  <Trash2 size={15} />
-                                </button>
-                              </div>
-                            </td>
+                              {/* Spec */}
+                              <td>
+                                <div className="prod-cell-spec">
+                                  <span>{prod.dimensions || 'Commercial Spec'}</span>
+                                  <span className="spec-sub">{prod.material ? prod.material.split('&')[0] : 'Event Grade'}</span>
+                                </div>
+                              </td>
 
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
+                              {/* Action Buttons */}
+                              <td style={{ textAlign: 'right' }}>
+                                <div className="action-buttons-group">
+                                  <button
+                                    type="button"
+                                    className="action-btn view-btn"
+                                    onClick={() => setInspectProduct(prod)}
+                                    title="Quick View Specifications"
+                                  >
+                                    <Eye size={15} />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className="action-btn edit-btn"
+                                    onClick={() => handleOpenEdit(prod)}
+                                    title="Edit Equipment Details"
+                                  >
+                                    <Edit3 size={15} />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className="action-btn delete-btn"
+                                    onClick={() => setDeletingProductId(prod.id)}
+                                    title="Delete Equipment"
+                                  >
+                                    <Trash2 size={15} />
+                                  </button>
+                                </div>
+                              </td>
+
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Table Footer */}
+                <div className="admin-table-footer hide-mobile-table">
+                  <span>Showing <strong>{filteredProducts.length}</strong> of <strong>{products.length}</strong> Brisbane equipment items</span>
+                  <span className="footer-sync-note">Live connected with customer storefront</span>
+                </div>
               </div>
+            ) : (
+              /* Bento Grid View */
+              <div className="admin-inventory-bento-grid hide-mobile-table">
+                {filteredProducts.length === 0 ? (
+                  <div className="table-empty-state" style={{ gridColumn: '1 / -1' }}>
+                    <AlertTriangle size={32} className="empty-icon text-amber-500" />
+                    <h4>No equipment found matching criteria</h4>
+                    <p>Try adjusting your search terms, clearing category filters, or add new equipment.</p>
+                    <button
+                      type="button"
+                      className="btn-outline-gold"
+                      onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setStockFilter('all'); }}
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                ) : (
+                  filteredProducts.map(prod => {
+                    const price = prod.priceAUD || Math.round((prod.priceINR || 0) * 0.0185);
+                    const isLowStock = (prod.stock || 0) <= 5 && (prod.stock || 0) > 0;
+                    const isOutOfStock = (prod.stock || 0) === 0;
+
+                    return (
+                      <div key={prod.id} className="bento-eq-card">
+                        <div className="bento-eq-media">
+                          <img
+                            src={prod.image}
+                            alt={prod.name}
+                            className="bento-eq-img"
+                            onError={(e) => {
+                              e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
+                            }}
+                          />
+                          <div className="bento-eq-badges">
+                            <span className="admin-cat-badge">{prod.categoryLabel || prod.category}</span>
+                            {prod.badge && <span className="prod-cell-badge">{prod.badge}</span>}
+                          </div>
+                          <div className="bento-eq-sku-chip">
+                            <span>{prod.sku || `IPH-${prod.id}`}</span>
+                          </div>
+                        </div>
+
+                        <div className="bento-eq-content">
+                          <h4 className="bento-eq-title">{prod.name}</h4>
+                          <div className="bento-eq-meta">
+                            <span>{prod.dimensions || 'Commercial Spec'}</span>
+                            {prod.material && <span className="meta-dot">·</span>}
+                            <span>{prod.material ? prod.material.split('&')[0] : ''}</span>
+                          </div>
+
+                          <div className="bento-eq-pricing-row">
+                            <div className="bento-eq-rate">
+                              <span className="rate-aud">${price} AUD</span>
+                              <span className="rate-period">/ 1–4 days</span>
+                            </div>
+                            <div className="bento-eq-bond">
+                              ${prod.bondAUD || 50} Bond
+                            </div>
+                          </div>
+
+                          <div className="bento-eq-stock-row">
+                            <div className="bento-stock-status">
+                              <span className={`stock-status-dot ${isOutOfStock ? 'dot-empty' : isLowStock ? 'dot-low' : 'dot-ok'}`} />
+                              <span className="stock-status-text">
+                                {isOutOfStock ? 'Out of Stock' : isLowStock ? `Low (${prod.stock})` : `In Stock (${prod.stock})`}
+                              </span>
+                            </div>
+
+                            <div className="stock-stepper-box compact">
+                              <button
+                                type="button"
+                                className="stock-step-btn"
+                                onClick={() => onUpdateProductStock?.(prod.id, Math.max(0, (prod.stock || 0) - 1))}
+                                disabled={(prod.stock || 0) === 0}
+                                title="Decrease stock"
+                              >
+                                -
+                              </button>
+                              <span className={`stock-step-count ${isOutOfStock ? 'stock-empty' : isLowStock ? 'stock-warning' : ''}`}>
+                                {prod.stock || 0}
+                              </span>
+                              <button
+                                type="button"
+                                className="stock-step-btn"
+                                onClick={() => onUpdateProductStock?.(prod.id, (prod.stock || 0) + 1)}
+                                title="Increase stock"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="bento-eq-actions">
+                            <button
+                              type="button"
+                              className="bento-action-btn view"
+                              onClick={() => setInspectProduct(prod)}
+                              title="Inspect Specifications"
+                            >
+                              <Eye size={14} />
+                              <span>Inspect</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="bento-action-btn edit"
+                              onClick={() => handleOpenEdit(prod)}
+                              title="Edit Equipment"
+                            >
+                              <Edit3 size={14} />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="bento-action-btn delete"
+                              onClick={() => setDeletingProductId(prod.id)}
+                              title="Delete Equipment"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
 
               {/* Native Mobile Equipment Cards List */}
               <div className="admin-mobile-inventory-list show-mobile-table">
@@ -1006,7 +1203,7 @@ export default function AdminPanel({
                           <div className="mobile-eq-pricing">
                             <div className="mobile-eq-rate">
                               <span className="rate-num">${price} AUD</span>
-                              <span className="rate-unit">/ weekend</span>
+                              <span className="rate-unit">/ 1–4 days</span>
                             </div>
                             <div className="mobile-eq-bond">
                               ${prod.bondAUD || 50} AUD Bond
@@ -1073,13 +1270,6 @@ export default function AdminPanel({
                   })
                 )}
               </div>
-
-              {/* Table Footer */}
-              <div className="admin-table-footer hide-mobile-table">
-                <span>Showing <strong>{filteredProducts.length}</strong> of <strong>{products.length}</strong> Brisbane equipment items</span>
-                <span className="footer-sync-note">Live connected with customer storefront</span>
-              </div>
-            </div>
 
           </div>
         )}
@@ -1703,7 +1893,7 @@ export default function AdminPanel({
 
                 {/* Weekend Hire Rate (AUD) */}
                 <div className="form-group">
-                  <label className="form-label">Weekend Rate (AUD $) *</label>
+                  <label className="form-label">Hire Rate 1–4 Days (AUD $) *</label>
                   <div className="input-prefix-wrap">
                     <span className="input-prefix">$</span>
                     <input
@@ -1767,22 +1957,35 @@ export default function AdminPanel({
                 {/* Image Selection / Preset */}
                 <div className="form-group full-width">
                   <label className="form-label">Equipment Photo (Preset Gallery or Custom URL)</label>
-                  <select
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    className="form-select mb-2"
-                  >
-                    {EQUIPMENT_IMAGE_OPTIONS.map((img, i) => (
-                      <option key={i} value={img.path}>{img.label} ({img.cat})</option>
-                    ))}
-                  </select>
-                  <input
-                    type="text"
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    placeholder="Or enter custom image URL"
-                    className="form-input text-xs font-mono"
-                  />
+                  <div className="modal-image-preview-group">
+                    <div className="modal-image-thumb-box">
+                      <img
+                        src={formData.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp'}
+                        alt="Equipment preview"
+                        onError={(e) => {
+                          e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
+                        }}
+                      />
+                    </div>
+                    <div className="modal-image-inputs">
+                      <select
+                        value={formData.image}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                        className="form-select mb-2"
+                      >
+                        {EQUIPMENT_IMAGE_OPTIONS.map((img, i) => (
+                          <option key={i} value={img.path}>{img.label} ({img.cat})</option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        value={formData.image}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                        placeholder="Or enter custom image URL"
+                        className="form-input text-xs font-mono"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Dimensions */}
@@ -1816,7 +2019,7 @@ export default function AdminPanel({
                     type="text"
                     value={formData.hirePeriod}
                     onChange={(e) => setFormData({ ...formData, hirePeriod: e.target.value })}
-                    placeholder="e.g. 24–72 Hours Flexible Weekend Hire"
+                    placeholder="e.g. 1–4 Days Flexible Brisbane Event Hire"
                     className="form-input"
                   />
                 </div>
@@ -1925,7 +2128,7 @@ export default function AdminPanel({
                 
                 <div className="inspect-price-box">
                   <div className="inspect-rate">
-                    ${inspectingProduct.priceAUD || 50} <span className="inspect-rate-sub">AUD / weekend</span>
+                    ${inspectingProduct.priceAUD || 50} <span className="inspect-rate-sub">AUD / 1–4 days</span>
                   </div>
                   <div className="inspect-bond">
                     Security Bond: <strong>${inspectingProduct.bondAUD || 50} AUD</strong>
@@ -2168,23 +2371,34 @@ export default function AdminPanel({
                 {/* Cover Image Selector */}
                 <div className="form-group full-width">
                   <label className="form-label">Category Cover Image *</label>
-                  <select
-                    value={categoryFormData.image}
-                    onChange={(e) => setCategoryFormData({ ...categoryFormData, image: e.target.value })}
-                    className="form-select"
-                  >
-                    {EQUIPMENT_IMAGE_OPTIONS.map((img, i) => (
-                      <option key={i} value={img.path}>{img.label}</option>
-                    ))}
-                  </select>
-                  <div style={{ marginTop: '8px' }}>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Or enter custom image path (/assets/images/...)"
-                      value={categoryFormData.image}
-                      onChange={(e) => setCategoryFormData({ ...categoryFormData, image: e.target.value })}
-                    />
+                  <div className="modal-image-preview-group">
+                    <div className="modal-image-thumb-box">
+                      <img
+                        src={categoryFormData.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp'}
+                        alt="Category preview"
+                        onError={(e) => {
+                          e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
+                        }}
+                      />
+                    </div>
+                    <div className="modal-image-inputs">
+                      <select
+                        value={categoryFormData.image}
+                        onChange={(e) => setCategoryFormData({ ...categoryFormData, image: e.target.value })}
+                        className="form-select mb-2"
+                      >
+                        {EQUIPMENT_IMAGE_OPTIONS.map((img, i) => (
+                          <option key={i} value={img.path}>{img.label}</option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        className="form-input text-xs font-mono"
+                        placeholder="Or enter custom image path (/assets/images/...)"
+                        value={categoryFormData.image}
+                        onChange={(e) => setCategoryFormData({ ...categoryFormData, image: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
 

@@ -223,6 +223,48 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.admin-session-badge {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(247, 209, 186, 0.14);
+  padding: 8px 10px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
+.session-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  flex-shrink: 0;
+  animation: sessionPulse 2s infinite ease-in-out;
+}
+
+@keyframes sessionPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.9); }
+}
+
+.session-text-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.session-role {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.session-meta {
+  font-size: 0.58rem;
+  color: #F7D1BA;
+}
+
 .admin-exit-btn {
   display: flex;
   align-items: center;
@@ -386,44 +428,122 @@
 .admin-kpi-strip {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 .kpi-mini-card {
   background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 11px 14px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 14px;
+  padding: 13px 15px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  gap: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 12px -2px rgba(27, 6, 26, 0.03);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.kpi-label {
+.kpi-mini-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -4px rgba(216, 27, 96, 0.08);
+  border-color: rgba(216, 27, 96, 0.25);
+}
+
+.kpi-mini-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.kpi-mini-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-mini-icon-box.magenta {
+  background: rgba(216, 27, 96, 0.09);
+  color: #D81B60;
+}
+
+.kpi-mini-icon-box.emerald {
+  background: rgba(16, 185, 129, 0.09);
+  color: #059669;
+}
+
+.kpi-mini-icon-box.amber {
+  background: rgba(245, 158, 11, 0.09);
+  color: #D97706;
+}
+
+.kpi-mini-icon-box.gold {
+  background: rgba(212, 139, 112, 0.12);
+  color: #B3644D;
+}
+
+.kpi-trend-pill {
   font-size: 0.625rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.kpi-trend-pill.positive {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.kpi-trend-pill.warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #D97706;
+}
+
+.kpi-trend-pill.neutral {
+  background: #F1F5F9;
   color: #64748B;
 }
 
+.kpi-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
 .kpi-val {
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: #0F172A;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.kpi-unit {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94A3B8;
 }
 
 /* Toolbar Card */
 .admin-toolbar-card {
   background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 10px 14px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 14px;
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 12px -2px rgba(27, 6, 26, 0.02);
 }
 
 .toolbar-top-row {
@@ -443,7 +563,7 @@
 
 .toolbar-search-box .search-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   color: #94A3B8;
@@ -452,7 +572,7 @@
 
 .toolbar-search-input {
   width: 100%;
-  padding: 6px 30px 6px 32px;
+  padding: 8px 32px 8px 36px;
   background: #F8FAFC;
   border: 1px solid #CBD5E1;
   border-radius: 9999px;
@@ -465,12 +585,12 @@
 .toolbar-search-input:focus {
   background: #FFFFFF;
   border-color: #D81B60;
-  box-shadow: 0 0 0 2px rgba(216, 27, 96, 0.12);
+  box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.12);
 }
 
 .search-clear-btn {
   position: absolute;
-  right: 10px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
@@ -484,10 +604,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .toolbar-select {
-  padding: 6px 12px;
+  padding: 7px 14px;
   background: #F8FAFC;
   border: 1px solid #CBD5E1;
   border-radius: 9999px;
@@ -496,7 +617,49 @@
   color: #334155;
   outline: none;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
+}
+
+.toolbar-select:focus,
+.toolbar-select:hover {
+  background: #FFFFFF;
+  border-color: #94A3B8;
+}
+
+/* View Switcher Segmented Control */
+.admin-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: #F1F5F9;
+  border-radius: 9999px;
+  padding: 2.5px;
+  gap: 2px;
+  border: 1px solid #E2E8F0;
+}
+
+.view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: #64748B;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle-btn:hover {
+  color: #0F172A;
+}
+
+.view-toggle-btn.active {
+  background: #FFFFFF;
+  color: #D81B60;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .toolbar-select:focus {
@@ -548,14 +711,14 @@
 }
 
 /* ==========================================================================
-   4. INVENTORY DATA TABLE
+   4. INVENTORY DATA TABLE & BENTO GRID
    ========================================================================== */
 .admin-table-card {
   background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 14px -2px rgba(27, 6, 26, 0.03);
 }
 
 .table-responsive-wrapper {
@@ -572,8 +735,8 @@
 
 .admin-data-table th {
   background: #F8FAFC;
-  padding: 8px 14px;
-  font-size: 0.625rem;
+  padding: 10px 16px;
+  font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   color: #64748B;
@@ -583,47 +746,52 @@
 }
 
 .admin-data-table td {
-  padding: 8px 14px;
+  padding: 11px 16px;
   border-bottom: 1px solid #F1F5F9;
   vertical-align: middle;
 }
 
+.admin-table-row {
+  transition: background-color 0.15s ease;
+}
+
 .admin-table-row:hover td {
-  background-color: #F8FAFC;
+  background-color: #FDF9FA;
 }
 
 /* Cell Lockup */
 .prod-cell-lockup {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .prod-cell-thumb-wrap {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #F8FAFC;
+  border: 1px solid rgba(226, 232, 240, 0.9);
   overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .prod-cell-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.25s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .admin-table-row:hover .prod-cell-thumb {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 .prod-cell-info {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .prod-cell-title-row {
@@ -635,8 +803,9 @@
 
 .prod-cell-title {
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   color: #0F172A;
+  letter-spacing: -0.01em;
 }
 
 .prod-cell-badge {
@@ -644,7 +813,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 1.5px 6px;
+  padding: 1.5px 7px;
   border-radius: 9999px;
   background: rgba(216, 27, 96, 0.1);
   color: #D81B60;
@@ -654,35 +823,38 @@
 .prod-cell-sku {
   font-size: 0.6875rem;
   color: #64748B;
+  font-family: monospace;
 }
 
 .admin-cat-badge {
   display: inline-block;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 9999px;
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
+  background: #FDF7FA;
+  border: 1px solid rgba(216, 27, 96, 0.15);
   font-size: 0.7rem;
   font-weight: 700;
-  color: #334155;
+  color: #D81B60;
   text-transform: capitalize;
 }
 
 .prod-cell-rate .rate-aud {
   font-weight: 800;
+  font-size: 0.88rem;
   color: #0F172A;
 }
 
 .prod-cell-rate .rate-period {
-  font-size: 0.6875rem;
-  color: #64748B;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #94A3B8;
   margin-left: 2px;
 }
 
 .prod-cell-bond {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #475569;
+  color: #64748B;
 }
 
 /* Stock Stepper */
@@ -690,39 +862,41 @@
   display: inline-flex;
   align-items: center;
   border: 1px solid #CBD5E1;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #FFFFFF;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .stock-step-btn {
   background: #F8FAFC;
   border: none;
-  width: 22px;
-  height: 24px;
+  width: 24px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #334155;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s ease;
 }
 
 .stock-step-btn:hover:not(:disabled) {
-  background: #E2E8F0;
+  background: #F1F5F9;
+  color: #D81B60;
 }
 
 .stock-step-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .stock-step-count {
-  width: 26px;
+  width: 28px;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 800;
   color: #0F172A;
 }
@@ -731,15 +905,15 @@
   display: block;
   font-size: 0.625rem;
   font-weight: 700;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .stock-pill-tag.empty {
-  color: #DC2626;
+  color: #EF4444;
 }
 
 .stock-pill-tag.low {
-  color: #D97706;
+  color: #F59E0B;
 }
 
 .prod-cell-spec {
@@ -751,7 +925,7 @@
 
 .prod-cell-spec .spec-sub {
   font-size: 0.625rem;
-  color: #64748B;
+  color: #94A3B8;
 }
 
 /* Action Buttons Group */
@@ -762,39 +936,263 @@
 }
 
 .action-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   border: 1px solid #E2E8F0;
   background: #FFFFFF;
-  color: #475569;
+  color: #64748B;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .action-btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1.5px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
 .action-btn.view-btn:hover {
-  background: #F0FDF4;
-  color: #16A34A;
-  border-color: #BBF7D0;
-}
-
-.action-btn.edit-btn:hover {
   background: #EFF6FF;
   color: #2563EB;
   border-color: #BFDBFE;
+}
+
+.action-btn.edit-btn:hover {
+  background: #FFFBEB;
+  color: #D97706;
+  border-color: #FCD34D;
 }
 
 .action-btn.delete-btn:hover {
   background: #FEF2F2;
   color: #DC2626;
   border-color: #FECACA;
+}
+
+/* ==========================================================================
+   BENTO GRID VIEW (VISUAL EQUIPMENT CARDS)
+   ========================================================================== */
+.admin-inventory-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.bento-eq-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 12px -2px rgba(27, 6, 26, 0.03);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.bento-eq-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px -4px rgba(216, 27, 96, 0.12);
+  border-color: rgba(216, 27, 96, 0.25);
+}
+
+.bento-eq-media {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: #F8FAFC;
+  overflow: hidden;
+}
+
+.bento-eq-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-eq-card:hover .bento-eq-img {
+  transform: scale(1.06);
+}
+
+.bento-eq-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+
+.bento-eq-sku-chip {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.bento-eq-content {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 10px;
+}
+
+.bento-eq-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.bento-eq-meta {
+  font-size: 0.7rem;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bento-eq-pricing-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #FDF7FA;
+  border-radius: 10px;
+  border: 1px solid rgba(216, 27, 96, 0.08);
+}
+
+.bento-eq-rate .rate-aud {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #D81B60;
+}
+
+.bento-eq-rate .rate-period {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #94A3B8;
+  margin-left: 3px;
+}
+
+.bento-eq-bond {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.bento-eq-stock-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bento-stock-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stock-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.stock-status-dot.dot-ok {
+  background: #10B981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+.stock-status-dot.dot-low {
+  background: #F59E0B;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+.stock-status-dot.dot-empty {
+  background: #EF4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+}
+
+.stock-status-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.bento-eq-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.bento-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #334155;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.bento-action-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  transform: translateY(-1px);
+}
+
+.bento-action-btn.view:hover {
+  color: #3B82F6;
+  border-color: #93C5FD;
+  background: #EFF6FF;
+}
+
+.bento-action-btn.edit:hover {
+  color: #D97706;
+  border-color: #FCD34D;
+  background: #FFFBEB;
+}
+
+.bento-action-btn.delete {
+  flex: 0 0 34px;
+  padding: 6px 0;
+  color: #94A3B8;
+}
+
+.bento-action-btn.delete:hover {
+  color: #EF4444;
+  border-color: #FCA5A5;
+  background: #FEF2F2;
 }
 
 .admin-table-footer {
@@ -1210,6 +1608,41 @@
 
 .form-input.with-prefix {
   padding-left: 28px;
+}
+
+/* Modal Live Image Preview */
+.modal-image-preview-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.modal-image-thumb-box {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.modal-image-thumb-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.modal-image-thumb-box:hover img {
+  transform: scale(1.08);
+}
+
+.modal-image-inputs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-modal-footer {
