@@ -121,3 +121,4 @@ export function useBookingsData(initialBookings = INITIAL_ORDERS, onToast) {
   }
   return useLocalBookingsStore(initialBookings, onToast);
 }
+

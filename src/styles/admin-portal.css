@@ -1635,9 +1635,17 @@
   font-weight: 700;
 }
 
-.metric-trend.positive { color: #16A34A; }
-.metric-trend.neutral { color: #0284C7; }
-.metric-trend.warning { color: #D97706; }
+.metric-trend.positive {
+  color: #16A34A;
+}
+
+.metric-trend.neutral {
+  color: #0284C7;
+}
+
+.metric-trend.warning {
+  color: #D97706;
+}
 
 /* Bookings List */
 .booking-items-list {
@@ -1792,7 +1800,9 @@
   color: #334155;
 }
 
-.form-input, .form-select, .form-textarea {
+.form-input,
+.form-select,
+.form-textarea {
   width: 100%;
   padding: 10px 14px;
   background: #F8FAFC;
@@ -1804,7 +1814,9 @@
   transition: all 0.15s ease;
 }
 
-.form-input:focus, .form-select:focus, .form-textarea:focus {
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
   background: #FFFFFF;
   border-color: #D81B60;
   box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.12);
@@ -2184,6 +2196,7 @@
 }
 
 @media (max-width: 768px) {
+
   /* Sidebar Mobile Drawer */
   .admin-portal-sidebar {
     position: fixed;
@@ -2236,11 +2249,18 @@
   }
 
   /* Prevent 16px input zoom on mobile in Admin Portal */
-  input, select, textarea, .admin-search-input, .admin-input {
+  input,
+  select,
+  textarea,
+  .admin-search-input,
+  .admin-input {
     font-size: 16px !important;
   }
 
-  button, [role="button"], .admin-btn, .admin-tab-pill {
+  button,
+  [role="button"],
+  .admin-btn,
+  .admin-tab-pill {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
@@ -2549,10 +2569,13 @@
 }
 
 @keyframes sync-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.15);
@@ -2846,8 +2869,10 @@
 
 /* 2. Mobile Responsive Engine (Under 768px) */
 @media (max-width: 768px) {
+
   /* Prevent horizontal blowout */
-  html, body {
+  html,
+  body {
     overflow-x: hidden !important;
     max-width: 100% !important;
     width: 100% !important;
@@ -3282,6 +3307,7 @@
     opacity: 0;
     transform: scale(0.96) translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -3632,7 +3658,9 @@
 }
 
 @keyframes adminGateSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .admin-gate-loading-text {
