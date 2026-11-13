@@ -1,6 +1,51 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useUser } from '@clerk/react';
 import { CATEGORIES } from '../data/products';
 import AuthControls from './AuthControls';
+
+const PUBLISHABLE_KEY =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+function AdminNavButton({ onOpenAdmin }) {
+  if (!PUBLISHABLE_KEY) return null;
+  return <AdminNavButtonInner onOpenAdmin={onOpenAdmin} />;
+}
+
+function AdminNavButtonInner({ onOpenAdmin }) {
+  const { isLoaded, isSignedIn, user } = useUser();
+  if (!isLoaded || !isSignedIn) return null;
+
+  const adminEmails = (
+    import.meta.env.VITE_ADMIN_EMAILS ||
+    import.meta.env.ADMIN_EMAILS ||
+    ''
+  ).split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+
+  const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase() || '';
+  const isRoleAdmin = user?.publicMetadata?.role === 'admin';
+  const isEmailAdmin = adminEmails.length > 0 && adminEmails.includes(userEmail);
+
+  if (!isRoleAdmin && !isEmailAdmin) return null;
+
+  return (
+    <button
+      type="button"
+      className="nav-icon-action-btn hide-mobile"
+      onClick={onOpenAdmin}
+      title="Icon Operations Admin HQ"
+      aria-label="Open Admin Operations Panel"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+    </button>
+  );
+}
 
 export default function Header({
   currentView = 'home',
@@ -237,21 +282,8 @@ export default function Header({
               {wishlistCount > 0 && <span className="nav-micro-counter">{wishlistCount}</span>}
             </button>
 
-            {/* Admin Operations HQ (Desktop) */}
-            <button
-              type="button"
-              className="nav-icon-action-btn hide-mobile"
-              onClick={onOpenAdmin}
-              title="Icon Operations Admin HQ"
-              aria-label="Open Admin Operations Panel"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
-            </button>
+            {/* Admin Operations HQ (Desktop - Only visible to authorized administrators) */}
+            <AdminNavButton onOpenAdmin={onOpenAdmin} />
 
             {/* Clerk User / Auth Controls (Desktop Navbar) */}
             <div className="hide-mobile">

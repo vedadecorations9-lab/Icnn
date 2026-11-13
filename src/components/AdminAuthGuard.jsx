@@ -69,13 +69,15 @@ export default function AdminAuthGuard({ children, onClose }) {
     );
   }
 
-  // 3. User is signed in — verify admin authorization
+  // 3. User is signed in — STRICTLY verify admin authorization
   const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase() || '';
   const isRoleAdmin = user?.publicMetadata?.role === 'admin';
-  const isEmailAdmin = ADMIN_EMAILS.length === 0 || ADMIN_EMAILS.includes(userEmail);
+  const isEmailAdmin = ADMIN_EMAILS.length > 0 && ADMIN_EMAILS.includes(userEmail);
 
-  // If admin emails are specified and user doesn't qualify
-  if (ADMIN_EMAILS.length > 0 && !isRoleAdmin && !isEmailAdmin) {
+  // User MUST have publicMetadata.role === 'admin' OR be listed in ADMIN_EMAILS
+  const isAuthorizedAdmin = isRoleAdmin || isEmailAdmin;
+
+  if (!isAuthorizedAdmin) {
     return (
       <div className="admin-gate-screen">
         <div className="admin-gate-card error">
@@ -85,7 +87,7 @@ export default function AdminAuthGuard({ children, onClose }) {
           <div className="admin-gate-tag error">Access Denied</div>
           <h2>Admin Privileges Required</h2>
           <p>
-            You are signed in as <strong>{userEmail}</strong>, but this account does not have operational admin permissions.
+            You are signed in as <strong>{userEmail || 'user'}</strong>, but this account does not have administrator permissions.
           </p>
 
           <div className="admin-gate-actions">
@@ -110,4 +112,3 @@ export default function AdminAuthGuard({ children, onClose }) {
   // 4. Authorized admin — render full panel
   return children;
 }
-

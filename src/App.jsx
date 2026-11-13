@@ -62,15 +62,35 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
   useLenisScroll(currentView);
 
   useEffect(() => {
-    const handlePopState = () => {
+    const handleRouteCheck = () => {
       const path = window.location.pathname.toLowerCase();
-      if (path.includes('sign-up')) setCurrentView('sign-up');
-      else if (path.includes('sign-in')) setCurrentView('sign-in');
-      else if (path.includes('catalog') || path.includes('shop')) setCurrentView('catalog');
-      else setCurrentView('home');
+      const hash = window.location.hash.toLowerCase();
+      if (path.includes('admin') || hash === '#admin') {
+        setIsAdminOpen(true);
+      } else if (path.includes('sign-up')) {
+        setCurrentView('sign-up');
+      } else if (path.includes('sign-in')) {
+        setCurrentView('sign-in');
+      } else if (path.includes('catalog') || path.includes('shop')) {
+        setCurrentView('catalog');
+      } else {
+        setCurrentView('home');
+      }
     };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+
+    // Check on initial mount
+    const initialPath = window.location.pathname.toLowerCase();
+    const initialHash = window.location.hash.toLowerCase();
+    if (initialPath.includes('admin') || initialHash === '#admin') {
+      setIsAdminOpen(true);
+    }
+
+    window.addEventListener('popstate', handleRouteCheck);
+    window.addEventListener('hashchange', handleRouteCheck);
+    return () => {
+      window.removeEventListener('popstate', handleRouteCheck);
+      window.removeEventListener('hashchange', handleRouteCheck);
+    };
   }, []);
 
   // --- Persistent State (Default to AUD for Brisbane, QLD) ---
@@ -282,13 +302,22 @@ function AppContent({ store, categoriesStore, toasts, addToast }) {
     }
   }, [isAdminOpen]);
 
+  const handleCloseAdmin = () => {
+    setIsAdminOpen(false);
+    try {
+      if (window.location.pathname.includes('admin') || window.location.hash.includes('admin')) {
+        window.history.pushState(null, '', '/');
+      }
+    } catch {}
+  };
+
   // If Admin Panel is Open, render full Admin Operations Portal
   if (isAdminOpen) {
     return (
       <div className="icon-admin-app" data-lenis-prevent="true">
-        <AdminAuthGuard onClose={() => setIsAdminOpen(false)}>
+        <AdminAuthGuard onClose={handleCloseAdmin}>
           <AdminPanel
-            onClose={() => setIsAdminOpen(false)}
+            onClose={handleCloseAdmin}
             products={products}
             categories={categories}
             isRealtime={isRealtime}
