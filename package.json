@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build.js",
+    "build": "vite build",
+    "deploy:convex": "node scripts/build.js",
     "preview": "vite preview"
   },
   "dependencies": {
