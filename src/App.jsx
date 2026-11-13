@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useUser, useClerk } from '@clerk/react';
 import { PRODUCTS, CURRENCIES, CATEGORIES, INITIAL_ORDERS } from './data/products';
 import { isConvexConfigured } from './convexClient';
 import { useConvexStore, useLocalStore } from './hooks/useProductsData';
@@ -27,11 +28,27 @@ import ConvexSafeBoundary from './components/ConvexSafeBoundary';
 import { Agentation } from 'agentation';
 import { useLenisScroll } from './hooks/useLenisScroll';
 
+const PUBLISHABLE_KEY =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.CLERK_PUBLISHABLE_KEY ||
+  import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 /**
  * Main application interface rendered with either Convex Real-time Cloud store
  * or local state fallback depending on whether VITE_CONVEX_URL is configured in Vercel.
  */
-function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast }) {
+function AppContent({
+  store,
+  categoriesStore,
+  bookingsStore,
+  toasts,
+  addToast,
+  isSignedIn = false,
+  isAuthLoaded = true,
+  authUser = null,
+  openSignIn,
+  openSignUp
+}) {
   const {
     products,
     isRealtime,
@@ -157,8 +174,23 @@ function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast })
     return `${curr.symbol}${converted.toLocaleString()}`;
   };
 
-  // Cart Operations
+  // Cart Operations — Protected by User Authentication
   const handleAddToCart = (productId, qty = 1) => {
+    // A user cannot buy or add items to cart before creating an account or signing in
+    if (PUBLISHABLE_KEY && !isSignedIn) {
+      addToast('Please sign in or create an account to hire equipment', 'warning');
+      if (typeof openSignIn === 'function') {
+        try {
+          openSignIn();
+        } catch {
+          handleNavigateAuth('sign-in');
+        }
+      } else {
+        handleNavigateAuth('sign-in');
+      }
+      return;
+    }
+
     setCart(prev => {
       const existing = prev.find(item => item.productId === productId);
       if (existing) {
@@ -170,6 +202,24 @@ function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast })
     });
     const prod = products.find(p => p.id === productId);
     addToast(`Added "${prod?.name || 'Equipment'}" to your hire bag`, 'success');
+  };
+
+  const handleProceedToCheckout = () => {
+    if (PUBLISHABLE_KEY && !isSignedIn) {
+      addToast('Please sign in or create an account to proceed with booking', 'warning');
+      if (typeof openSignIn === 'function') {
+        try {
+          openSignIn();
+        } catch {
+          handleNavigateAuth('sign-in');
+        }
+      } else {
+        handleNavigateAuth('sign-in');
+      }
+      return;
+    }
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
   };
 
   const handleUpdateCartQty = (productId, delta) => {
@@ -489,11 +539,9 @@ function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast })
         products={products}
         onUpdateQty={handleUpdateCartQty}
         onRemoveItem={handleRemoveFromCart}
-        onCheckout={() => {
-          setIsCartOpen(false);
-          setIsCheckoutOpen(true);
-        }}
+        onCheckout={handleProceedToCheckout}
         formatPrice={formatPrice}
+        isSignedIn={isSignedIn}
         onToast={addToast}
       />
 
@@ -542,6 +590,20 @@ function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast })
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         onCompleteOrder={handleCompleteOrder}
+        isSignedIn={isSignedIn}
+        user={authUser}
+        onRequireAuth={() => {
+          setIsCheckoutOpen(false);
+          if (typeof openSignIn === 'function') {
+            try {
+              openSignIn();
+            } catch {
+              handleNavigateAuth('sign-in');
+            }
+          } else {
+            handleNavigateAuth('sign-in');
+          }
+        }}
       />
 
       <TrackOrderModal
@@ -565,6 +627,37 @@ function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast })
   );
 }
 
+function AppContentWithClerk(props) {
+  const { isSignedIn, isLoaded, user } = useUser();
+  const { openSignIn, openSignUp } = useClerk();
+  return (
+    <AppContent
+      {...props}
+      isSignedIn={Boolean(isSignedIn)}
+      isAuthLoaded={Boolean(isLoaded)}
+      authUser={user}
+      openSignIn={openSignIn}
+      openSignUp={openSignUp}
+    />
+  );
+}
+
+function AppContentRouter(props) {
+  if (PUBLISHABLE_KEY) {
+    return <AppContentWithClerk {...props} />;
+  }
+  return (
+    <AppContent
+      {...props}
+      isSignedIn={true}
+      isAuthLoaded={true}
+      authUser={null}
+      openSignIn={() => {}}
+      openSignUp={() => {}}
+    />
+  );
+}
+
 // 1. App variant with Convex Cloud real-time subscriptions
 function ConvexConnectedApp() {
   const [toasts, setToasts] = useState([]);
@@ -579,7 +672,7 @@ function ConvexConnectedApp() {
   const categoriesStore = useConvexCategoriesStore(CATEGORIES, addToast);
   const bookingsStore = useConvexBookingsStore(INITIAL_ORDERS, addToast);
   return (
-    <AppContent
+    <AppContentRouter
       store={store}
       categoriesStore={categoriesStore}
       bookingsStore={bookingsStore}
@@ -603,7 +696,7 @@ function LocalFallbackApp() {
   const categoriesStore = useLocalCategoriesStore(CATEGORIES, addToast);
   const bookingsStore = useLocalBookingsStore(INITIAL_ORDERS, addToast);
   return (
-    <AppContent
+    <AppContentRouter
       store={store}
       categoriesStore={categoriesStore}
       bookingsStore={bookingsStore}

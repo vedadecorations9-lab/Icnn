@@ -17,7 +17,8 @@ export default function CartDrawer({
   onUpdateQty,
   onRemoveItem,
   onCheckout,
-  formatPrice
+  formatPrice,
+  isSignedIn = true
 }) {
   if (!isOpen) return null;
 
@@ -201,14 +202,13 @@ export default function CartDrawer({
               className="cart-minimal-checkout-btn"
               onClick={onCheckout}
             >
-              <span>Proceed to Booking</span>
+              <span>{isSignedIn ? 'Proceed to Booking' : 'Sign In to Book Hire'}</span>
               <ArrowRight size={16} />
             </button>
 
             <div className="cart-minimal-trust-note">
               <ShieldCheck size={13} />
-              <span>100% Bond Security · Stripe Verified Booking</span>
-              <span>100% Bond Security · Verified Hire Booking</span>
+              <span>100% Bond Security · Verified Brisbane Hire Booking</span>
             </div>
           </div>
         )}

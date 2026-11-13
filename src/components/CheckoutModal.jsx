@@ -1,19 +1,79 @@
 import React, { useState } from 'react';
 import { Truck, MapPin, Check, Sparkles, Calendar, Clock } from 'lucide-react';
 
-export default function CheckoutModal({ isOpen, onClose, onCompleteOrder }) {
+export default function CheckoutModal({
+  isOpen,
+  onClose,
+  onCompleteOrder,
+  isSignedIn = true,
+  user = null,
+  onRequireAuth
+}) {
   const [step, setStep] = useState(1);
   const [fulfillmentType, setFulfillmentType] = useState('delivery'); // 'delivery' | 'pickup'
   const [orderId, setOrderId] = useState('');
   const [eventDate, setEventDate] = useState('This Saturday, 12:00 PM');
-  const [fullName, setFullName] = useState('Olivia Henderson');
-  const [phone, setPhone] = useState('+61 412 345 678');
+  const [fullName, setFullName] = useState(user?.fullName || user?.firstName || 'Olivia Henderson');
+  const [phone, setPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || '+61 412 345 678');
   const [eventType, setEventType] = useState('Birthday Celebration (21st / 30th / 50th)');
   const [address, setAddress] = useState('Unit 14, 88 Macquarie Street');
   const [suburb, setSuburb] = useState('New Farm, Brisbane');
   const [postcode, setPostcode] = useState('QLD 4005');
 
   if (!isOpen) return null;
+
+  // Strict check: if not signed in, show Auth Gate
+  if (!isSignedIn) {
+    return (
+      <>
+        <div className="modal-backdrop active" onClick={onClose} />
+        <div className="center-modal active" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            className="modal-close-corner-btn"
+            onClick={onClose}
+            aria-label="Close modal"
+          >
+            ✕
+          </button>
+          <div style={{ textAlign: 'center', padding: '36px 20px' }}>
+            <div
+              style={{
+                width: 58,
+                height: 58,
+                borderRadius: '50%',
+                background: 'rgba(216, 27, 96, 0.1)',
+                color: '#D81B60',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px auto'
+              }}
+            >
+              <Sparkles size={28} />
+            </div>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1B061A', marginBottom: 8 }}>
+              Account Required to Book
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: '#64748B', maxWidth: 360, margin: '0 auto 24px auto', lineHeight: 1.5 }}>
+              Please sign in or create an account to finalize your event equipment reservation and bond coverage.
+            </p>
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ width: '100%', maxWidth: 300, margin: '0 auto', display: 'flex', justifyContent: 'center' }}
+              onClick={() => {
+                onClose?.();
+                onRequireAuth?.();
+              }}
+            >
+              Sign In / Create Account
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   const handleFinish = (e) => {
     if (e && e.preventDefault) e.preventDefault();
@@ -50,7 +110,7 @@ export default function CheckoutModal({ isOpen, onClose, onCompleteOrder }) {
           ✕
         </button>
         <div className="checkout-modal-inner">
-          
+
           {/* Streamlined 2-Step Progress Indicator */}
           <div className="checkout-steps-nav">
             <div className={`step-indicator ${step === 1 ? 'active' : ''}`}>
@@ -282,7 +342,7 @@ export default function CheckoutModal({ isOpen, onClose, onCompleteOrder }) {
                 }}>
                   Booking reference: #{orderId}
                 </div>
-                
+
                 <div className="order-summary-pill-row">
                   <span className="order-type-tag">
                     {fulfillmentType === 'delivery' ? 'Brisbane Venue Delivery' : 'Murrumba Downs Pickup'}
