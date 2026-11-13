@@ -286,6 +286,11 @@ function AppContent({ store, categoriesStore, bookingsStore, toasts, addToast })
 
   const handleScrollToCategories = () => {
     closeAllDrawers();
+    // On mobile devices, categories showcase is hidden on home screen: navigate directly to dedicated hire catalog
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      handleNavigateCatalog('all');
+      return;
+    }
     if (currentView !== 'home') {
       setCurrentView('home');
       try {

@@ -18,6 +18,9 @@ export default function CategoriesShowcase({
   const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;
 
   useLayoutEffect(() => {
+    // Skip GSAP animations on mobile screens where categories showcase is hidden
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) return;
+
     const section = sectionRef.current;
     const grid = gridRef.current;
     if (!section || !grid) return;
