@@ -11339,3 +11339,416 @@ html.lenis, html.lenis body {
   box-shadow: 0 4px 14px rgba(216, 27, 96, 0.25) !important;
   transform: translateY(-1px) !important;
 }
+
+
+/* ==========================================================================
+   25. UPWARD ARCH 3D AUTO-SLIDING CAROUSEL (DESKTOP)
+   Applicable to: The Icon Experience (Bento) & How It Works (HIW)
+   ========================================================================== */
+
+.arch-desktop-only {
+  display: block;
+}
+
+.arch-desktop-flex {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .arch-desktop-only,
+  .arch-desktop-flex {
+    display: none !important;
+  }
+}
+
+.arch-carousel-container {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  perspective: 1400px;
+  padding: 24px 0 16px 0;
+}
+
+/* Luminous Architectural Curved Arch Line Guide */
+.arch-backdrop-track {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1050px;
+  height: 240px;
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arch-svg-curve {
+  width: 100%;
+  height: 100%;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 16px rgba(216, 27, 96, 0.22));
+}
+
+/* Floating Navigation Arrows */
+.arch-nav-controls {
+  position: absolute;
+  top: 45%;
+  left: -20px;
+  right: -20px;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 25;
+  width: calc(100% + 40px);
+}
+
+.arch-nav-arrow {
+  pointer-events: auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(216, 27, 96, 0.22);
+  color: #1B061A;
+  box-shadow: 0 8px 24px rgba(27, 6, 26, 0.08), 0 2px 8px rgba(216, 27, 96, 0.12);
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arch-nav-arrow:hover {
+  background: #1B061A;
+  color: #FFFFFF;
+  border-color: #D81B60;
+  transform: scale(1.12);
+  box-shadow: 0 12px 32px rgba(216, 27, 96, 0.32);
+}
+
+.arch-nav-arrow:active {
+  transform: scale(0.96);
+}
+
+/* Interactive Desktop Indicator Stepper */
+.arch-desktop-stepper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 36px;
+  position: relative;
+  z-index: 10;
+}
+
+.arch-stepper-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 10px 18px 12px 18px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(216, 27, 96, 0.14);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 140px;
+  text-align: left;
+}
+
+.arch-stepper-pill:hover {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(216, 27, 96, 0.32);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(216, 27, 96, 0.1);
+}
+
+.arch-stepper-pill.is-active {
+  background: #FFFFFF;
+  border-color: #D81B60;
+  box-shadow: 0 8px 24px rgba(216, 27, 96, 0.16);
+  transform: translateY(-2px);
+}
+
+.arch-stepper-pill-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.arch-stepper-num {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #D81B60;
+  letter-spacing: 0.04em;
+}
+
+.arch-stepper-label {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1B061A;
+}
+
+.arch-stepper-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(216, 27, 96, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.arch-stepper-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #D81B60 0%, #D48B70 60%, #F59E0B 100%);
+  border-radius: 9999px;
+}
+
+.arch-stepper-fill.is-running {
+  animation: archProgressFill 3.8s linear infinite;
+}
+
+.arch-carousel-container:hover .arch-stepper-fill.is-running {
+  animation-play-state: paused;
+}
+
+@keyframes archProgressFill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Bento Promos (Icon Experience) Upward Arch Rules
+   -------------------------------------------------------------------------- */
+@media (min-width: 769px) {
+  .bento-grid.arch-stage-grid {
+    display: flex !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 460px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    perspective: 1400px !important;
+    transform-style: preserve-3d !important;
+    overflow: visible !important;
+    margin: 0 auto !important;
+  }
+
+  .bento-grid.arch-stage-grid .bento-card {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    margin-top: -180px !important;
+    margin-left: -200px !important;
+    width: 400px !important;
+    min-height: 360px !important;
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 0.85s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    will-change: transform, opacity;
+    transform-style: preserve-3d !important;
+  }
+
+  /* Apex / Center Slot - Top of the Arch */
+  .bento-grid.arch-stage-grid .bento-card.arch-slot-center {
+    transform: translate3d(0, -36px, 40px) scale(1.05) rotate(0deg) !important;
+    z-index: 10 !important;
+    opacity: 1 !important;
+    filter: blur(0px) !important;
+    pointer-events: auto !important;
+    box-shadow: 0 28px 70px -14px rgba(216, 27, 96, 0.25), 0 0 0 1.5px rgba(216, 27, 96, 0.35) !important;
+  }
+
+  /* Left Down-Slope Slot */
+  .bento-grid.arch-stage-grid .bento-card.arch-slot-left {
+    transform: translate3d(calc(-1 * clamp(310px, 28vw, 385px)), 42px, -30px) scale(0.88) rotate(-6.5deg) !important;
+    z-index: 5 !important;
+    opacity: 0.65 !important;
+    filter: blur(0.2px) !important;
+    cursor: pointer !important;
+  }
+  .bento-grid.arch-stage-grid .bento-card.arch-slot-left:hover {
+    opacity: 0.88 !important;
+    transform: translate3d(calc(-1 * clamp(310px, 28vw, 385px)), 32px, -15px) scale(0.92) rotate(-4.5deg) !important;
+  }
+
+  /* Right Down-Slope Slot */
+  .bento-grid.arch-stage-grid .bento-card.arch-slot-right {
+    transform: translate3d(clamp(310px, 28vw, 385px), 42px, -30px) scale(0.88) rotate(6.5deg) !important;
+    z-index: 5 !important;
+    opacity: 0.65 !important;
+    filter: blur(0.2px) !important;
+    cursor: pointer !important;
+  }
+  .bento-grid.arch-stage-grid .bento-card.arch-slot-right:hover {
+    opacity: 0.88 !important;
+    transform: translate3d(clamp(310px, 28vw, 385px), 32px, -15px) scale(0.92) rotate(4.5deg) !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   How It Works Upward Arch Rules
+   -------------------------------------------------------------------------- */
+@media (min-width: 769px) {
+  .hiw-grid.arch-stage-grid {
+    display: flex !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 550px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    perspective: 1400px !important;
+    transform-style: preserve-3d !important;
+    overflow: visible !important;
+    margin: 0 auto !important;
+  }
+
+  .hiw-grid.arch-stage-grid .hiw-step-card {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    margin-top: -245px !important;
+    margin-left: -175px !important;
+    width: 350px !important;
+    min-height: 490px !important;
+    border-radius: 24px !important;
+    padding: 22px 20px 24px 20px !important;
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.85s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    will-change: transform, opacity;
+    transform-style: preserve-3d !important;
+    background: rgba(255, 255, 255, 0.90) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(216, 27, 96, 0.12) !important;
+    box-shadow: 0 10px 30px -6px rgba(27, 6, 26, 0.08) !important;
+  }
+
+  /* Apex / Center Slot - Top of the Arch */
+  .hiw-grid.arch-stage-grid .hiw-step-card.arch-slot-center {
+    transform: translate3d(0, -36px, 40px) scale(1.05) rotate(0deg) !important;
+    z-index: 10 !important;
+    opacity: 1 !important;
+    filter: blur(0px) !important;
+    pointer-events: auto !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 1.5px solid rgba(216, 27, 96, 0.32) !important;
+    box-shadow: 0 28px 70px -14px rgba(216, 27, 96, 0.22), 0 10px 30px rgba(27, 6, 26, 0.08) !important;
+  }
+
+  .hiw-grid.arch-stage-grid .hiw-step-card.arch-slot-center .hiw-number-badge {
+    transform: scale(1.12);
+    box-shadow: 0 0 22px rgba(216, 27, 96, 0.45), 0 4px 14px rgba(212, 139, 112, 0.4);
+  }
+
+  /* Left Down-Slope Slot */
+  .hiw-grid.arch-stage-grid .hiw-step-card.arch-slot-left {
+    transform: translate3d(calc(-1 * clamp(300px, 28vw, 380px)), 42px, -30px) scale(0.88) rotate(-6.5deg) !important;
+    z-index: 5 !important;
+    opacity: 0.65 !important;
+    filter: blur(0.2px) !important;
+    cursor: pointer !important;
+  }
+  .hiw-grid.arch-stage-grid .hiw-step-card.arch-slot-left:hover {
+    opacity: 0.88 !important;
+    transform: translate3d(calc(-1 * clamp(300px, 28vw, 380px)), 32px, -15px) scale(0.92) rotate(-4.5deg) !important;
+  }
+
+  /* Right Down-Slope Slot */
+  .hiw-grid.arch-stage-grid .hiw-step-card.arch-slot-right {
+    transform: translate3d(clamp(300px, 28vw, 380px), 42px, -30px) scale(0.88) rotate(6.5deg) !important;
+    z-index: 5 !important;
+    opacity: 0.65 !important;
+    filter: blur(0.2px) !important;
+    cursor: pointer !important;
+  }
+  .hiw-grid.arch-stage-grid .hiw-step-card.arch-slot-right:hover {
+    opacity: 0.88 !important;
+    transform: translate3d(clamp(300px, 28vw, 380px), 32px, -15px) scale(0.92) rotate(4.5deg) !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Safety Fallbacks (Under 768px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .arch-carousel-container {
+    perspective: none !important;
+    padding: 0 !important;
+  }
+
+  .bento-grid.arch-stage-grid {
+    height: auto !important;
+    perspective: none !important;
+    transform-style: flat !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    display: flex !important;
+    gap: 16px !important;
+    padding: 0 16px 16px 16px !important;
+  }
+
+  .bento-grid.arch-stage-grid .bento-card {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    width: auto !important;
+    flex: 0 0 84vw !important;
+    max-width: 320px !important;
+    min-height: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    scroll-snap-align: center !important;
+    box-shadow: 0 8px 24px -4px rgba(27, 6, 26, 0.08) !important;
+  }
+
+  .hiw-grid.arch-stage-grid {
+    height: auto !important;
+    perspective: none !important;
+    transform-style: flat !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    display: flex !important;
+    gap: 16px !important;
+    padding: 0 16px 16px 16px !important;
+  }
+
+  .hiw-grid.arch-stage-grid .hiw-step-card {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    width: auto !important;
+    flex: 0 0 82vw !important;
+    max-width: 320px !important;
+    min-height: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    scroll-snap-align: center !important;
+  }
+}

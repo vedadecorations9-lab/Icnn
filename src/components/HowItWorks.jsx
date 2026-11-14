@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ShoppingBag, ClipboardCheck, Truck } from 'lucide-react';
+import { ShoppingBag, ClipboardCheck, Truck, ChevronLeft, ChevronRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,38 +43,47 @@ export default function HowItWorks() {
   const gridRef = useRef(null);
   const [activeStep, setActiveStep] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const pauseTimeoutRef = useRef(null);
 
-  // GSAP entrance animation for desktop
+  // GSAP entrance animation for section header on desktop
   useLayoutEffect(() => {
     const section = sectionRef.current;
-    const grid = gridRef.current;
-    if (!section || !grid) return;
+    if (!section) return;
 
     let ctx = gsap.context(() => {
-      const cards = grid.querySelectorAll('.hiw-step-card');
       if (window.innerWidth > 768) {
-        gsap.from(cards, {
-          y: 45,
-          opacity: 0,
-          scale: 0.95,
-          stagger: 0.16,
-          duration: 0.85,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 78%',
-            once: true,
-            clearProps: 'opacity,transform',
-          },
-        });
+        gsap.fromTo(
+          '.hiw-header',
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 80%',
+              once: true,
+            },
+          }
+        );
       }
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
-  // Smooth centered scroll to a specific step
+  // Calculate arch slot class for desktop 3D curved trajectory (Apex, Right slope, Left slope)
+  const getSlotClass = (cardIdx, currentIdx) => {
+    const total = STEPS.length;
+    const diff = (cardIdx - currentIdx + total) % total;
+    if (diff === 0) return 'arch-slot-center';
+    if (diff === 1) return 'arch-slot-right';
+    return 'arch-slot-left';
+  };
+
+  // Smooth centered scroll to a specific step on mobile
   const scrollToStep = (idx) => {
     if (!gridRef.current) return;
     const el = gridRef.current;
@@ -90,7 +99,7 @@ export default function HowItWorks() {
     }
   };
 
-  // Pause auto-rotation momentarily when user manually interacts
+  // User manual interaction pauses auto-rotation momentarily
   const handleUserInteraction = (stepIndex) => {
     setIsPaused(true);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
@@ -99,13 +108,41 @@ export default function HowItWorks() {
     }, 6000);
 
     if (typeof stepIndex === 'number') {
-      scrollToStep(stepIndex);
+      setActiveStep(stepIndex);
+      if (window.innerWidth <= 768) {
+        scrollToStep(stepIndex);
+      }
     }
   };
 
-  // Auto-advance loop (continuously transitions between steps on a timer)
+  // Manual Desktop Navigation
+  const handlePrev = (e) => {
+    e?.stopPropagation();
+    setIsPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 6000);
+    setActiveStep((prev) => (prev - 1 + STEPS.length) % STEPS.length);
+  };
+
+  const handleNext = (e) => {
+    e?.stopPropagation();
+    setIsPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 6000);
+    setActiveStep((prev) => (prev + 1) % STEPS.length);
+  };
+
+  // Clicking a flanking step card promotes it to the center apex
+  const handleCardClick = (idx, e) => {
+    if (idx !== activeStep) {
+      e.preventDefault();
+      handleUserInteraction(idx);
+    }
+  };
+
+  // Auto-advance loop: continuously transitions between steps along the upward arch on desktop
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || isHovered) return;
 
     const interval = setInterval(() => {
       setActiveStep((prev) => {
@@ -124,12 +161,12 @@ export default function HowItWorks() {
         }
         return next;
       });
-    }, 3500);
+    }, 3800);
 
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, isHovered]);
 
-  // Update active dot/tab when user manually swipes
+  // Update active dot/tab when user manually swipes on mobile
   const handleScroll = () => {
     if (!gridRef.current || window.innerWidth > 768) return;
     const el = gridRef.current;
@@ -180,56 +217,147 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        {/* 3 Step Cards — Auto-advancing Carousel on Mobile, 3-Col Grid on Desktop */}
+        {/* Upward Arch Stage Container */}
         <div
-          className="hiw-grid"
-          ref={gridRef}
-          onScroll={handleScroll}
-          onTouchStart={() => handleUserInteraction()}
-          onMouseDown={() => handleUserInteraction()}
+          className="arch-carousel-container hiw-arch-container"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          {STEPS.map((step, idx) => {
-            const StepIcon = step.icon;
-            return (
-              <article
+          {/* Luminous Architectural Curved Arch Line Guide (Desktop) */}
+          <div className="arch-backdrop-track arch-desktop-only" aria-hidden="true">
+            <svg viewBox="0 0 1000 240" fill="none" preserveAspectRatio="none" className="arch-svg-curve">
+              <defs>
+                <linearGradient id="hiwArchGrad" x1="0%" y1="100%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#D81B60" stopOpacity="0" />
+                  <stop offset="20%" stopColor="#D81B60" stopOpacity="0.28" />
+                  <stop offset="50%" stopColor="#E03E8A" stopOpacity="0.65" />
+                  <stop offset="80%" stopColor="#D48B70" stopOpacity="0.28" />
+                  <stop offset="100%" stopColor="#D48B70" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="hiwArchDashedGrad" x1="0%" y1="100%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#D81B60" stopOpacity="0" />
+                  <stop offset="50%" stopColor="#F59E0B" stopOpacity="0.5" />
+                  <stop offset="100%" stopColor="#D81B60" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 60 210 C 260 30, 740 30, 940 210"
+                stroke="url(#hiwArchGrad)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M 120 210 C 300 50, 700 50, 880 210"
+                stroke="url(#hiwArchDashedGrad)"
+                strokeWidth="1.5"
+                strokeDasharray="6 8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+
+          {/* Floating Desktop Nav Arrows */}
+          <div className="arch-nav-controls arch-desktop-flex" aria-hidden="true">
+            <button
+              type="button"
+              className="arch-nav-arrow arch-nav-prev"
+              onClick={handlePrev}
+              aria-label="Previous step"
+            >
+              <ChevronLeft size={22} />
+            </button>
+            <button
+              type="button"
+              className="arch-nav-arrow arch-nav-next"
+              onClick={handleNext}
+              aria-label="Next step"
+            >
+              <ChevronRight size={22} />
+            </button>
+          </div>
+
+          {/* 3 Step Cards: Desktop Upward Arch Slots / Mobile Auto-Snap Track */}
+          <div
+            className="hiw-grid arch-stage-grid"
+            ref={gridRef}
+            onScroll={handleScroll}
+            onTouchStart={() => handleUserInteraction()}
+          >
+            {STEPS.map((step, idx) => {
+              const StepIcon = step.icon;
+              const slotClass = getSlotClass(idx, activeStep);
+              const isCenter = activeStep === idx;
+              return (
+                <article
+                  key={idx}
+                  className={`hiw-step-card ${slotClass} ${isCenter ? 'is-active hiw-card-spotlight' : ''}`}
+                  onClick={(e) => handleCardClick(idx, e)}
+                >
+                  {/* Illustration Card Image Stage (Desktop Only) */}
+                  <div className="hiw-card-stage hide-mobile">
+                    <picture>
+                      <source srcSet={step.image} type="image/webp" />
+                      <img
+                        src={step.fallback}
+                        alt={step.alt}
+                        className="hiw-card-img"
+                        loading="lazy"
+                        width="300"
+                        height="247"
+                      />
+                    </picture>
+                  </div>
+
+                  {/* Step Meta: Rose-Gold Step Number Badge + Icon + Text */}
+                  <div className="hiw-card-body">
+                    <div className="hiw-card-top-row">
+                      <div className="hiw-number-badge" aria-label={`Step ${step.step}`}>
+                        <span>{step.step}</span>
+                      </div>
+                      <div className="hiw-icon-disc">
+                        <StepIcon size={17} />
+                      </div>
+                    </div>
+                    
+                    <h3 className="hiw-step-title">{step.title}</h3>
+                    <p className="hiw-step-desc">{step.description}</p>
+                  </div>
+
+                </article>
+              );
+            })}
+          </div>
+
+          {/* Interactive Desktop Indicator Stepper with Countdown Progress */}
+          <div
+            className="arch-desktop-stepper arch-desktop-flex"
+            role="tablist"
+            aria-label="How it works desktop step progress"
+          >
+            {STEPS.map((step, idx) => (
+              <button
                 key={idx}
-                className={`hiw-step-card ${activeStep === idx ? 'is-active' : ''}`}
+                type="button"
+                role="tab"
+                aria-selected={activeStep === idx}
+                className={`arch-stepper-pill ${activeStep === idx ? 'is-active' : ''}`}
                 onClick={() => handleUserInteraction(idx)}
               >
-                
-                {/* Illustration Card Image Stage (Desktop Only - completely removed on mobile) */}
-                <div className="hiw-card-stage hide-mobile">
-                  <picture>
-                    <source srcSet={step.image} type="image/webp" />
-                    <img
-                      src={step.fallback}
-                      alt={step.alt}
-                      className="hiw-card-img"
-                      loading="lazy"
-                      width="300"
-                      height="247"
-                    />
-                  </picture>
+                <div className="arch-stepper-pill-top">
+                  <span className="arch-stepper-num">{step.step}</span>
+                  <span className="arch-stepper-label">{step.short}</span>
                 </div>
+                <span className="arch-stepper-bar">
+                  <span
+                    className={`arch-stepper-fill ${
+                      activeStep === idx && !isPaused && !isHovered ? 'is-running' : ''
+                    }`}
+                  />
+                </span>
+              </button>
+            ))}
+          </div>
 
-                {/* Step Meta: Rose-Gold Step Number Badge + Icon + Text */}
-                <div className="hiw-card-body">
-                  <div className="hiw-card-top-row">
-                    <div className="hiw-number-badge" aria-label={`Step ${step.step}`}>
-                      <span>{step.step}</span>
-                    </div>
-                    <div className="hiw-icon-disc">
-                      <StepIcon size={17} />
-                    </div>
-                  </div>
-                  
-                  <h3 className="hiw-step-title">{step.title}</h3>
-                  <p className="hiw-step-desc">{step.description}</p>
-                </div>
-
-              </article>
-            );
-          })}
         </div>
 
         {/* Pagination Dots (Mobile Only) */}
