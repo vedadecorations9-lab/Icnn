@@ -2721,10 +2721,10 @@ export default function AdminPanel({
               {/* Form Action Footer */}
               <div className="admin-product-modal-footer">
                 <div className="admin-modal-footer-summary">
-                  <span>Target:</span>
+                  <span className="summary-target-label">Target Item</span>
+                  <span className="summary-arrow">→</span>
                   <span className="summary-val">{formData.name || 'Untitled Item'}</span>
-                  <span>•</span>
-                  <span className="summary-price">${formData.priceAUD || 0} AUD</span>
+                  <span className="summary-badge">${formData.priceAUD || 0} AUD / hire</span>
                 </div>
                 <div className="admin-modal-footer-actions">
                   <button
@@ -2735,7 +2735,9 @@ export default function AdminPanel({
                     Cancel
                   </button>
                   <button type="submit" className="btn-product-modal-save">
-                    <Check size={15} />
+                    <span className="btn-save-icon-circle">
+                      <Check size={13} strokeWidth={2.5} />
+                    </span>
                     <span>{isCreateModalOpen ? 'Create & Publish Equipment' : 'Save Changes'}</span>
                   </button>
                 </div>
