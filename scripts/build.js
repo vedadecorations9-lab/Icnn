@@ -4,12 +4,16 @@ import { execSync } from 'node:child_process';
 const deployKey = process.env.CONVEX_DEPLOY_KEY;
 
 if (deployKey) {
-  console.log('⚡ [Convex] Deploying database functions and schema to Convex Cloud...');
+  console.log('⚡ [Convex] CONVEX_DEPLOY_KEY detected! Deploying database functions and auto-injecting deployment URL...');
   try {
-    execSync('npx convex deploy', { stdio: 'inherit' });
-    console.log('✅ [Convex] Database functions deployed successfully!');
+    // Official Convex CI deploy pattern:
+    // It deploys functions & schema to Convex Cloud, automatically retrieves the deployment URL,
+    // injects VITE_CONVEX_URL into the environment, and runs vite build.
+    execSync('npx convex deploy --cmd "npx vite build"', { stdio: 'inherit' });
+    console.log('✅ [Convex] Successfully deployed backend and built frontend bundle!');
+    process.exit(0);
   } catch (err) {
-    console.warn('⚠️ [Convex] Cloud deploy encountered an issue, proceeding with frontend build:', err.message);
+    console.warn('⚠️ [Convex] Deployment with --cmd encountered an issue, falling back to direct build:', err.message);
   }
 } else {
   console.log('ℹ️ [Convex] No CONVEX_DEPLOY_KEY set in environment, building frontend directly.');
