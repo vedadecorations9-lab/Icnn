@@ -49,7 +49,6 @@ export default function BentoPromos({ onSelectCategory }) {
   const gridRef = useRef(null);
   const [activePillar, setActivePillar] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const pauseTimeoutRef = useRef(null);
 
   // GSAP desktop entrance animation for section header
@@ -105,13 +104,13 @@ export default function BentoPromos({ onSelectCategory }) {
     }
   };
 
-  // User manual interaction pauses auto-rotation momentarily
+  // User manual interaction (click) pauses auto-rotation for 4s then cleanly resumes
   const handleUserInteraction = (idx) => {
     setIsPaused(true);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
     pauseTimeoutRef.current = setTimeout(() => {
       setIsPaused(false);
-    }, 6000);
+    }, 4000);
 
     if (typeof idx === 'number') {
       setActivePillar(idx);
@@ -126,7 +125,7 @@ export default function BentoPromos({ onSelectCategory }) {
     e?.stopPropagation();
     setIsPaused(true);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 6000);
+    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 4000);
     setActivePillar((prev) => (prev - 1 + PILLARS.length) % PILLARS.length);
   };
 
@@ -134,7 +133,7 @@ export default function BentoPromos({ onSelectCategory }) {
     e?.stopPropagation();
     setIsPaused(true);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 6000);
+    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 4000);
     setActivePillar((prev) => (prev + 1) % PILLARS.length);
   };
 
@@ -146,11 +145,11 @@ export default function BentoPromos({ onSelectCategory }) {
     }
   };
 
-  // Continuous auto-advancing carousel along upward arch on desktop, and snap track on mobile
+  // Continuous auto-advancing carousel: automatically transitions every 3.2 seconds
   useEffect(() => {
-    if (isPaused || isHovered) return;
+    if (isPaused) return;
 
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setActivePillar((prev) => {
         const next = (prev + 1) % PILLARS.length;
         if (gridRef.current && window.innerWidth <= 768) {
@@ -167,10 +166,10 @@ export default function BentoPromos({ onSelectCategory }) {
         }
         return next;
       });
-    }, 3800);
+    }, 3200);
 
-    return () => clearInterval(interval);
-  }, [isPaused, isHovered]);
+    return () => clearInterval(timer);
+  }, [isPaused]);
 
   // Sync active pillar when swiping horizontally on mobile
   const handleScroll = () => {
@@ -223,44 +222,8 @@ export default function BentoPromos({ onSelectCategory }) {
         </div>
 
         {/* Upward Arch Stage Container */}
-        <div
-          className="arch-carousel-container bento-arch-container"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {/* Luminous Architectural Curved Arch Line Guide (Desktop) */}
-          <div className="arch-backdrop-track arch-desktop-only" aria-hidden="true">
-            <svg viewBox="0 0 1000 240" fill="none" preserveAspectRatio="none" className="arch-svg-curve">
-              <defs>
-                <linearGradient id="bentoArchGrad" x1="0%" y1="100%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#D81B60" stopOpacity="0" />
-                  <stop offset="20%" stopColor="#D81B60" stopOpacity="0.28" />
-                  <stop offset="50%" stopColor="#E03E8A" stopOpacity="0.65" />
-                  <stop offset="80%" stopColor="#D48B70" stopOpacity="0.28" />
-                  <stop offset="100%" stopColor="#D48B70" stopOpacity="0" />
-                </linearGradient>
-                <linearGradient id="bentoArchDashedGrad" x1="0%" y1="100%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#D81B60" stopOpacity="0" />
-                  <stop offset="50%" stopColor="#F59E0B" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="#D81B60" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 60 210 C 260 30, 740 30, 940 210"
-                stroke="url(#bentoArchGrad)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 120 210 C 300 50, 700 50, 880 210"
-                stroke="url(#bentoArchDashedGrad)"
-                strokeWidth="1.5"
-                strokeDasharray="6 8"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-
+        <div className="arch-carousel-container bento-arch-container">
+          
           {/* Floating Desktop Nav Arrows */}
           <div className="arch-nav-controls arch-desktop-flex" aria-hidden="true">
             <button
@@ -352,9 +315,8 @@ export default function BentoPromos({ onSelectCategory }) {
                 </div>
                 <span className="arch-stepper-bar">
                   <span
-                    className={`arch-stepper-fill ${
-                      activePillar === idx && !isPaused && !isHovered ? 'is-running' : ''
-                    }`}
+                    key={`bento-bar-${pillar.id}-${activePillar === idx ? activePillar : 'idle'}`}
+                    className={`arch-stepper-fill ${activePillar === idx && !isPaused ? 'is-running' : ''}`}
                   />
                 </span>
               </button>

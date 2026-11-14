@@ -11370,29 +11370,6 @@ html.lenis, html.lenis body {
   padding: 24px 0 16px 0;
 }
 
-/* Luminous Architectural Curved Arch Line Guide */
-.arch-backdrop-track {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 1050px;
-  height: 240px;
-  pointer-events: none;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.arch-svg-curve {
-  width: 100%;
-  height: 100%;
-  opacity: 0.85;
-  filter: drop-shadow(0 0 16px rgba(216, 27, 96, 0.22));
-}
-
 /* Floating Navigation Arrows */
 .arch-nav-controls {
   position: absolute;
@@ -11519,11 +11496,7 @@ html.lenis, html.lenis body {
 }
 
 .arch-stepper-fill.is-running {
-  animation: archProgressFill 3.8s linear infinite;
-}
-
-.arch-carousel-container:hover .arch-stepper-fill.is-running {
-  animation-play-state: paused;
+  animation: archProgressFill 3.2s linear forwards;
 }
 
 @keyframes archProgressFill {
@@ -11576,6 +11549,11 @@ html.lenis, html.lenis body {
     filter: blur(0px) !important;
     pointer-events: auto !important;
     box-shadow: 0 28px 70px -14px rgba(216, 27, 96, 0.25), 0 0 0 1.5px rgba(216, 27, 96, 0.35) !important;
+  }
+
+  .bento-grid.arch-stage-grid .bento-card.arch-slot-center:hover {
+    transform: translate3d(0, -40px, 45px) scale(1.06) rotate(0deg) !important;
+    box-shadow: 0 32px 80px -14px rgba(216, 27, 96, 0.32), 0 0 0 2px rgba(216, 27, 96, 0.45) !important;
   }
 
   /* Left Down-Slope Slot */
@@ -11656,6 +11634,10 @@ html.lenis, html.lenis body {
     background: rgba(255, 255, 255, 0.98) !important;
     border: 1.5px solid rgba(216, 27, 96, 0.32) !important;
     box-shadow: 0 28px 70px -14px rgba(216, 27, 96, 0.22), 0 10px 30px rgba(27, 6, 26, 0.08) !important;
+  }
+
+  .hiw-grid.arch-stage-grid .hiw-step-card.arch-slot-center:hover {
+    transform: translate3d(0, -40px, 45px) scale(1.06) rotate(0deg) !important;
   }
 
   .hiw-grid.arch-stage-grid .hiw-step-card.arch-slot-center .hiw-number-badge {

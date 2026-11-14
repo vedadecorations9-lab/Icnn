@@ -43,7 +43,6 @@ export default function HowItWorks() {
   const gridRef = useRef(null);
   const [activeStep, setActiveStep] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const pauseTimeoutRef = useRef(null);
 
   // GSAP entrance animation for section header on desktop
@@ -99,13 +98,13 @@ export default function HowItWorks() {
     }
   };
 
-  // User manual interaction pauses auto-rotation momentarily
+  // User manual interaction (click) pauses auto-rotation for 4s then cleanly resumes
   const handleUserInteraction = (stepIndex) => {
     setIsPaused(true);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
     pauseTimeoutRef.current = setTimeout(() => {
       setIsPaused(false);
-    }, 6000);
+    }, 4000);
 
     if (typeof stepIndex === 'number') {
       setActiveStep(stepIndex);
@@ -120,7 +119,7 @@ export default function HowItWorks() {
     e?.stopPropagation();
     setIsPaused(true);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 6000);
+    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 4000);
     setActiveStep((prev) => (prev - 1 + STEPS.length) % STEPS.length);
   };
 
@@ -128,7 +127,7 @@ export default function HowItWorks() {
     e?.stopPropagation();
     setIsPaused(true);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 6000);
+    pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 4000);
     setActiveStep((prev) => (prev + 1) % STEPS.length);
   };
 
@@ -140,11 +139,11 @@ export default function HowItWorks() {
     }
   };
 
-  // Auto-advance loop: continuously transitions between steps along the upward arch on desktop
+  // Auto-advance loop: continuously transitions between steps along the upward arch every 3.2 seconds
   useEffect(() => {
-    if (isPaused || isHovered) return;
+    if (isPaused) return;
 
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setActiveStep((prev) => {
         const next = (prev + 1) % STEPS.length;
         if (gridRef.current && window.innerWidth <= 768) {
@@ -161,10 +160,10 @@ export default function HowItWorks() {
         }
         return next;
       });
-    }, 3800);
+    }, 3200);
 
-    return () => clearInterval(interval);
-  }, [isPaused, isHovered]);
+    return () => clearInterval(timer);
+  }, [isPaused]);
 
   // Update active dot/tab when user manually swipes on mobile
   const handleScroll = () => {
@@ -218,43 +217,7 @@ export default function HowItWorks() {
         </div>
 
         {/* Upward Arch Stage Container */}
-        <div
-          className="arch-carousel-container hiw-arch-container"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {/* Luminous Architectural Curved Arch Line Guide (Desktop) */}
-          <div className="arch-backdrop-track arch-desktop-only" aria-hidden="true">
-            <svg viewBox="0 0 1000 240" fill="none" preserveAspectRatio="none" className="arch-svg-curve">
-              <defs>
-                <linearGradient id="hiwArchGrad" x1="0%" y1="100%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#D81B60" stopOpacity="0" />
-                  <stop offset="20%" stopColor="#D81B60" stopOpacity="0.28" />
-                  <stop offset="50%" stopColor="#E03E8A" stopOpacity="0.65" />
-                  <stop offset="80%" stopColor="#D48B70" stopOpacity="0.28" />
-                  <stop offset="100%" stopColor="#D48B70" stopOpacity="0" />
-                </linearGradient>
-                <linearGradient id="hiwArchDashedGrad" x1="0%" y1="100%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#D81B60" stopOpacity="0" />
-                  <stop offset="50%" stopColor="#F59E0B" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="#D81B60" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 60 210 C 260 30, 740 30, 940 210"
-                stroke="url(#hiwArchGrad)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 120 210 C 300 50, 700 50, 880 210"
-                stroke="url(#hiwArchDashedGrad)"
-                strokeWidth="1.5"
-                strokeDasharray="6 8"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
+        <div className="arch-carousel-container hiw-arch-container">
 
           {/* Floating Desktop Nav Arrows */}
           <div className="arch-nav-controls arch-desktop-flex" aria-hidden="true">
@@ -349,9 +312,8 @@ export default function HowItWorks() {
                 </div>
                 <span className="arch-stepper-bar">
                   <span
-                    className={`arch-stepper-fill ${
-                      activeStep === idx && !isPaused && !isHovered ? 'is-running' : ''
-                    }`}
+                    key={`hiw-bar-${step.step}-${activeStep === idx ? activeStep : 'idle'}`}
+                    className={`arch-stepper-fill ${activeStep === idx && !isPaused ? 'is-running' : ''}`}
                   />
                 </span>
               </button>
