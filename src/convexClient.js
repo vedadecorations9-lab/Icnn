@@ -6,6 +6,7 @@ const rawUrl =
   import.meta.env.VITE_CONVEX_URL ||
   import.meta.env.CONVEX_URL ||
   import.meta.env.NEXT_PUBLIC_CONVEX_URL ||
+  (typeof process !== 'undefined' && process.env && (process.env.CONVEX_URL || process.env.VITE_CONVEX_URL)) ||
   localSavedUrl ||
   '';
 

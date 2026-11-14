@@ -31,7 +31,9 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(clerkKey),
       'import.meta.env.VITE_CONVEX_URL': JSON.stringify(convexUrl),
       'import.meta.env.CONVEX_URL': JSON.stringify(convexUrl),
-      'import.meta.env.NEXT_PUBLIC_CONVEX_URL': JSON.stringify(convexUrl)
+      'import.meta.env.NEXT_PUBLIC_CONVEX_URL': JSON.stringify(convexUrl),
+      'process.env.CONVEX_URL': JSON.stringify(convexUrl),
+      'process.env.VITE_CONVEX_URL': JSON.stringify(convexUrl)
     },
     build: {
       chunkSizeWarningLimit: 1000,
