@@ -2118,18 +2118,20 @@ export default function AdminPanel({
           <div className="admin-product-modal-card" onClick={(e) => e.stopPropagation()}>
             
             {/* Modal Header */}
-            <div className="admin-modal-header">
+            <div className="admin-product-modal-header">
               <div className="admin-product-modal-header-left">
                 <div className="admin-product-modal-icon-badge">
-                  <Package size={20} />
+                  <Package size={18} />
                 </div>
                 <div>
-                  <div className="admin-product-modal-tagline">
+                  <div className="admin-modal-eyebrow">
+                    <span className="admin-eyebrow-dot" />
                     <span>Brisbane Inventory Management</span>
-                    <span className="dot">•</span>
-                    <span>{isCreateModalOpen ? 'New Listing' : `SKU: ${formData.sku || 'UNASSIGNED'}`}</span>
+                    <span className="admin-modal-status-chip">
+                      {isCreateModalOpen ? 'New Listing' : `SKU: ${formData.sku || 'UNASSIGNED'}`}
+                    </span>
                   </div>
-                  <h3 className="modal-title">
+                  <h3 className="admin-product-modal-title">
                     {isCreateModalOpen ? 'Add New Hire Equipment' : `Edit: ${editingProduct?.name || 'Equipment'}`}
                   </h3>
                 </div>
@@ -2140,33 +2142,34 @@ export default function AdminPanel({
                 onClick={() => { setIsCreateModalOpen(false); setEditingProduct(null); }}
                 title="Close (Esc)"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
             {/* Modal Form */}
             <form onSubmit={isCreateModalOpen ? handleSubmitCreate : handleSubmitEdit} className="admin-product-modal-form">
               
-              <div className="admin-product-modal-body">
+              <div className="admin-product-form-layout">
                 
                 {/* LEFT COLUMN: Main Configuration (General Info, Image Studio, Specs & Terms) */}
-                <div className="admin-modal-col-main">
+                <div className="admin-form-left-col">
                   
                   {/* Card 1: General Information */}
                   <div className="admin-form-card">
                     <div className="admin-form-card-header">
-                      <div className="admin-form-card-title">
-                        <FileText size={16} className="text-pink-600" />
-                        <span>General Information</span>
+                      <div className="admin-form-card-title-group">
+                        <FileText size={15} className="text-pink-600" />
+                        <span className="admin-form-card-title">General Information</span>
                       </div>
-                      <span className="admin-form-card-sub">Core item details shown across Brisbane catalog</span>
+                      <span className="admin-form-card-sub">Core item details shown in Brisbane catalog</span>
                     </div>
 
-                    <div className="modal-form-grid">
+                    <div className="admin-form-fields-grid">
                       {/* Equipment Name */}
-                      <div className="form-group full-width">
-                        <label className="form-label">
-                          Equipment Name <span className="text-rose-500">*</span>
+                      <div className="admin-form-group full-width">
+                        <label className="admin-form-label">
+                          <span>Equipment Name</span>
+                          <span className="text-rose-500 font-bold">*</span>
                         </label>
                         <input
                           type="text"
@@ -2174,19 +2177,20 @@ export default function AdminPanel({
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="e.g. 6x3m Commercial Pop-Up Gazebo (Waterproof)"
-                          className="form-input"
+                          className="admin-form-input lg"
                         />
                       </div>
 
                       {/* Category Selection */}
-                      <div className="form-group">
-                        <label className="form-label">
-                          Category <span className="text-rose-500">*</span>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">
+                          <span>Category</span>
+                          <span className="text-rose-500 font-bold">*</span>
                         </label>
                         <select
                           value={formData.category}
                           onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                          className="form-select"
+                          className="admin-form-select"
                         >
                           {activeCategories.map(c => (
                             <option key={c.id} value={c.id}>{c.label}</option>
@@ -2195,12 +2199,12 @@ export default function AdminPanel({
                       </div>
 
                       {/* Badge / Merchandising Tag */}
-                      <div className="form-group">
-                        <label className="form-label">Catalog Merchandising Badge</label>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Catalog Merchandising Badge</label>
                         <select
                           value={formData.badge}
                           onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                          className="form-select"
+                          className="admin-form-select"
                         >
                           <option value="">None (Standard Listing)</option>
                           <option value="Popular Hire">Popular Hire</option>
@@ -2213,14 +2217,14 @@ export default function AdminPanel({
                       </div>
 
                       {/* Commercial Description */}
-                      <div className="form-group full-width">
-                        <label className="form-label">Customer Description</label>
+                      <div className="admin-form-group full-width">
+                        <label className="admin-form-label">Customer Description</label>
                         <textarea
                           rows={3}
                           value={formData.description}
                           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                           placeholder="Detail features, setup requirements, capacity, and suitability for Brisbane events..."
-                          className="form-textarea"
+                          className="admin-form-textarea"
                         />
                       </div>
                     </div>
@@ -2229,37 +2233,37 @@ export default function AdminPanel({
                   {/* Card 2: Image Studio with Native Drag-and-Drop */}
                   <div className="admin-form-card">
                     <div className="admin-form-card-header">
-                      <div className="admin-form-card-title">
-                        <ImageIcon size={16} className="text-pink-600" />
-                        <span>Equipment Media & Photography</span>
+                      <div className="admin-form-card-title-group">
+                        <ImageIcon size={15} className="text-pink-600" />
+                        <span className="admin-form-card-title">Equipment Media & Photography</span>
                       </div>
-                      <span className="admin-form-card-sub">Drag & drop new photo or pick from warehouse library</span>
+                      <span className="admin-form-card-sub">Drag & drop photo or pick from warehouse stock</span>
                     </div>
 
                     {/* Image Mode Tabs */}
-                    <div className="admin-image-tabs">
+                    <div className="admin-media-tab-strip">
                       <button
                         type="button"
-                        className={`admin-image-tab-btn ${imageTabMode === 'upload' ? 'active' : ''}`}
+                        className={`media-tab-btn ${imageTabMode === 'upload' ? 'active' : ''}`}
                         onClick={() => setImageTabMode('upload')}
                       >
-                        <UploadCloud size={14} />
+                        <UploadCloud size={13} />
                         <span>Drag & Drop File</span>
                       </button>
                       <button
                         type="button"
-                        className={`admin-image-tab-btn ${imageTabMode === 'preset' ? 'active' : ''}`}
+                        className={`media-tab-btn ${imageTabMode === 'preset' ? 'active' : ''}`}
                         onClick={() => setImageTabMode('preset')}
                       >
-                        <Sparkles size={14} />
+                        <Sparkles size={13} />
                         <span>Brisbane Stock Library ({EQUIPMENT_IMAGE_OPTIONS.length})</span>
                       </button>
                       <button
                         type="button"
-                        className={`admin-image-tab-btn ${imageTabMode === 'url' ? 'active' : ''}`}
+                        className={`media-tab-btn ${imageTabMode === 'url' ? 'active' : ''}`}
                         onClick={() => setImageTabMode('url')}
                       >
-                        <ExternalLink size={14} />
+                        <ExternalLink size={13} />
                         <span>Image URL</span>
                       </button>
                     </div>
@@ -2277,38 +2281,38 @@ export default function AdminPanel({
                     {imageTabMode === 'upload' && (
                       <div>
                         <div
-                          className={`admin-drag-dropzone ${isDraggingImage ? 'dragging' : ''} ${formData.image ? 'has-file' : ''}`}
+                          className={`admin-drag-dropzone ${isDraggingImage ? 'is-dragging' : ''}`}
                           onDragOver={handleDragOver}
                           onDragLeave={handleDragLeave}
                           onDrop={handleDropImage}
                           onClick={() => fileInputRef.current?.click()}
                         >
                           <div className="admin-dropzone-icon-bubble">
-                            <UploadCloud size={24} />
+                            <UploadCloud size={20} />
                           </div>
                           <div className="admin-dropzone-title">
                             {isDraggingImage ? 'Drop image here now' : 'Drag & drop product photo here'}
                           </div>
-                          <div className="admin-dropzone-sub">
-                            or <span className="admin-dropzone-browse-link">browse your computer</span>
+                          <div className="admin-dropzone-desc">
+                            or <span className="highlight-browse">browse from your computer</span>
                           </div>
-                          <div className="admin-dropzone-hint">
-                            Supports high-res PNG, JPG, WEBP, SVG • Instant client preview
+                          <div className="admin-dropzone-meta-chips">
+                            Supports high-res PNG, JPG, WEBP, SVG up to 10MB
                           </div>
                         </div>
 
                         {/* Uploaded File Meta Card */}
                         {formData.image && (
                           <div className="admin-uploaded-preview-card">
-                            <div className="admin-preview-thumb-box">
+                            <div className="admin-preview-thumb-stage">
                               <img
                                 src={formData.image}
                                 alt="Current equipment preview"
+                                className="admin-preview-img"
                                 onError={(e) => {
                                   e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
                                 }}
                               />
-                              <span className="admin-preview-badge">Active</span>
                             </div>
                             <div className="admin-preview-details">
                               <div className="admin-preview-name-row">
@@ -2331,7 +2335,7 @@ export default function AdminPanel({
                                     fileInputRef.current?.click();
                                   }}
                                 >
-                                  <UploadCloud size={13} />
+                                  <UploadCloud size={12} />
                                   <span>Replace Photo</span>
                                 </button>
                                 <button
@@ -2342,7 +2346,7 @@ export default function AdminPanel({
                                     handleRemoveImage();
                                   }}
                                 >
-                                  <Trash2 size={13} />
+                                  <Trash2 size={12} />
                                   <span>Reset Default</span>
                                 </button>
                               </div>
@@ -2365,7 +2369,7 @@ export default function AdminPanel({
                               <button
                                 key={i}
                                 type="button"
-                                className={`admin-preset-thumb-btn ${isSelected ? 'selected' : ''}`}
+                                className={`preset-gallery-item ${isSelected ? 'selected' : ''}`}
                                 onClick={() => {
                                   setFormData({ ...formData, image: img.path });
                                   setImageMeta({
@@ -2379,14 +2383,15 @@ export default function AdminPanel({
                                 <img
                                   src={img.path}
                                   alt={img.label}
+                                  className="preset-item-img"
                                   loading="lazy"
                                   onError={(e) => {
                                     e.currentTarget.style.display = 'none';
                                   }}
                                 />
-                                <span className="admin-preset-thumb-label">{img.label}</span>
+                                <span className="preset-item-label">{img.label}</span>
                                 {isSelected && (
-                                  <span className="admin-preset-check-badge">
+                                  <span className="preset-selected-check">
                                     <Check size={11} strokeWidth={3} />
                                   </span>
                                 )}
@@ -2399,10 +2404,10 @@ export default function AdminPanel({
 
                     {/* Tab 3: Direct Image URL */}
                     {imageTabMode === 'url' && (
-                      <div className="form-group full-width">
-                        <label className="form-label">Public Image URL (CDN / Web)</label>
-                        <div className="input-prefix-wrap">
-                          <span className="input-prefix"><ExternalLink size={13} /></span>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Public Image URL (HTTPS)</label>
+                        <div className="input-prefix-box">
+                          <span className="prefix-icon"><ExternalLink size={12} /></span>
                           <input
                             type="url"
                             value={formData.image}
@@ -2416,7 +2421,7 @@ export default function AdminPanel({
                               });
                             }}
                             placeholder="https://images.unsplash.com/... or https://cdn..."
-                            className="form-input with-prefix font-mono text-xs"
+                            className="admin-form-input font-mono text-xs"
                           />
                         </div>
                         <span className="form-hint-text">
@@ -2430,47 +2435,47 @@ export default function AdminPanel({
                   {/* Card 3: Specifications & Logistics */}
                   <div className="admin-form-card">
                     <div className="admin-form-card-header">
-                      <div className="admin-form-card-title">
-                        <Truck size={16} className="text-pink-600" />
-                        <span>Specifications & Brisbane Logistics</span>
+                      <div className="admin-form-card-title-group">
+                        <Truck size={15} className="text-pink-600" />
+                        <span className="admin-form-card-title">Specifications & Brisbane Logistics</span>
                       </div>
-                      <span className="admin-form-card-sub">Dimensions, commercial material, and hire terms</span>
+                      <span className="admin-form-card-sub">Dimensions, commercial material & hire terms</span>
                     </div>
 
-                    <div className="modal-form-grid">
+                    <div className="admin-form-fields-grid">
                       {/* Dimensions */}
-                      <div className="form-group">
-                        <label className="form-label">Dimensions / Sizing</label>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Dimensions / Sizing</label>
                         <input
                           type="text"
                           value={formData.dimensions}
                           onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
                           placeholder="e.g. 6m × 3m × 3.3m Peak"
-                          className="form-input"
+                          className="admin-form-input"
                         />
                       </div>
 
                       {/* Material */}
-                      <div className="form-group">
-                        <label className="form-label">Commercial Specifications</label>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Commercial Specifications</label>
                         <input
                           type="text"
                           value={formData.material}
                           onChange={(e) => setFormData({ ...formData, material: e.target.value })}
                           placeholder="e.g. 500D Waterproof PVC & Reinforced Alloy"
-                          className="form-input"
+                          className="admin-form-input"
                         />
                       </div>
 
                       {/* Hire Period */}
-                      <div className="form-group full-width">
-                        <label className="form-label">Hire Period Terms</label>
+                      <div className="admin-form-group full-width">
+                        <label className="admin-form-label">Hire Period Terms</label>
                         <input
                           type="text"
                           value={formData.hirePeriod}
                           onChange={(e) => setFormData({ ...formData, hirePeriod: e.target.value })}
                           placeholder="e.g. 24–72 Hours Flexible Weekend Hire"
-                          className="form-input"
+                          className="admin-form-input"
                         />
                       </div>
                     </div>
@@ -2479,16 +2484,16 @@ export default function AdminPanel({
                 </div>
 
                 {/* RIGHT COLUMN: Live Card Preview, Pricing & Bond, Inventory & SKU */}
-                <div className="admin-modal-col-side">
+                <div className="admin-form-right-col">
                   
                   {/* Live Catalog Preview */}
-                  <div className="admin-form-card">
+                  <div className="admin-form-card preview-card">
                     <div className="admin-form-card-header">
-                      <div className="admin-form-card-title">
-                        <Eye size={16} className="text-pink-600" />
-                        <span>Live Catalog Preview</span>
+                      <div className="admin-form-card-title-group">
+                        <Eye size={15} className="text-pink-600" />
+                        <span className="admin-form-card-title">Live Catalog Card Preview</span>
                       </div>
-                      <span className="admin-form-card-sub">What customers see in the Brisbane hire store</span>
+                      <span className="admin-form-card-sub">Storefront replica</span>
                     </div>
 
                     <div className="admin-live-catalog-card">
@@ -2505,7 +2510,7 @@ export default function AdminPanel({
                           <span className="live-card-badge-chip">{formData.badge}</span>
                         )}
                         <span className="live-card-stock-pill">
-                          {Number(formData.stock) > 0 ? `${formData.stock} Available` : 'Out of Stock'}
+                          {Number(formData.stock) > 0 ? `${formData.stock} In Stock` : 'Out of Stock'}
                         </span>
                       </div>
 
@@ -2529,18 +2534,18 @@ export default function AdminPanel({
 
                         <div className="live-card-meta-list">
                           <div className="live-card-meta-item">
-                            <Clock size={12} />
+                            <Clock size={11} />
                             <span>{formData.hirePeriod || '24–72 Hours Hire'}</span>
                           </div>
                           <div className="live-card-meta-item">
-                            <MapPin size={12} />
+                            <MapPin size={11} />
                             <span>Brisbane Warehouse Dispatch</span>
                           </div>
                         </div>
 
                         <div className="live-card-cta-mock">
                           <span>Book For Event</span>
-                          <ArrowRight size={13} />
+                          <ArrowRight size={12} />
                         </div>
                       </div>
                     </div>
@@ -2549,21 +2554,21 @@ export default function AdminPanel({
                   {/* Card: Pricing & Security Bond */}
                   <div className="admin-form-card">
                     <div className="admin-form-card-header">
-                      <div className="admin-form-card-title">
-                        <DollarSign size={16} className="text-pink-600" />
-                        <span>Pricing & Security Bond (AUD)</span>
+                      <div className="admin-form-card-title-group">
+                        <DollarSign size={15} className="text-pink-600" />
+                        <span className="admin-form-card-title">Pricing & Security Bond (AUD)</span>
                       </div>
-                      <span className="admin-form-card-sub">Hire rates and refundable bond per booking</span>
                     </div>
 
-                    <div className="modal-form-grid">
+                    <div className="admin-form-fields-grid">
                       {/* Hire Rate */}
-                      <div className="form-group">
-                        <label className="form-label">
-                          Hire Rate (AUD $) <span className="text-rose-500">*</span>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">
+                          <span>Hire Rate (AUD $)</span>
+                          <span className="text-rose-500 font-bold">*</span>
                         </label>
-                        <div className="input-prefix-wrap">
-                          <span className="input-prefix">$</span>
+                        <div className="input-prefix-box">
+                          <span className="prefix-icon">$</span>
                           <input
                             type="number"
                             required
@@ -2571,27 +2576,27 @@ export default function AdminPanel({
                             step="1"
                             value={formData.priceAUD}
                             onChange={(e) => setFormData({ ...formData, priceAUD: e.target.value })}
-                            className="form-input with-prefix font-bold"
+                            className="admin-form-input font-bold"
                           />
                         </div>
-                        <span className="form-hint-text">1–4 days weekend hire</span>
+                        <span className="form-hint-text">1–4 days hire period</span>
                       </div>
 
                       {/* Security Bond */}
-                      <div className="form-group">
-                        <label className="form-label">Refundable Bond ($)</label>
-                        <div className="input-prefix-wrap">
-                          <span className="input-prefix">$</span>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Refundable Bond ($)</label>
+                        <div className="input-prefix-box">
+                          <span className="prefix-icon">$</span>
                           <input
                             type="number"
                             min="0"
                             step="5"
                             value={formData.bondAUD}
                             onChange={(e) => setFormData({ ...formData, bondAUD: e.target.value })}
-                            className="form-input with-prefix"
+                            className="admin-form-input"
                           />
                         </div>
-                        <span className="form-hint-text">Returned after event return</span>
+                        <span className="form-hint-text">Returned after check-in</span>
                       </div>
                     </div>
                   </div>
@@ -2599,23 +2604,23 @@ export default function AdminPanel({
                   {/* Card: Warehouse Inventory & SKU */}
                   <div className="admin-form-card">
                     <div className="admin-form-card-header">
-                      <div className="admin-form-card-title">
-                        <Package size={16} className="text-pink-600" />
-                        <span>Warehouse Stock & SKU</span>
+                      <div className="admin-form-card-title-group">
+                        <Package size={15} className="text-pink-600" />
+                        <span className="admin-form-card-title">Warehouse Stock & SKU</span>
                       </div>
-                      <span className="admin-form-card-sub">Stock tracking and inventory identifier</span>
                     </div>
 
-                    <div className="modal-form-grid">
+                    <div className="admin-form-fields-grid">
                       {/* Stock Stepper */}
-                      <div className="form-group">
-                        <label className="form-label">
-                          Warehouse Stock Units <span className="text-rose-500">*</span>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">
+                          <span>Stock Units</span>
+                          <span className="text-rose-500 font-bold">*</span>
                         </label>
                         <div className="stock-stepper-wrap">
                           <button
                             type="button"
-                            className="stock-step-btn"
+                            className="stepper-btn"
                             onClick={() => {
                               const curr = Number(formData.stock) || 0;
                               setFormData({ ...formData, stock: Math.max(0, curr - 1) });
@@ -2629,11 +2634,11 @@ export default function AdminPanel({
                             min="0"
                             value={formData.stock}
                             onChange={(e) => setFormData({ ...formData, stock: Math.max(0, parseInt(e.target.value, 10) || 0) })}
-                            className="stock-stepper-input"
+                            className="stepper-input"
                           />
                           <button
                             type="button"
-                            className="stock-step-btn"
+                            className="stepper-btn"
                             onClick={() => {
                               const curr = Number(formData.stock) || 0;
                               setFormData({ ...formData, stock: curr + 1 });
@@ -2642,31 +2647,31 @@ export default function AdminPanel({
                             +
                           </button>
                         </div>
-                        <span className="form-hint-text">Units in Murrumba Downs hub</span>
+                        <span className="form-hint-text">Units in Brisbane hub</span>
                       </div>
 
                       {/* SKU Reference */}
-                      <div className="form-group">
-                        <label className="form-label">SKU Reference</label>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">SKU Reference</label>
                         <div className="sku-input-group">
                           <input
                             type="text"
                             value={formData.sku}
                             onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                             placeholder="e.g. IPH-GZB-101"
-                            className="form-input font-mono uppercase"
+                            className="admin-form-input font-mono uppercase text-xs"
                           />
                           <button
                             type="button"
-                            className="sku-gen-btn"
+                            className="btn-generate-sku"
                             onClick={handleAutoGenerateSKU}
                             title="Auto-generate SKU"
                           >
-                            <RefreshCw size={12} />
+                            <RefreshCw size={11} />
                             <span>Auto</span>
                           </button>
                         </div>
-                        <span className="form-hint-text">Internal tracking code</span>
+                        <span className="form-hint-text">Internal item code</span>
                       </div>
                     </div>
                   </div>
@@ -2678,21 +2683,21 @@ export default function AdminPanel({
               {/* Form Action Footer */}
               <div className="admin-product-modal-footer">
                 <div className="admin-modal-footer-summary">
-                  <span className="summary-label">Target:</span>
+                  <span>Target:</span>
                   <span className="summary-val">{formData.name || 'Untitled Item'}</span>
-                  <span className="summary-dot">•</span>
+                  <span>•</span>
                   <span className="summary-price">${formData.priceAUD || 0} AUD</span>
                 </div>
                 <div className="admin-modal-footer-actions">
                   <button
                     type="button"
-                    className="btn-outline-cancel"
+                    className="btn-product-modal-cancel"
                     onClick={() => { setIsCreateModalOpen(false); setEditingProduct(null); }}
                   >
                     Cancel
                   </button>
-                  <button type="submit" className="admin-btn-primary">
-                    <Check size={16} />
+                  <button type="submit" className="btn-product-modal-save">
+                    <Check size={15} />
                     <span>{isCreateModalOpen ? 'Create & Publish Equipment' : 'Save Changes'}</span>
                   </button>
                 </div>
