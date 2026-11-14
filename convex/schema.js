@@ -39,7 +39,7 @@ export default defineSchema({
     pills: v.optional(v.array(v.string())),
     image: v.string(),
     description: v.optional(v.string())
-  }).index('by_id', ['id']),
+  }).index('by_category_id', ['id']),
 
   bookings: defineTable({
     id: v.string(),
