@@ -38,9 +38,13 @@ import {
   FileText,
   Info,
   HelpCircle,
-  RefreshCw
+  RefreshCw,
+  Database,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { CATEGORIES, BRISBANE_STORE_INFO, INITIAL_ORDERS } from '../data/products';
+import { activeConvexUrl } from '../convexClient';
 
 // Available gallery images from public/assets/images/items/
 const EQUIPMENT_IMAGE_OPTIONS = [
@@ -252,11 +256,19 @@ export default function AdminPanel({
   const [stockFilter, setStockFilter] = useState('all'); // 'all' | 'in_stock' | 'low_stock' | 'out_of_stock'
   const [sortBy, setSortBy] = useState('name_asc'); // 'name_asc' | 'price_desc' | 'price_asc' | 'stock_desc'
 
-  // CRUD Modal States
+  // CRUD & Cloud Diagnostics Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProductId, setDeletingProductId] = useState(null);
   const [inspectingProduct, setInspectProduct] = useState(null);
+  const [isCloudDiagnosticsOpen, setIsCloudDiagnosticsOpen] = useState(false);
+  const [customConvexUrlInput, setCustomConvexUrlInput] = useState(() => {
+    try {
+      return localStorage.getItem('icon_custom_convex_url') || activeConvexUrl || '';
+    } catch {
+      return activeConvexUrl || '';
+    }
+  });
 
   // Form State for Create & Edit
   const initialFormState = {
@@ -523,6 +535,25 @@ export default function AdminPanel({
     setEditingProduct(prod);
   };
 
+  // Save / Clear custom Convex URL from Admin UI
+  const handleSaveCustomConvexUrl = (e) => {
+    e.preventDefault();
+    const clean = customConvexUrlInput.trim();
+    if (clean) {
+      if (!clean.startsWith('https://') && !clean.startsWith('http://')) {
+        onToast?.('Convex URL must start with https://', 'warning');
+        return;
+      }
+      localStorage.setItem('icon_custom_convex_url', clean);
+      onToast?.('Convex URL saved! Reconnecting real-time cloud...', 'success');
+      setTimeout(() => window.location.reload(), 400);
+    } else {
+      localStorage.removeItem('icon_custom_convex_url');
+      onToast?.('Cleared custom Convex URL. Reverting to environment default.', 'info');
+      setTimeout(() => window.location.reload(), 400);
+    }
+  };
+
   // Submit Create Equipment Form
   const handleSubmitCreate = (e) => {
     e.preventDefault();
@@ -737,14 +768,19 @@ export default function AdminPanel({
         </div>
 
         {/* Realtime Cloud / Local Indicator */}
-        <div className={`admin-sync-pill ${isRealtime ? 'is-convex' : 'is-local'}`} title={isRealtime ? 'Convex Cloud Sync is active with real-time WebSocket connection' : 'Running in Local Storage. Set VITE_CONVEX_URL in Vercel to activate instant multi-device real-time sync.'}>
+        <div
+          className={`admin-sync-pill ${isRealtime ? 'is-convex' : 'is-local'}`}
+          onClick={() => setIsCloudDiagnosticsOpen(true)}
+          style={{ cursor: 'pointer' }}
+          title="Click to view Cloud Connection Status & Settings"
+        >
           <span className={`sync-status-dot ${isRealtime ? 'dot-active' : 'dot-local'}`} />
           <div className="status-text-stack">
             <span className="status-hub-title">
               {isRealtime ? 'Convex Cloud Live' : 'Local Storage Mode'}
             </span>
             <span className="status-hub-meta">
-              {isRealtime ? 'Real-Time WebSocket' : 'Set VITE_CONVEX_URL'}
+              {isRealtime ? 'Real-Time WebSocket' : 'Diagnostics & Settings'}
             </span>
           </div>
         </div>
@@ -884,7 +920,9 @@ export default function AdminPanel({
             {/* Realtime Cloud Status */}
             <div
               className={`admin-cloud-indicator-badge ${isRealtime ? 'live' : 'offline'}`}
-              title={isRealtime ? 'Convex Cloud Sync is active and streaming real-time catalog updates' : 'Local storage fallback. Set VITE_CONVEX_URL in Vercel to sync across all devices.'}
+              onClick={() => setIsCloudDiagnosticsOpen(true)}
+              style={{ cursor: 'pointer' }}
+              title="Click to view Cloud Connection Status & Settings"
             >
               <span className="badge-pulse-indicator" />
               <span className="cloud-badge-text">{isRealtime ? 'Convex Live' : 'Local Mode'}</span>
@@ -3247,6 +3285,176 @@ export default function AdminPanel({
               </div>
             </form>
 
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+         6. CLOUD CONNECTION & CONVEX DIAGNOSTICS MODAL
+         ===================================================================== */}
+      {isCloudDiagnosticsOpen && (
+        <div className="admin-modal-backdrop" onClick={() => setIsCloudDiagnosticsOpen(false)}>
+          <div
+            className="admin-cloud-diag-card"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: '560px',
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              padding: '28px',
+              boxShadow: '0 30px 80px -15px rgba(27, 6, 26, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.9)',
+              fontFamily: 'var(--font-sans, "Inter", sans-serif)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '12px',
+                  background: isRealtime ? 'rgba(5, 150, 105, 0.1)' : 'rgba(216, 27, 96, 0.1)',
+                  color: isRealtime ? '#059669' : '#D81B60',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {isRealtime ? <Wifi size={22} /> : <Database size={22} />}
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+                    Cloud Database Diagnostics
+                  </h3>
+                  <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                    Real-time catalog synchronization status
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close-icon-btn"
+                onClick={() => setIsCloudDiagnosticsOpen(false)}
+                title="Close"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Current Status Box */}
+            <div style={{
+              background: isRealtime ? '#F0FDF4' : '#FDF7FA',
+              border: `1.5px solid ${isRealtime ? '#BBF7D0' : 'rgba(216, 27, 96, 0.2)'}`,
+              borderRadius: '14px',
+              padding: '16px',
+              marginBottom: '18px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155' }}>Current Mode</span>
+                <span style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 800,
+                  padding: '3px 10px',
+                  borderRadius: '999px',
+                  background: isRealtime ? '#DCFCE7' : '#FFE4E6',
+                  color: isRealtime ? '#15803D' : '#BE123C'
+                }}>
+                  {isRealtime ? '● Convex Cloud Live' : '○ Local Storage Mode'}
+                </span>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5 }}>
+                {isRealtime ? (
+                  <>
+                    Connected to Convex real-time WebSockets. Product updates, bookings, and categories are synced instantly across all devices.
+                    <div style={{ marginTop: '6px', fontFamily: 'monospace', fontSize: '0.72rem', color: '#059669', wordBreak: 'break-all' }}>
+                      Endpoint: {activeConvexUrl}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    Running on browser local storage fallback. Catalog changes will be preserved on this browser, but will not sync across other devices until Convex is connected.
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Connect Convex URL Override */}
+            <form onSubmit={handleSaveCustomConvexUrl} style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#0F172A', marginBottom: '6px' }}>
+                {isRealtime ? 'Connected Convex Deployment URL' : 'Connect Directly with Convex Deployment URL'}
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="url"
+                  placeholder="https://your-deployment-name.convex.cloud"
+                  value={customConvexUrlInput}
+                  onChange={(e) => setCustomConvexUrlInput(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '9px 12px',
+                    fontSize: '0.8rem',
+                    fontFamily: 'monospace',
+                    borderRadius: '8px',
+                    border: '1.5px solid #CBD5E1',
+                    outline: 'none'
+                  }}
+                />
+                <button
+                  type="submit"
+                  style={{
+                    padding: '9px 16px',
+                    borderRadius: '8px',
+                    background: '#1B061A',
+                    color: '#FFF',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    border: 'none',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  Save & Connect
+                </button>
+              </div>
+              <span style={{ display: 'block', fontSize: '0.72rem', color: '#64748B', marginTop: '5px' }}>
+                Find this in your Convex Dashboard under <strong>Settings → Deployment URL</strong>.
+              </span>
+            </form>
+
+            {/* How to enable in Vercel guide */}
+            <div style={{
+              background: '#F8FAFC',
+              borderRadius: '12px',
+              padding: '14px 16px',
+              fontSize: '0.78rem',
+              color: '#334155',
+              lineHeight: 1.5,
+              border: '1px solid #E2E8F0'
+            }}>
+              <strong style={{ display: 'block', color: '#0F172A', marginBottom: '6px' }}>
+                Why does Vercel show "Local Mode"?
+              </strong>
+              <ol style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <li>
+                  <strong>Variable Name:</strong> In Vercel Project Settings, ensure the variable name is <code>VITE_CONVEX_URL</code> (Vite only bundles environment variables starting with <code>VITE_</code>).
+                </li>
+                <li>
+                  <strong>Value:</strong> Must be your full URL: <code>https://&lt;name&gt;.convex.cloud</code> (not the deploy key).
+                </li>
+                <li>
+                  <strong>Redeploy:</strong> In Vercel, newly added environment variables only take effect on your <em>next deployment</em>. Go to <strong>Deployments → ... → Redeploy</strong> to bake them into production.
+                </li>
+              </ol>
+            </div>
+
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="btn-product-modal-cancel"
+                onClick={() => setIsCloudDiagnosticsOpen(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
