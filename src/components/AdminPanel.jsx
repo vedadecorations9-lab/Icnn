@@ -32,7 +32,13 @@ import {
   LayoutGrid,
   LogOut,
   Bell,
-  MessageSquare
+  MessageSquare,
+  UploadCloud,
+  Image as ImageIcon,
+  FileText,
+  Info,
+  HelpCircle,
+  RefreshCw
 } from 'lucide-react';
 import { CATEGORIES, BRISBANE_STORE_INFO, INITIAL_ORDERS } from '../data/products';
 
@@ -270,6 +276,24 @@ export default function AdminPanel({
 
   const [formData, setFormData] = useState(initialFormState);
 
+  // Industry-Standard Equipment Image Studio & Drag-and-Drop State
+  const [imageTabMode, setImageTabMode] = useState('upload'); // 'upload' | 'preset' | 'url'
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const [imageMeta, setImageMeta] = useState({ fileName: '', fileSize: '', isCustomFile: false });
+  const fileInputRef = useRef(null);
+
+  // Keyboard shortcut: Escape to close modals
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (isCreateModalOpen) setIsCreateModalOpen(false);
+        if (editingProduct) setEditingProduct(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCreateModalOpen, editingProduct]);
+
   // Real Event Bookings State (Synchronized with Cloud / LocalStorage)
   const [localBookings, setLocalBookings] = useState(() => {
     try {
@@ -381,13 +405,95 @@ export default function AdminPanel({
     setIsCreateBookingModalOpen(false);
   };
 
+  // Helper to process dropped or chosen image file
+  const handleProcessImageFile = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      onToast?.('Please upload a valid image file (PNG, JPG, WEBP, SVG)', 'warning');
+      return;
+    }
+    // 10MB limit check
+    if (file.size > 10 * 1024 * 1024) {
+      onToast?.('Image is too large. Please select an image under 10MB', 'warning');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      setFormData(prev => ({ ...prev, image: dataUrl }));
+      const sizeFormatted = file.size > 1024 * 1024
+        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+        : `${Math.round(file.size / 1024)} KB`;
+      setImageMeta({
+        fileName: file.name,
+        fileSize: sizeFormatted,
+        isCustomFile: true
+      });
+      onToast?.(`Image "${file.name}" uploaded successfully!`, 'success');
+    };
+    reader.onerror = () => {
+      onToast?.('Failed to process image file', 'error');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Drag & Drop handlers
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isDraggingImage) setIsDraggingImage(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.currentTarget.contains(e.relatedTarget)) return;
+    setIsDraggingImage(false);
+  };
+
+  const handleDropImage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingImage(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleProcessImageFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleSelectFileInput = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleProcessImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      image: '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp'
+    }));
+    setImageMeta({ fileName: '', fileSize: '', isCustomFile: false });
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    onToast?.('Equipment image reset to Brisbane warehouse default', 'info');
+  };
+
+  // Auto-generate industry-standard SKU
+  const handleAutoGenerateSKU = () => {
+    const catPrefix = (formData.category || 'GEN').substring(0, 3).toUpperCase();
+    const randNum = Math.floor(100 + Math.random() * 900);
+    const newSku = `IPH-${catPrefix}-${randNum}`;
+    setFormData(prev => ({ ...prev, sku: newSku }));
+  };
+
   // Open Create Modal
   const handleOpenCreate = () => {
-    const randomSKU = `IPH-${Math.floor(100 + Math.random() * 900)}`;
+    const randomSKU = `IPH-GZB-${Math.floor(100 + Math.random() * 900)}`;
     setFormData({
       ...initialFormState,
       sku: randomSKU
     });
+    setImageTabMode('upload');
+    setImageMeta({ fileName: '', fileSize: '', isCustomFile: false });
     setIsCreateModalOpen(true);
   };
 
@@ -406,6 +512,13 @@ export default function AdminPanel({
       dimensions: prod.dimensions || 'Commercial Event Spec',
       material: prod.material || 'Commercial Specification',
       description: prod.description || ''
+    });
+    const isDataUrl = prod.image?.startsWith('data:');
+    setImageTabMode(isDataUrl ? 'upload' : prod.image?.startsWith('/assets') ? 'preset' : 'url');
+    setImageMeta({
+      fileName: isDataUrl ? 'Uploaded Product Photo' : prod.image?.split('/').pop() || 'Existing Image',
+      fileSize: isDataUrl ? 'Custom Image' : 'Standard WebP',
+      isCustomFile: Boolean(isDataUrl)
     });
     setEditingProduct(prod);
   };
@@ -1995,235 +2108,594 @@ export default function AdminPanel({
       </main>
 
       {/* =====================================================================
-         3. CREATE & EDIT EQUIPMENT MODAL (CRUD OPERATIONS)
+         3. CREATE & EDIT EQUIPMENT MODAL (CRUD OPERATIONS - INDUSTRY STANDARD)
          ===================================================================== */}
       {(isCreateModalOpen || editingProduct) && (
-        <div className="admin-modal-backdrop" onClick={() => { setIsCreateModalOpen(false); setEditingProduct(null); }}>
-          <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="admin-modal-backdrop"
+          onClick={() => { setIsCreateModalOpen(false); setEditingProduct(null); }}
+        >
+          <div className="admin-product-modal-card" onClick={(e) => e.stopPropagation()}>
             
+            {/* Modal Header */}
             <div className="admin-modal-header">
-              <div>
-                <h3 className="modal-title">
-                  {isCreateModalOpen ? 'Add New Hire Equipment' : `Edit: ${editingProduct?.name}`}
-                </h3>
-                <p className="modal-sub">
-                  {isCreateModalOpen
-                    ? 'Create a new equipment entry in the Brisbane party hire inventory.'
-                    : 'Update pricing, bond, warehouse stock units, and commercial specifications.'}
-                </p>
+              <div className="admin-product-modal-header-left">
+                <div className="admin-product-modal-icon-badge">
+                  <Package size={20} />
+                </div>
+                <div>
+                  <div className="admin-product-modal-tagline">
+                    <span>Brisbane Inventory Management</span>
+                    <span className="dot">•</span>
+                    <span>{isCreateModalOpen ? 'New Listing' : `SKU: ${formData.sku || 'UNASSIGNED'}`}</span>
+                  </div>
+                  <h3 className="modal-title">
+                    {isCreateModalOpen ? 'Add New Hire Equipment' : `Edit: ${editingProduct?.name || 'Equipment'}`}
+                  </h3>
+                </div>
               </div>
               <button
                 type="button"
                 className="modal-close-icon-btn"
                 onClick={() => { setIsCreateModalOpen(false); setEditingProduct(null); }}
+                title="Close (Esc)"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={isCreateModalOpen ? handleSubmitCreate : handleSubmitEdit} className="admin-modal-form">
+            {/* Modal Form */}
+            <form onSubmit={isCreateModalOpen ? handleSubmitCreate : handleSubmitEdit} className="admin-product-modal-form">
               
-              <div className="modal-form-grid">
+              <div className="admin-product-modal-body">
                 
-                {/* Equipment Name */}
-                <div className="form-group full-width">
-                  <label className="form-label">Equipment Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Commercial 6x3m Pop-Up Gazebo"
-                    className="form-input"
-                  />
-                </div>
-
-                {/* Category Selection */}
-                <div className="form-group">
-                  <label className="form-label">Category *</label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="form-select"
-                  >
-                    {activeCategories.map(c => (
-                      <option key={c.id} value={c.id}>{c.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* SKU Code */}
-                <div className="form-group">
-                  <label className="form-label">SKU Reference</label>
-                  <input
-                    type="text"
-                    value={formData.sku}
-                    onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                    placeholder="e.g. IPH-GZB-101"
-                    className="form-input font-mono"
-                  />
-                </div>
-
-                {/* Weekend Hire Rate (AUD) */}
-                <div className="form-group">
-                  <label className="form-label">Hire Rate 1–4 Days (AUD $) *</label>
-                  <div className="input-prefix-wrap">
-                    <span className="input-prefix">$</span>
-                    <input
-                      type="number"
-                      required
-                      min="1"
-                      step="1"
-                      value={formData.priceAUD}
-                      onChange={(e) => setFormData({ ...formData, priceAUD: e.target.value })}
-                      className="form-input with-prefix"
-                    />
-                  </div>
-                </div>
-
-                {/* Security Bond (AUD) */}
-                <div className="form-group">
-                  <label className="form-label">Security Bond (AUD $)</label>
-                  <div className="input-prefix-wrap">
-                    <span className="input-prefix">$</span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="5"
-                      value={formData.bondAUD}
-                      onChange={(e) => setFormData({ ...formData, bondAUD: e.target.value })}
-                      className="form-input with-prefix"
-                    />
-                  </div>
-                </div>
-
-                {/* Warehouse Stock Units */}
-                <div className="form-group">
-                  <label className="form-label">Warehouse Units (Stock) *</label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={formData.stock}
-                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
-
-                {/* Badge Tag */}
-                <div className="form-group">
-                  <label className="form-label">Badge Tag</label>
-                  <select
-                    value={formData.badge}
-                    onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                    className="form-select"
-                  >
-                    <option value="">None</option>
-                    <option value="Bestseller">Bestseller</option>
-                    <option value="Popular Hire">Popular Hire</option>
-                    <option value="Trending">Trending</option>
-                    <option value="New Arrival">New Arrival</option>
-                    <option value="Showstopper">Showstopper</option>
-                  </select>
-                </div>
-
-                {/* Image Selection / Preset */}
-                <div className="form-group full-width">
-                  <label className="form-label">Equipment Photo (Preset Gallery or Custom URL)</label>
-                  <div className="modal-image-preview-group">
-                    <div className="modal-image-thumb-box">
-                      <img
-                        src={formData.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp'}
-                        alt="Equipment preview"
-                        onError={(e) => {
-                          e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
-                        }}
-                      />
+                {/* LEFT COLUMN: Main Configuration (General Info, Image Studio, Specs & Terms) */}
+                <div className="admin-modal-col-main">
+                  
+                  {/* Card 1: General Information */}
+                  <div className="admin-form-card">
+                    <div className="admin-form-card-header">
+                      <div className="admin-form-card-title">
+                        <FileText size={16} className="text-pink-600" />
+                        <span>General Information</span>
+                      </div>
+                      <span className="admin-form-card-sub">Core item details shown across Brisbane catalog</span>
                     </div>
-                    <div className="modal-image-inputs">
-                      <select
-                        value={formData.image}
-                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                        className="form-select mb-2"
+
+                    <div className="modal-form-grid">
+                      {/* Equipment Name */}
+                      <div className="form-group full-width">
+                        <label className="form-label">
+                          Equipment Name <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="e.g. 6x3m Commercial Pop-Up Gazebo (Waterproof)"
+                          className="form-input"
+                        />
+                      </div>
+
+                      {/* Category Selection */}
+                      <div className="form-group">
+                        <label className="form-label">
+                          Category <span className="text-rose-500">*</span>
+                        </label>
+                        <select
+                          value={formData.category}
+                          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                          className="form-select"
+                        >
+                          {activeCategories.map(c => (
+                            <option key={c.id} value={c.id}>{c.label}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Badge / Merchandising Tag */}
+                      <div className="form-group">
+                        <label className="form-label">Catalog Merchandising Badge</label>
+                        <select
+                          value={formData.badge}
+                          onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
+                          className="form-select"
+                        >
+                          <option value="">None (Standard Listing)</option>
+                          <option value="Popular Hire">Popular Hire</option>
+                          <option value="Bestseller">Bestseller</option>
+                          <option value="Trending">Trending</option>
+                          <option value="New Arrival">New Arrival</option>
+                          <option value="Showstopper">Showstopper</option>
+                          <option value="Limited Stock">Limited Stock</option>
+                        </select>
+                      </div>
+
+                      {/* Commercial Description */}
+                      <div className="form-group full-width">
+                        <label className="form-label">Customer Description</label>
+                        <textarea
+                          rows={3}
+                          value={formData.description}
+                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                          placeholder="Detail features, setup requirements, capacity, and suitability for Brisbane events..."
+                          className="form-textarea"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Image Studio with Native Drag-and-Drop */}
+                  <div className="admin-form-card">
+                    <div className="admin-form-card-header">
+                      <div className="admin-form-card-title">
+                        <ImageIcon size={16} className="text-pink-600" />
+                        <span>Equipment Media & Photography</span>
+                      </div>
+                      <span className="admin-form-card-sub">Drag & drop new photo or pick from warehouse library</span>
+                    </div>
+
+                    {/* Image Mode Tabs */}
+                    <div className="admin-image-tabs">
+                      <button
+                        type="button"
+                        className={`admin-image-tab-btn ${imageTabMode === 'upload' ? 'active' : ''}`}
+                        onClick={() => setImageTabMode('upload')}
                       >
-                        {EQUIPMENT_IMAGE_OPTIONS.map((img, i) => (
-                          <option key={i} value={img.path}>{img.label} ({img.cat})</option>
-                        ))}
-                      </select>
-                      <input
-                        type="text"
-                        value={formData.image}
-                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                        placeholder="Or enter custom image URL"
-                        className="form-input text-xs font-mono"
-                      />
+                        <UploadCloud size={14} />
+                        <span>Drag & Drop File</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`admin-image-tab-btn ${imageTabMode === 'preset' ? 'active' : ''}`}
+                        onClick={() => setImageTabMode('preset')}
+                      >
+                        <Sparkles size={14} />
+                        <span>Brisbane Stock Library ({EQUIPMENT_IMAGE_OPTIONS.length})</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`admin-image-tab-btn ${imageTabMode === 'url' ? 'active' : ''}`}
+                        onClick={() => setImageTabMode('url')}
+                      >
+                        <ExternalLink size={14} />
+                        <span>Image URL</span>
+                      </button>
+                    </div>
+
+                    {/* Hidden Native File Input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      style={{ display: 'none' }}
+                      onChange={handleSelectFileInput}
+                    />
+
+                    {/* Tab 1: Drag & Drop Dropzone */}
+                    {imageTabMode === 'upload' && (
+                      <div>
+                        <div
+                          className={`admin-drag-dropzone ${isDraggingImage ? 'dragging' : ''} ${formData.image ? 'has-file' : ''}`}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDropImage}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <div className="admin-dropzone-icon-bubble">
+                            <UploadCloud size={24} />
+                          </div>
+                          <div className="admin-dropzone-title">
+                            {isDraggingImage ? 'Drop image here now' : 'Drag & drop product photo here'}
+                          </div>
+                          <div className="admin-dropzone-sub">
+                            or <span className="admin-dropzone-browse-link">browse your computer</span>
+                          </div>
+                          <div className="admin-dropzone-hint">
+                            Supports high-res PNG, JPG, WEBP, SVG • Instant client preview
+                          </div>
+                        </div>
+
+                        {/* Uploaded File Meta Card */}
+                        {formData.image && (
+                          <div className="admin-uploaded-preview-card">
+                            <div className="admin-preview-thumb-box">
+                              <img
+                                src={formData.image}
+                                alt="Current equipment preview"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
+                                }}
+                              />
+                              <span className="admin-preview-badge">Active</span>
+                            </div>
+                            <div className="admin-preview-details">
+                              <div className="admin-preview-name-row">
+                                <span className="admin-preview-filename">
+                                  {imageMeta.fileName || 'Equipment Photo'}
+                                </span>
+                                {imageMeta.fileSize && (
+                                  <span className="admin-preview-filesize">{imageMeta.fileSize}</span>
+                                )}
+                              </div>
+                              <p className="admin-preview-sub">
+                                High-res image loaded. Ready for customer hire bookings across Brisbane.
+                              </p>
+                              <div className="admin-preview-actions">
+                                <button
+                                  type="button"
+                                  className="btn-admin-preview-action replace"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    fileInputRef.current?.click();
+                                  }}
+                                >
+                                  <UploadCloud size={13} />
+                                  <span>Replace Photo</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn-admin-preview-action remove"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveImage();
+                                  }}
+                                >
+                                  <Trash2 size={13} />
+                                  <span>Reset Default</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Tab 2: Brisbane Stock Preset Library */}
+                    {imageTabMode === 'preset' && (
+                      <div>
+                        <p className="preset-library-note">
+                          Select an official Icon Party Hire photo from our Brisbane warehouse collection:
+                        </p>
+                        <div className="admin-preset-gallery-grid">
+                          {EQUIPMENT_IMAGE_OPTIONS.map((img, i) => {
+                            const isSelected = formData.image === img.path;
+                            return (
+                              <button
+                                key={i}
+                                type="button"
+                                className={`admin-preset-thumb-btn ${isSelected ? 'selected' : ''}`}
+                                onClick={() => {
+                                  setFormData({ ...formData, image: img.path });
+                                  setImageMeta({
+                                    fileName: img.label,
+                                    fileSize: 'Icon Stock WebP',
+                                    isCustomFile: false
+                                  });
+                                }}
+                                title={img.label}
+                              >
+                                <img
+                                  src={img.path}
+                                  alt={img.label}
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                                <span className="admin-preset-thumb-label">{img.label}</span>
+                                {isSelected && (
+                                  <span className="admin-preset-check-badge">
+                                    <Check size={11} strokeWidth={3} />
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tab 3: Direct Image URL */}
+                    {imageTabMode === 'url' && (
+                      <div className="form-group full-width">
+                        <label className="form-label">Public Image URL (CDN / Web)</label>
+                        <div className="input-prefix-wrap">
+                          <span className="input-prefix"><ExternalLink size={13} /></span>
+                          <input
+                            type="url"
+                            value={formData.image}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setFormData({ ...formData, image: val });
+                              setImageMeta({
+                                fileName: val.split('/').pop() || 'External URL',
+                                fileSize: 'Remote URL',
+                                isCustomFile: false
+                              });
+                            }}
+                            placeholder="https://images.unsplash.com/... or https://cdn..."
+                            className="form-input with-prefix font-mono text-xs"
+                          />
+                        </div>
+                        <span className="form-hint-text">
+                          Use HTTPS URLs that allow direct image embedding.
+                        </span>
+                      </div>
+                    )}
+
+                  </div>
+
+                  {/* Card 3: Specifications & Logistics */}
+                  <div className="admin-form-card">
+                    <div className="admin-form-card-header">
+                      <div className="admin-form-card-title">
+                        <Truck size={16} className="text-pink-600" />
+                        <span>Specifications & Brisbane Logistics</span>
+                      </div>
+                      <span className="admin-form-card-sub">Dimensions, commercial material, and hire terms</span>
+                    </div>
+
+                    <div className="modal-form-grid">
+                      {/* Dimensions */}
+                      <div className="form-group">
+                        <label className="form-label">Dimensions / Sizing</label>
+                        <input
+                          type="text"
+                          value={formData.dimensions}
+                          onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
+                          placeholder="e.g. 6m × 3m × 3.3m Peak"
+                          className="form-input"
+                        />
+                      </div>
+
+                      {/* Material */}
+                      <div className="form-group">
+                        <label className="form-label">Commercial Specifications</label>
+                        <input
+                          type="text"
+                          value={formData.material}
+                          onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                          placeholder="e.g. 500D Waterproof PVC & Reinforced Alloy"
+                          className="form-input"
+                        />
+                      </div>
+
+                      {/* Hire Period */}
+                      <div className="form-group full-width">
+                        <label className="form-label">Hire Period Terms</label>
+                        <input
+                          type="text"
+                          value={formData.hirePeriod}
+                          onChange={(e) => setFormData({ ...formData, hirePeriod: e.target.value })}
+                          placeholder="e.g. 24–72 Hours Flexible Weekend Hire"
+                          className="form-input"
+                        />
+                      </div>
                     </div>
                   </div>
+
                 </div>
 
-                {/* Dimensions */}
-                <div className="form-group">
-                  <label className="form-label">Dimensions / Sizing</label>
-                  <input
-                    type="text"
-                    value={formData.dimensions}
-                    onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
-                    placeholder="e.g. 6m × 3m × 3.3m"
-                    className="form-input"
-                  />
-                </div>
+                {/* RIGHT COLUMN: Live Card Preview, Pricing & Bond, Inventory & SKU */}
+                <div className="admin-modal-col-side">
+                  
+                  {/* Live Catalog Preview */}
+                  <div className="admin-form-card">
+                    <div className="admin-form-card-header">
+                      <div className="admin-form-card-title">
+                        <Eye size={16} className="text-pink-600" />
+                        <span>Live Catalog Preview</span>
+                      </div>
+                      <span className="admin-form-card-sub">What customers see in the Brisbane hire store</span>
+                    </div>
 
-                {/* Commercial Material */}
-                <div className="form-group">
-                  <label className="form-label">Commercial Specifications</label>
-                  <input
-                    type="text"
-                    value={formData.material}
-                    onChange={(e) => setFormData({ ...formData, material: e.target.value })}
-                    placeholder="e.g. 500D Waterproof PVC & Reinforced Alloy"
-                    className="form-input"
-                  />
-                </div>
+                    <div className="admin-live-catalog-card">
+                      <div className="live-card-media-stage">
+                        <img
+                          src={formData.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp'}
+                          alt="Live Storefront Preview"
+                          className="live-card-img"
+                          onError={(e) => {
+                            e.currentTarget.src = '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp';
+                          }}
+                        />
+                        {formData.badge && (
+                          <span className="live-card-badge-chip">{formData.badge}</span>
+                        )}
+                        <span className="live-card-stock-pill">
+                          {Number(formData.stock) > 0 ? `${formData.stock} Available` : 'Out of Stock'}
+                        </span>
+                      </div>
 
-                {/* Hire Period */}
-                <div className="form-group full-width">
-                  <label className="form-label">Hire Period Terms</label>
-                  <input
-                    type="text"
-                    value={formData.hirePeriod}
-                    onChange={(e) => setFormData({ ...formData, hirePeriod: e.target.value })}
-                    placeholder="e.g. 1–4 Days Flexible Brisbane Event Hire"
-                    className="form-input"
-                  />
-                </div>
+                      <div className="live-card-content">
+                        <div className="live-card-cat-tag">
+                          {activeCategories.find(c => c.id === formData.category)?.label || formData.category}
+                        </div>
+                        <h4 className="live-card-title" title={formData.name || 'Equipment Title'}>
+                          {formData.name || 'Equipment Name'}
+                        </h4>
 
-                {/* Description */}
-                <div className="form-group full-width">
-                  <label className="form-label">Commercial Description</label>
-                  <textarea
-                    rows={3}
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Provide details on equipment features, setup requirements, and suitability for Brisbane events..."
-                    className="form-textarea"
-                  />
+                        <div className="live-card-price-row">
+                          <div>
+                            <span className="live-card-price-aud">${Number(formData.priceAUD) || 0}</span>
+                            <span className="live-card-price-term">AUD / hire</span>
+                          </div>
+                          <span className="live-card-bond-note">
+                            +${Number(formData.bondAUD) || 0} Bond
+                          </span>
+                        </div>
+
+                        <div className="live-card-meta-list">
+                          <div className="live-card-meta-item">
+                            <Clock size={12} />
+                            <span>{formData.hirePeriod || '24–72 Hours Hire'}</span>
+                          </div>
+                          <div className="live-card-meta-item">
+                            <MapPin size={12} />
+                            <span>Brisbane Warehouse Dispatch</span>
+                          </div>
+                        </div>
+
+                        <div className="live-card-cta-mock">
+                          <span>Book For Event</span>
+                          <ArrowRight size={13} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card: Pricing & Security Bond */}
+                  <div className="admin-form-card">
+                    <div className="admin-form-card-header">
+                      <div className="admin-form-card-title">
+                        <DollarSign size={16} className="text-pink-600" />
+                        <span>Pricing & Security Bond (AUD)</span>
+                      </div>
+                      <span className="admin-form-card-sub">Hire rates and refundable bond per booking</span>
+                    </div>
+
+                    <div className="modal-form-grid">
+                      {/* Hire Rate */}
+                      <div className="form-group">
+                        <label className="form-label">
+                          Hire Rate (AUD $) <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="input-prefix-wrap">
+                          <span className="input-prefix">$</span>
+                          <input
+                            type="number"
+                            required
+                            min="1"
+                            step="1"
+                            value={formData.priceAUD}
+                            onChange={(e) => setFormData({ ...formData, priceAUD: e.target.value })}
+                            className="form-input with-prefix font-bold"
+                          />
+                        </div>
+                        <span className="form-hint-text">1–4 days weekend hire</span>
+                      </div>
+
+                      {/* Security Bond */}
+                      <div className="form-group">
+                        <label className="form-label">Refundable Bond ($)</label>
+                        <div className="input-prefix-wrap">
+                          <span className="input-prefix">$</span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="5"
+                            value={formData.bondAUD}
+                            onChange={(e) => setFormData({ ...formData, bondAUD: e.target.value })}
+                            className="form-input with-prefix"
+                          />
+                        </div>
+                        <span className="form-hint-text">Returned after event return</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card: Warehouse Inventory & SKU */}
+                  <div className="admin-form-card">
+                    <div className="admin-form-card-header">
+                      <div className="admin-form-card-title">
+                        <Package size={16} className="text-pink-600" />
+                        <span>Warehouse Stock & SKU</span>
+                      </div>
+                      <span className="admin-form-card-sub">Stock tracking and inventory identifier</span>
+                    </div>
+
+                    <div className="modal-form-grid">
+                      {/* Stock Stepper */}
+                      <div className="form-group">
+                        <label className="form-label">
+                          Warehouse Stock Units <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="stock-stepper-wrap">
+                          <button
+                            type="button"
+                            className="stock-step-btn"
+                            onClick={() => {
+                              const curr = Number(formData.stock) || 0;
+                              setFormData({ ...formData, stock: Math.max(0, curr - 1) });
+                            }}
+                          >
+                            –
+                          </button>
+                          <input
+                            type="number"
+                            required
+                            min="0"
+                            value={formData.stock}
+                            onChange={(e) => setFormData({ ...formData, stock: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+                            className="stock-stepper-input"
+                          />
+                          <button
+                            type="button"
+                            className="stock-step-btn"
+                            onClick={() => {
+                              const curr = Number(formData.stock) || 0;
+                              setFormData({ ...formData, stock: curr + 1 });
+                            }}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <span className="form-hint-text">Units in Murrumba Downs hub</span>
+                      </div>
+
+                      {/* SKU Reference */}
+                      <div className="form-group">
+                        <label className="form-label">SKU Reference</label>
+                        <div className="sku-input-group">
+                          <input
+                            type="text"
+                            value={formData.sku}
+                            onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                            placeholder="e.g. IPH-GZB-101"
+                            className="form-input font-mono uppercase"
+                          />
+                          <button
+                            type="button"
+                            className="sku-gen-btn"
+                            onClick={handleAutoGenerateSKU}
+                            title="Auto-generate SKU"
+                          >
+                            <RefreshCw size={12} />
+                            <span>Auto</span>
+                          </button>
+                        </div>
+                        <span className="form-hint-text">Internal tracking code</span>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
 
               </div>
 
-              {/* Form Action Buttons */}
-              <div className="admin-modal-footer">
-                <button
-                  type="button"
-                  className="btn-outline-cancel"
-                  onClick={() => { setIsCreateModalOpen(false); setEditingProduct(null); }}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="admin-btn-primary">
-                  <Check size={16} />
-                  <span>{isCreateModalOpen ? 'Create & Publish Equipment' : 'Save Changes'}</span>
-                </button>
+              {/* Form Action Footer */}
+              <div className="admin-product-modal-footer">
+                <div className="admin-modal-footer-summary">
+                  <span className="summary-label">Target:</span>
+                  <span className="summary-val">{formData.name || 'Untitled Item'}</span>
+                  <span className="summary-dot">•</span>
+                  <span className="summary-price">${formData.priceAUD || 0} AUD</span>
+                </div>
+                <div className="admin-modal-footer-actions">
+                  <button
+                    type="button"
+                    className="btn-outline-cancel"
+                    onClick={() => { setIsCreateModalOpen(false); setEditingProduct(null); }}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="admin-btn-primary">
+                    <Check size={16} />
+                    <span>{isCreateModalOpen ? 'Create & Publish Equipment' : 'Save Changes'}</span>
+                  </button>
+                </div>
               </div>
 
             </form>
