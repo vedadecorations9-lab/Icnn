@@ -3422,7 +3422,7 @@ export default function AdminPanel({
               </span>
             </form>
 
-            {/* How to enable in Vercel guide */}
+            {/* Resolution Guide */}
             <div style={{
               background: '#F8FAFC',
               borderRadius: '12px',
@@ -3433,17 +3433,17 @@ export default function AdminPanel({
               border: '1px solid #E2E8F0'
             }}>
               <strong style={{ display: 'block', color: '#0F172A', marginBottom: '6px' }}>
-                Why does Vercel show "Local Mode"?
+                How to switch from Local Mode to Convex Cloud Live:
               </strong>
-              <ol style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <ol style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <li>
-                  <strong>Variable Name:</strong> In Vercel Project Settings, ensure the variable name is <code>VITE_CONVEX_URL</code> (Vite only bundles environment variables starting with <code>VITE_</code>).
+                  <strong>Upload Backend Functions:</strong> Convex Cloud requires the backend functions in <code>/convex</code> to be pushed to your cloud project. In your project terminal (<code>d:\icon</code>), run: <code>npx convex dev</code> or <code>npx convex deploy</code>.
                 </li>
                 <li>
-                  <strong>Value:</strong> Must be your full URL: <code>https://&lt;name&gt;.convex.cloud</code> (not the deploy key).
+                  <strong>Automatic Vercel Deploy:</strong> In your Convex Dashboard (<em>Settings → Deploy Keys</em>), create a deploy key and add it to Vercel as <code>CONVEX_DEPLOY_KEY</code>. Vercel will then auto-deploy backend functions on every build.
                 </li>
                 <li>
-                  <strong>Redeploy:</strong> In Vercel, newly added environment variables only take effect on your <em>next deployment</em>. Go to <strong>Deployments → ... → Redeploy</strong> to bake them into production.
+                  <strong>Vercel Redeploy:</strong> Both <code>CONVEX_URL</code> and <code>VITE_CONVEX_URL</code> are supported. If you added the URL in Vercel, go to <strong>Deployments → Redeploy</strong> to bake it into production.
                 </li>
               </ol>
             </div>
