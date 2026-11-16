@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { isConvexConfigured } from '../convexClient';
@@ -12,13 +12,34 @@ export function useConvexStore(initialProducts = PRODUCTS, onToast) {
   const removeMutation = useMutation(api.products?.remove || 'products:remove');
   const updateStockMutation = useMutation(api.products?.updateStock || 'products:updateStock');
   const seedMutation = useMutation(api.products?.seedDefault || 'products:seedDefault');
+  const resetMutation = useMutation(api.products?.resetToDefaults || 'products:resetToDefaults');
 
   const hasSeededRef = useRef(false);
+  const [optimisticDeletedIds, setOptimisticDeletedIds] = useState(() => new Set());
 
-  // Auto-seed default 22 products into Convex if database is empty on first run
+  // Auto-seed default products into Convex on very first deployment ONLY
   useEffect(() => {
-    if (convexItems && Array.isArray(convexItems) && convexItems.length === 0 && !hasSeededRef.current && typeof seedMutation === 'function') {
+    if (!convexItems || !Array.isArray(convexItems)) return;
+
+    if (convexItems.length > 0) {
+      try {
+        localStorage.setItem('icon_catalog_initialized', 'true');
+      } catch {}
+      return;
+    }
+
+    // Database is empty (length === 0)
+    let isInitialized = false;
+    try {
+      isInitialized = localStorage.getItem('icon_catalog_initialized') === 'true';
+    } catch {}
+
+    // Only seed if this is truly the first brand-new launch, never re-seed after intentional deletions
+    if (!isInitialized && !hasSeededRef.current && typeof seedMutation === 'function') {
       hasSeededRef.current = true;
+      try {
+        localStorage.setItem('icon_catalog_initialized', 'true');
+      } catch {}
       seedMutation({ initialProducts })
         .then(() => {
           onToast?.('Initialized Convex cloud database with Brisbane hire catalog', 'gold');
@@ -27,12 +48,26 @@ export function useConvexStore(initialProducts = PRODUCTS, onToast) {
     }
   }, [convexItems, initialProducts, seedMutation, onToast]);
 
-  // If Convex has loaded items, use them; otherwise fallback while loading
-  const products = (Array.isArray(convexItems) && convexItems.length > 0) ? convexItems : initialProducts;
+  // Compute live products: when Convex items array is available (even if length is 0), respect it!
+  const products = useMemo(() => {
+    if (!Array.isArray(convexItems)) {
+      // Still loading initial connection
+      return initialProducts;
+    }
+    return convexItems.filter(p => !optimisticDeletedIds.has(p.id) && !optimisticDeletedIds.has(p._id));
+  }, [convexItems, initialProducts, optimisticDeletedIds]);
 
   const handleAdd = async (newProd) => {
     try {
-      await addMutation(newProd);
+      const { _id, _creationTime, ...cleanProd } = newProd;
+      await addMutation(cleanProd);
+      if (cleanProd.id) {
+        setOptimisticDeletedIds(prev => {
+          const next = new Set(prev);
+          next.delete(cleanProd.id);
+          return next;
+        });
+      }
       onToast?.(`Added "${newProd.name}" to cloud database`, 'gold');
     } catch (e) {
       console.error(e);
@@ -43,7 +78,7 @@ export function useConvexStore(initialProducts = PRODUCTS, onToast) {
   const handleUpdate = async (updatedProd) => {
     try {
       await updateMutation({
-        id: updatedProd.id,
+        id: updatedProd.id || updatedProd._id,
         name: updatedProd.name,
         category: updatedProd.category,
         categoryLabel: updatedProd.categoryLabel,
@@ -66,11 +101,20 @@ export function useConvexStore(initialProducts = PRODUCTS, onToast) {
   };
 
   const handleDelete = async (prodId) => {
+    if (!prodId) return;
+    // 1. Instantly hide item from UI optimistically so deletion feels instantaneous
+    setOptimisticDeletedIds(prev => new Set([...prev, prodId]));
     try {
       await removeMutation({ id: prodId });
       onToast?.('Removed equipment from cloud database', 'gold');
     } catch (e) {
       console.error(e);
+      // Revert optimistic delete on error
+      setOptimisticDeletedIds(prev => {
+        const next = new Set(prev);
+        next.delete(prodId);
+        return next;
+      });
       onToast?.('Failed to delete from Convex cloud', 'warning');
     }
   };
@@ -86,13 +130,19 @@ export function useConvexStore(initialProducts = PRODUCTS, onToast) {
 
   const handleReset = async () => {
     try {
-      for (const p of products) {
-        await removeMutation({ id: p.id }).catch(() => {});
+      setOptimisticDeletedIds(new Set());
+      if (typeof resetMutation === 'function') {
+        await resetMutation({ defaultProducts: initialProducts });
+      } else {
+        await seedMutation({ initialProducts });
       }
-      await seedMutation({ initialProducts });
+      try {
+        localStorage.setItem('icon_catalog_initialized', 'true');
+      } catch {}
       onToast?.('Reset Convex cloud catalog to official defaults', 'gold');
     } catch (e) {
       console.error(e);
+      onToast?.('Failed to reset catalog', 'warning');
     }
   };
 
@@ -112,7 +162,11 @@ export function useLocalStore(initialProducts = PRODUCTS, onToast) {
   const [products, setProducts] = useState(() => {
     try {
       const saved = localStorage.getItem('icon_products_inventory');
-      return saved ? JSON.parse(saved) : initialProducts;
+      if (saved !== null) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+      return initialProducts;
     } catch {
       return initialProducts;
     }
@@ -133,26 +187,28 @@ export function useLocalStore(initialProducts = PRODUCTS, onToast) {
 
   const handleUpdate = (updatedProd) => {
     setProducts(prev =>
-      prev.map(p => (p.id === updatedProd.id ? updatedProd : p))
+      prev.map(p => ((p.id === updatedProd.id || (p._id && p._id === updatedProd._id)) ? updatedProd : p))
     );
     onToast?.(`Updated "${updatedProd.name}" successfully`, 'gold');
   };
 
   const handleDelete = (prodId) => {
-    setProducts(prev => prev.filter(p => p.id !== prodId));
+    setProducts(prev => prev.filter(p => p.id !== prodId && p._id !== prodId));
     onToast?.('Removed equipment from inventory', 'gold');
   };
 
   const handleUpdateStock = (id, newStock) => {
     setProducts(prev =>
-      prev.map(p => (p.id === id ? { ...p, stock: newStock } : p))
+      prev.map(p => ((p.id === id || p._id === id) ? { ...p, stock: newStock } : p))
     );
     onToast?.('Equipment inventory stock updated', 'gold');
   };
 
   const handleReset = () => {
     setProducts(initialProducts);
-    localStorage.removeItem('icon_products_inventory');
+    try {
+      localStorage.removeItem('icon_products_inventory');
+    } catch {}
     onToast?.('Restored official Brisbane equipment catalog', 'gold');
   };
 
@@ -166,4 +222,3 @@ export function useLocalStore(initialProducts = PRODUCTS, onToast) {
     handleReset
   };
 }
-

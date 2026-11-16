@@ -23,7 +23,8 @@ export const add = mutation({
     description: v.optional(v.string())
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert('categories', args);
+    const { _id, _creationTime, ...cleanArgs } = args;
+    return await ctx.db.insert('categories', cleanArgs);
   }
 });
 
@@ -41,10 +42,16 @@ export const update = mutation({
     description: v.optional(v.string())
   },
   handler: async (ctx, args) => {
-    const existing = await ctx.db
+    let existing = await ctx.db
       .query('categories')
       .filter((q) => q.eq(q.field('id'), args.id))
       .first();
+
+    if (!existing) {
+      try {
+        existing = await ctx.db.get(args.id);
+      } catch {}
+    }
 
     if (!existing) {
       throw new Error(`Category ${args.id} not found`);
@@ -63,18 +70,26 @@ export const update = mutation({
   }
 });
 
-// 4. Remove category
+// 4. Remove category (supports matching by custom 'id' or Convex '_id')
 export const remove = mutation({
   args: { id: v.string() },
   handler: async (ctx, args) => {
-    const existing = await ctx.db
+    let existing = await ctx.db
       .query('categories')
       .filter((q) => q.eq(q.field('id'), args.id))
       .first();
 
+    if (!existing) {
+      try {
+        existing = await ctx.db.get(args.id);
+      } catch {}
+    }
+
     if (existing) {
       await ctx.db.delete(existing._id);
+      return { success: true, deletedId: existing._id };
     }
+    return { success: false, notFound: true };
   }
 });
 
@@ -82,14 +97,33 @@ export const remove = mutation({
 export const seedDefault = mutation({
   args: { initialCategories: v.any() },
   handler: async (ctx, args) => {
-    const count = (await ctx.db.query('categories').collect()).length;
-    if (count === 0 && Array.isArray(args.initialCategories)) {
+    const existing = await ctx.db.query('categories').collect();
+    if (existing.length === 0 && Array.isArray(args.initialCategories)) {
       for (const item of args.initialCategories) {
-        await ctx.db.insert('categories', item);
+        const { _id, _creationTime, ...cleanItem } = item;
+        await ctx.db.insert('categories', cleanItem);
       }
       return { seeded: args.initialCategories.length };
     }
-    return { seeded: 0, existing: count };
+    return { seeded: 0, existing: existing.length };
+  }
+});
+
+// 6. Explicit Admin Reset back to official Brisbane category defaults
+export const resetToDefaults = mutation({
+  args: { defaultCategories: v.any() },
+  handler: async (ctx, args) => {
+    const all = await ctx.db.query('categories').collect();
+    for (const c of all) {
+      await ctx.db.delete(c._id);
+    }
+    if (Array.isArray(args.defaultCategories)) {
+      for (const item of args.defaultCategories) {
+        const { _id, _creationTime, ...cleanItem } = item;
+        await ctx.db.insert('categories', cleanItem);
+      }
+    }
+    return { reset: true, count: args.defaultCategories?.length || 0 };
   }
 });
 

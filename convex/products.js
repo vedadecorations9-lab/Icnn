@@ -36,7 +36,8 @@ export const add = mutation({
     pills: v.optional(v.array(v.string()))
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert('products', args);
+    const { _id, _creationTime, ...cleanArgs } = args;
+    return await ctx.db.insert('products', cleanArgs);
   }
 });
 
@@ -59,10 +60,16 @@ export const update = mutation({
     hirePeriod: v.optional(v.string())
   },
   handler: async (ctx, args) => {
-    const existing = await ctx.db
+    let existing = await ctx.db
       .query('products')
       .filter((q) => q.eq(q.field('id'), args.id))
       .first();
+
+    if (!existing) {
+      try {
+        existing = await ctx.db.get(args.id);
+      } catch {}
+    }
 
     if (!existing) {
       throw new Error(`Product ${args.id} not found`);
@@ -86,18 +93,36 @@ export const update = mutation({
   }
 });
 
-// 4. Delete product
+// 4. Delete product (supports matching by custom 'id' or Convex '_id')
 export const remove = mutation({
   args: { id: v.string() },
   handler: async (ctx, args) => {
-    const existing = await ctx.db
+    // 1. Try matching by custom 'id' (e.g. 'icon-01')
+    let existing = await ctx.db
       .query('products')
       .filter((q) => q.eq(q.field('id'), args.id))
       .first();
 
+    // 2. If not found, try matching by Convex document _id
+    if (!existing) {
+      try {
+        existing = await ctx.db.get(args.id);
+      } catch {}
+    }
+
+    // 3. If still not found, try matching by SKU
+    if (!existing) {
+      existing = await ctx.db
+        .query('products')
+        .filter((q) => q.eq(q.field('sku'), args.id))
+        .first();
+    }
+
     if (existing) {
       await ctx.db.delete(existing._id);
+      return { success: true, deletedId: existing._id };
     }
+    return { success: false, notFound: true };
   }
 });
 
@@ -105,10 +130,16 @@ export const remove = mutation({
 export const updateStock = mutation({
   args: { id: v.string(), stock: v.number() },
   handler: async (ctx, args) => {
-    const existing = await ctx.db
+    let existing = await ctx.db
       .query('products')
       .filter((q) => q.eq(q.field('id'), args.id))
       .first();
+
+    if (!existing) {
+      try {
+        existing = await ctx.db.get(args.id);
+      } catch {}
+    }
 
     if (existing) {
       await ctx.db.patch(existing._id, { stock: Math.max(0, args.stock) });
@@ -116,18 +147,36 @@ export const updateStock = mutation({
   }
 });
 
-// 6. Seed defaults if empty
+// 6. Seed defaults on very first setup if database is completely empty
 export const seedDefault = mutation({
   args: { initialProducts: v.any() },
   handler: async (ctx, args) => {
-    const count = (await ctx.db.query('products').collect()).length;
-    if (count === 0 && Array.isArray(args.initialProducts)) {
+    const existingItems = await ctx.db.query('products').collect();
+    if (existingItems.length === 0 && Array.isArray(args.initialProducts)) {
       for (const item of args.initialProducts) {
-        await ctx.db.insert('products', item);
+        const { _id, _creationTime, ...cleanItem } = item;
+        await ctx.db.insert('products', cleanItem);
       }
       return { seeded: args.initialProducts.length };
     }
-    return { seeded: 0, existing: count };
+    return { seeded: 0, existing: existingItems.length };
   }
 });
 
+// 7. Explicit Admin Reset back to official Brisbane defaults
+export const resetToDefaults = mutation({
+  args: { defaultProducts: v.any() },
+  handler: async (ctx, args) => {
+    const all = await ctx.db.query('products').collect();
+    for (const p of all) {
+      await ctx.db.delete(p._id);
+    }
+    if (Array.isArray(args.defaultProducts)) {
+      for (const item of args.defaultProducts) {
+        const { _id, _creationTime, ...cleanItem } = item;
+        await ctx.db.insert('products', cleanItem);
+      }
+    }
+    return { reset: true, count: args.defaultProducts?.length || 0 };
+  }
+});

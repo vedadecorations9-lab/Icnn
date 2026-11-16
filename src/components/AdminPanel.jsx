@@ -192,7 +192,7 @@ export default function AdminPanel({
       startingPrice: Number(categoryFormData.startingPrice) || 50,
       itemCount: count,
       pills: pillsArr,
-      image: categoryFormData.image,
+      image: categoryFormData.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
       description: categoryFormData.description.trim() || 'Commercial party hire equipment range.'
     };
 
@@ -210,14 +210,15 @@ export default function AdminPanel({
 
     const updatedCat = {
       ...editingCategory,
+      id: editingCategory.id || editingCategory._id,
       label: categoryFormData.label.trim(),
       shortLabel: categoryFormData.shortLabel.trim() || categoryFormData.label.trim(),
       tag: categoryFormData.tag.trim() || 'Event Essential',
       startingPrice: Number(categoryFormData.startingPrice) || 50,
       itemCount: count,
       pills: pillsArr,
-      image: categoryFormData.image,
-      description: categoryFormData.description.trim()
+      image: categoryFormData.image || editingCategory.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
+      description: categoryFormData.description.trim() || editingCategory.description || 'Commercial party hire equipment range.'
     };
 
     onUpdateCategory?.(updatedCat);
@@ -226,7 +227,8 @@ export default function AdminPanel({
 
   // Attempt Delete Category with Safety Check
   const handleAttemptDeleteCategory = (cat) => {
-    const linked = products.filter(p => p.category === cat.id);
+    const catId = cat.id || cat._id;
+    const linked = products.filter(p => p.category === cat.id || p.category === catId);
     if (linked.length > 0) {
       setCategoryDeleteWarning({
         category: cat,
@@ -234,7 +236,7 @@ export default function AdminPanel({
         sampleNames: linked.slice(0, 3).map(p => p.name)
       });
     } else {
-      setDeletingCategoryId(cat.id);
+      setDeletingCategoryId(catId);
     }
   };
 
@@ -568,7 +570,7 @@ export default function AdminPanel({
     const newProduct = {
       id: `icon-${Date.now().toString().slice(-4)}`,
       name: formData.name.trim(),
-      category: formData.category,
+      category: formData.category || catObj.id,
       categoryLabel: catObj.label,
       priceAUD: price,
       priceINR: Math.round(price / 0.0185),
@@ -578,12 +580,12 @@ export default function AdminPanel({
       reviewsCount: 1,
       badge: formData.badge || 'New Arrival',
       badgeType: 'badge-gold',
-      image: formData.image,
-      description: formData.description,
+      image: formData.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
+      description: formData.description || 'Commercial-grade party hire equipment maintained in pristine condition in our Brisbane warehouse.',
       origin: 'Icon Warehouse Hub · Murrumba Downs QLD',
-      material: formData.material,
-      dimensions: formData.dimensions,
-      hirePeriod: formData.hirePeriod,
+      material: formData.material || 'Commercial Heavy-Duty Specification',
+      dimensions: formData.dimensions || 'Commercial Event Spec',
+      hirePeriod: formData.hirePeriod || '24–72 Hours Flexible Weekend Hire',
       bondAUD: Number(formData.bondAUD) || 50,
       stock: parseInt(formData.stock, 10) || 5,
       sku: formData.sku || `IPH-AU-${Math.floor(100 + Math.random() * 900)}`,
@@ -604,21 +606,22 @@ export default function AdminPanel({
 
     const updatedProduct = {
       ...editingProduct,
+      id: editingProduct.id || editingProduct._id,
       name: formData.name.trim(),
-      category: formData.category,
+      category: formData.category || catObj.id,
       categoryLabel: catObj.label,
       priceAUD: price,
       priceINR: Math.round(price / 0.0185),
       originalAUD: Math.round(price * 1.25),
-      badge: formData.badge,
-      image: formData.image,
-      description: formData.description,
-      material: formData.material,
-      dimensions: formData.dimensions,
-      hirePeriod: formData.hirePeriod,
+      badge: formData.badge || editingProduct.badge || 'New Arrival',
+      image: formData.image || editingProduct.image || '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
+      description: formData.description || editingProduct.description || 'Commercial-grade party hire equipment maintained in pristine condition in our Brisbane warehouse.',
+      material: formData.material || editingProduct.material || 'Commercial Heavy-Duty Specification',
+      dimensions: formData.dimensions || editingProduct.dimensions || 'Commercial Event Spec',
+      hirePeriod: formData.hirePeriod || editingProduct.hirePeriod || '24–72 Hours Flexible Weekend Hire',
       bondAUD: Number(formData.bondAUD) || 50,
       stock: parseInt(formData.stock, 10) || 0,
-      sku: formData.sku
+      sku: formData.sku || editingProduct.sku
     };
 
     onUpdateProduct?.(updatedProduct);
@@ -717,7 +720,7 @@ export default function AdminPanel({
     };
   }, [bookings]);
 
-  const targetDeleteProduct = products.find(p => p.id === deletingProductId);
+  const targetDeleteProduct = products.find(p => (p.id && p.id === deletingProductId) || (p._id && p._id === deletingProductId));
 
   return (
     <div className="icon-admin-portal" data-lenis-prevent="true" role="dialog" aria-modal="true" aria-label="Icon Party Hire Operations Hub">
@@ -1309,7 +1312,7 @@ export default function AdminPanel({
                                   <button
                                     type="button"
                                     className="action-btn delete-btn"
-                                    onClick={() => setDeletingProductId(prod.id)}
+                                    onClick={() => setDeletingProductId(prod.id || prod._id)}
                                     title="Delete Equipment"
                                   >
                                     <Trash2 size={15} />
@@ -1445,7 +1448,7 @@ export default function AdminPanel({
                             <button
                               type="button"
                               className="bento-action-btn delete"
-                              onClick={() => setDeletingProductId(prod.id)}
+                              onClick={() => setDeletingProductId(prod.id || prod._id)}
                               title="Delete Equipment"
                             >
                               <Trash2 size={14} />
@@ -1565,7 +1568,7 @@ export default function AdminPanel({
                           <button
                             type="button"
                             className="mobile-action-btn delete"
-                            onClick={() => setDeletingProductId(prod.id)}
+                            onClick={() => setDeletingProductId(prod.id || prod._id)}
                             title="Delete Equipment"
                           >
                             <Trash2 size={15} />
@@ -2752,7 +2755,7 @@ export default function AdminPanel({
       {/* =====================================================================
          4. CONFIRM DELETE SAFETY MODAL
          ===================================================================== */}
-      {deletingProductId && targetDeleteProduct && (
+      {deletingProductId && (
         <div className="admin-modal-backdrop" onClick={() => setDeletingProductId(null)}>
           <div className="admin-confirm-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="confirm-icon-bubble">
@@ -2760,16 +2763,18 @@ export default function AdminPanel({
             </div>
             <h3 className="confirm-title">Remove Equipment from Inventory?</h3>
             <p className="confirm-desc">
-              Are you sure you want to remove <strong>"{targetDeleteProduct.name}"</strong>?
+              Are you sure you want to remove <strong>"{targetDeleteProduct?.name || 'this equipment item'}"</strong>?
               This item will immediately be removed from the Brisbane catalog and cannot be booked by customers.
             </p>
-            <div className="confirm-item-preview">
-              <img src={targetDeleteProduct.image} alt={targetDeleteProduct.name} className="confirm-thumb" />
-              <div>
-                <strong>{targetDeleteProduct.name}</strong>
-                <div className="text-subtle-xs">SKU: {targetDeleteProduct.sku || targetDeleteProduct.id} · ${targetDeleteProduct.priceAUD || 50} AUD</div>
+            {targetDeleteProduct && (
+              <div className="confirm-item-preview">
+                <img src={targetDeleteProduct.image} alt={targetDeleteProduct.name} className="confirm-thumb" />
+                <div>
+                  <strong>{targetDeleteProduct.name}</strong>
+                  <div className="text-subtle-xs">SKU: {targetDeleteProduct.sku || targetDeleteProduct.id} · ${targetDeleteProduct.priceAUD || 50} AUD</div>
+                </div>
               </div>
-            </div>
+            )}
             <div className="confirm-actions">
               <button
                 type="button"
@@ -2920,7 +2925,7 @@ export default function AdminPanel({
             </div>
             <h3 className="confirm-title">Delete Category Card?</h3>
             <p className="confirm-desc">
-              Are you sure you want to permanently delete the <strong>"{activeCategories.find(c => c.id === deletingCategoryId)?.label || deletingCategoryId}"</strong> category card from your storefront?
+              Are you sure you want to permanently delete the <strong>"{activeCategories.find(c => c.id === deletingCategoryId || c._id === deletingCategoryId)?.label || deletingCategoryId}"</strong> category card from your storefront?
             </p>
             <div className="confirm-actions">
               <button

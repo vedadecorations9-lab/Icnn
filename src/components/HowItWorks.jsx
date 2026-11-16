@@ -184,7 +184,7 @@ export default function HowItWorks() {
       aria-label="How Event Hire Works"
     >
       <div className="container hiw-relative-container">
-        
+
         {/* Aesthetic Centered Section Header */}
         <div className="hiw-header">
           <div className="hiw-kicker-line">
@@ -281,7 +281,7 @@ export default function HowItWorks() {
                         <StepIcon size={17} />
                       </div>
                     </div>
-                    
+
                     <h3 className="hiw-step-title">{step.title}</h3>
                     <p className="hiw-step-desc">{step.description}</p>
                   </div>

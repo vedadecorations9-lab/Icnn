@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { isConvexConfigured } from '../convexClient';
@@ -11,13 +11,33 @@ export function useConvexCategoriesStore(initialCategories = CATEGORIES, onToast
   const updateMutation = useMutation(api.categories?.update || 'categories:update');
   const removeMutation = useMutation(api.categories?.remove || 'categories:remove');
   const seedMutation = useMutation(api.categories?.seedDefault || 'categories:seedDefault');
+  const resetMutation = useMutation(api.categories?.resetToDefaults || 'categories:resetToDefaults');
 
   const hasSeededRef = useRef(false);
+  const [optimisticDeletedCatIds, setOptimisticDeletedCatIds] = useState(() => new Set());
 
-  // Auto-seed default 10 categories into Convex if database is empty on first run
+  // Auto-seed default categories into Convex on first launch ONLY
   useEffect(() => {
-    if (convexItems && Array.isArray(convexItems) && convexItems.length === 0 && !hasSeededRef.current && typeof seedMutation === 'function') {
+    if (!convexItems || !Array.isArray(convexItems)) return;
+
+    if (convexItems.length > 0) {
+      try {
+        localStorage.setItem('icon_categories_initialized', 'true');
+      } catch {}
+      return;
+    }
+
+    // Database categories empty (length === 0)
+    let isInitialized = false;
+    try {
+      isInitialized = localStorage.getItem('icon_categories_initialized') === 'true';
+    } catch {}
+
+    if (!isInitialized && !hasSeededRef.current && typeof seedMutation === 'function') {
       hasSeededRef.current = true;
+      try {
+        localStorage.setItem('icon_categories_initialized', 'true');
+      } catch {}
       seedMutation({ initialCategories })
         .then(() => {
           onToast?.('Initialized Convex cloud database with Brisbane hire categories', 'gold');
@@ -26,11 +46,24 @@ export function useConvexCategoriesStore(initialCategories = CATEGORIES, onToast
     }
   }, [convexItems, initialCategories, seedMutation, onToast]);
 
-  const categories = (Array.isArray(convexItems) && convexItems.length > 0) ? convexItems : initialCategories;
+  const categories = useMemo(() => {
+    if (!Array.isArray(convexItems)) {
+      return initialCategories;
+    }
+    return convexItems.filter(c => !optimisticDeletedCatIds.has(c.id) && !optimisticDeletedCatIds.has(c._id));
+  }, [convexItems, initialCategories, optimisticDeletedCatIds]);
 
   const handleAddCategory = async (newCat) => {
     try {
-      await addMutation(newCat);
+      const { _id, _creationTime, ...cleanCat } = newCat;
+      await addMutation(cleanCat);
+      if (cleanCat.id) {
+        setOptimisticDeletedCatIds(prev => {
+          const next = new Set(prev);
+          next.delete(cleanCat.id);
+          return next;
+        });
+      }
       onToast?.(`Added "${newCat.label}" category to cloud database`, 'gold');
     } catch (e) {
       console.error(e);
@@ -41,7 +74,7 @@ export function useConvexCategoriesStore(initialCategories = CATEGORIES, onToast
   const handleUpdateCategory = async (updatedCat) => {
     try {
       await updateMutation({
-        id: updatedCat.id,
+        id: updatedCat.id || updatedCat._id,
         label: updatedCat.label,
         shortLabel: updatedCat.shortLabel || updatedCat.label,
         tag: updatedCat.tag,
@@ -59,24 +92,37 @@ export function useConvexCategoriesStore(initialCategories = CATEGORIES, onToast
   };
 
   const handleDeleteCategory = async (catId) => {
+    if (!catId) return;
+    setOptimisticDeletedCatIds(prev => new Set([...prev, catId]));
     try {
       await removeMutation({ id: catId });
       onToast?.('Removed category card from cloud database', 'gold');
     } catch (e) {
       console.error(e);
+      setOptimisticDeletedCatIds(prev => {
+        const next = new Set(prev);
+        next.delete(catId);
+        return next;
+      });
       onToast?.('Failed to delete category from Convex cloud', 'warning');
     }
   };
 
   const handleResetCategories = async () => {
     try {
-      for (const c of categories) {
-        await removeMutation({ id: c.id }).catch(() => {});
+      setOptimisticDeletedCatIds(new Set());
+      if (typeof resetMutation === 'function') {
+        await resetMutation({ defaultCategories: initialCategories });
+      } else {
+        await seedMutation({ initialCategories });
       }
-      await seedMutation({ initialCategories });
+      try {
+        localStorage.setItem('icon_categories_initialized', 'true');
+      } catch {}
       onToast?.('Reset categories to default Brisbane catalog', 'gold');
     } catch (e) {
       console.error(e);
+      onToast?.('Failed to reset categories', 'warning');
     }
   };
 
@@ -95,7 +141,11 @@ export function useLocalCategoriesStore(initialCategories = CATEGORIES, onToast)
   const [categories, setCategories] = useState(() => {
     try {
       const saved = localStorage.getItem('icon_categories_inventory');
-      return saved ? JSON.parse(saved) : initialCategories;
+      if (saved !== null) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+      return initialCategories;
     } catch {
       return initialCategories;
     }
@@ -116,19 +166,21 @@ export function useLocalCategoriesStore(initialCategories = CATEGORIES, onToast)
 
   const handleUpdateCategory = (updatedCat) => {
     setCategories(prev =>
-      prev.map(c => (c.id === updatedCat.id ? updatedCat : c))
+      prev.map(c => ((c.id === updatedCat.id || (c._id && c._id === updatedCat._id)) ? updatedCat : c))
     );
     onToast?.(`Updated "${updatedCat.label}" category card`, 'gold');
   };
 
   const handleDeleteCategory = (catId) => {
-    setCategories(prev => prev.filter(c => c.id !== catId));
+    setCategories(prev => prev.filter(c => c.id !== catId && c._id !== catId));
     onToast?.('Removed category card from catalog', 'gold');
   };
 
   const handleResetCategories = () => {
     setCategories(initialCategories);
-    localStorage.removeItem('icon_categories_inventory');
+    try {
+      localStorage.removeItem('icon_categories_inventory');
+    } catch {}
     onToast?.('Restored official Brisbane categories', 'gold');
   };
 
@@ -141,4 +193,3 @@ export function useLocalCategoriesStore(initialCategories = CATEGORIES, onToast)
     handleResetCategories
   };
 }
-
