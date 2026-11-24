@@ -1,8 +1,28 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { isConvexConfigured } from '../convexClient';
 import { INITIAL_ORDERS } from '../data/products';
+
+function saveRejectedOrderNotice(booking) {
+  if (!booking) return;
+  try {
+    const raw = localStorage.getItem('icon_rejected_order_notices');
+    const list = raw ? JSON.parse(raw) : [];
+    if (!list.some((item) => item.id === booking.id)) {
+      list.push({
+        id: booking.id,
+        customerName: booking.customerName,
+        email: booking.email,
+        eventDate: booking.eventDate,
+        items: booking.items,
+        totalAUD: booking.totalAUD,
+        rejectedAt: new Date().toISOString()
+      });
+      localStorage.setItem('icon_rejected_order_notices', JSON.stringify(list));
+    }
+  } catch {}
+}
 
 // 1. Hook for Convex Cloud Bookings Synchronization
 export function useConvexBookingsStore(initialBookings = INITIAL_ORDERS, onToast) {
@@ -12,26 +32,42 @@ export function useConvexBookingsStore(initialBookings = INITIAL_ORDERS, onToast
   const seedMutation = useMutation(api.bookings?.seedInitial || 'bookings:seedInitial');
 
   const hasSeededRef = useRef(false);
+  const [optimisticRejectedIds, setOptimisticRejectedIds] = useState(() => new Set());
 
-  // Auto-seed initial bookings into Convex if empty
+  // Auto-seed initial bookings into Convex on first setup only
   useEffect(() => {
-    if (
-      convexItems &&
-      Array.isArray(convexItems) &&
-      convexItems.length === 0 &&
-      !hasSeededRef.current &&
-      typeof seedMutation === 'function'
-    ) {
+    if (!convexItems || !Array.isArray(convexItems)) return;
+    if (convexItems.length > 0) {
+      try {
+        localStorage.setItem('icon_bookings_initialized', 'true');
+      } catch {}
+      return;
+    }
+
+    let isInit = false;
+    try {
+      isInit = localStorage.getItem('icon_bookings_initialized') === 'true';
+    } catch {}
+
+    if (!isInit && !hasSeededRef.current && typeof seedMutation === 'function') {
       hasSeededRef.current = true;
-      seedMutation({ initialBookings })
-        .then(() => {
-          console.log('Convex bookings initialized');
-        })
-        .catch((err) => console.warn('Convex booking seeding note:', err?.message || err));
+      try {
+        localStorage.setItem('icon_bookings_initialized', 'true');
+      } catch {}
+      seedMutation({ initialBookings }).catch((err) =>
+        console.warn('Convex booking seeding note:', err?.message || err)
+      );
     }
   }, [convexItems, initialBookings, seedMutation]);
 
-  const bookings = Array.isArray(convexItems) && convexItems.length > 0 ? convexItems : initialBookings;
+  const bookings = useMemo(() => {
+    const source = Array.isArray(convexItems) ? convexItems : initialBookings;
+    return source.map((b) =>
+      optimisticRejectedIds.has(b.id) || optimisticRejectedIds.has(b._id)
+        ? { ...b, status: 'Rejected' }
+        : b
+    );
+  }, [convexItems, initialBookings, optimisticRejectedIds]);
 
   const handleUpdateBookingStatus = async (bookingId, newStatus) => {
     try {
@@ -51,7 +87,8 @@ export function useConvexBookingsStore(initialBookings = INITIAL_ORDERS, onToast
 
   const handleAddBooking = async (newBooking) => {
     try {
-      await addMutation(newBooking);
+      const { _id, _creationTime, ...cleanBooking } = newBooking;
+      await addMutation(cleanBooking);
       onToast?.(`New Order #${newBooking.id} initiated successfully!`, 'success');
     } catch (e) {
       console.error(e);
@@ -59,11 +96,27 @@ export function useConvexBookingsStore(initialBookings = INITIAL_ORDERS, onToast
     }
   };
 
+  const handleDeleteBooking = async (bookingId) => {
+    if (!bookingId) return;
+    const target = bookings.find((b) => b.id === bookingId || b._id === bookingId);
+    if (target) saveRejectedOrderNotice(target);
+
+    setOptimisticRejectedIds((prev) => new Set([...prev, bookingId]));
+    try {
+      await updateStatusMutation({ id: bookingId, status: 'Rejected' });
+      onToast?.(`Order #${bookingId} deleted & customer notified of rejection by Owner`, 'gold');
+    } catch (e) {
+      console.error(e);
+      onToast?.('Failed to delete order in cloud', 'warning');
+    }
+  };
+
   return {
     bookings,
     isRealtime: true,
     handleUpdateBookingStatus,
-    handleAddBooking
+    handleAddBooking,
+    handleDeleteBooking
   };
 }
 
@@ -105,11 +158,24 @@ export function useLocalBookingsStore(initialBookings = INITIAL_ORDERS, onToast)
     onToast?.(`New Order #${newBooking.id} initiated successfully!`, 'success');
   };
 
+  const handleDeleteBooking = (bookingId) => {
+    const target = bookings.find((b) => b.id === bookingId || b._id === bookingId);
+    if (target) saveRejectedOrderNotice(target);
+
+    setBookings((prev) =>
+      prev.map((b) =>
+        b.id === bookingId || b._id === bookingId ? { ...b, status: 'Rejected' } : b
+      )
+    );
+    onToast?.(`Order #${bookingId} deleted & customer notified of rejection by Owner`, 'gold');
+  };
+
   return {
     bookings,
     isRealtime: false,
     handleUpdateBookingStatus,
-    handleAddBooking
+    handleAddBooking,
+    handleDeleteBooking
   };
 }
 
@@ -121,4 +187,3 @@ export function useBookingsData(initialBookings = INITIAL_ORDERS, onToast) {
   }
   return useLocalBookingsStore(initialBookings, onToast);
 }
-

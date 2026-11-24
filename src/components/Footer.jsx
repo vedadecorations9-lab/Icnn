@@ -1,6 +1,6 @@
 import React from 'react';
 import { BRISBANE_STORE_INFO } from '../data/products';
-import { MapPin, Phone } from 'lucide-react';
+import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react';
 
 export default function Footer({ onSelectCategory }) {
   return (
@@ -36,15 +36,32 @@ export default function Footer({ onSelectCategory }) {
 
           {/* Direct Brisbane Contact */}
           <div className="clean-footer-contact">
-            <span className="clean-footer-heading">Location</span>
+            <span className="clean-footer-heading">Location & Contact</span>
             <div className="clean-contact-capsule">
               <div className="clean-contact-item">
                 <MapPin size={13} className="clean-contact-icon" />
                 <span>{BRISBANE_STORE_INFO.address}, Brisbane 4503</span>
               </div>
-              <div className="clean-contact-item">
+              <div className="clean-contact-item clean-contact-phone-row">
                 <Phone size={13} className="clean-contact-icon" />
                 <a href="tel:0439592472" className="clean-contact-tel">{BRISBANE_STORE_INFO.phone}</a>
+                <a
+                  href="https://wa.me/61439592472"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="clean-whatsapp-btn"
+                  title="Chat with Icon Party Hire on WhatsApp"
+                  aria-label="Redirect to WhatsApp"
+                >
+                  <MessageCircle size={13} />
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+              <div className="clean-contact-item">
+                <Mail size={13} className="clean-contact-icon" />
+                <a href="mailto:info@iconpartyhire.com.au" className="clean-contact-tel">
+                  id: info@iconpartyhire.com.au
+                </a>
               </div>
             </div>
           </div>

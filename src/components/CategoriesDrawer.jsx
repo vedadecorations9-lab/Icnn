@@ -183,7 +183,7 @@ export default function CategoriesDrawer({
 
             <nav className="mobile-pure-nav-list" aria-label="Mobile Navigation Links">
               
-              {/* Hire Shop */}
+              {/* Hiring */}
               <button
                 type="button"
                 className={`mobile-pure-nav-item ${currentView === 'catalog' ? 'active' : ''}`}
@@ -197,12 +197,58 @@ export default function CategoriesDrawer({
                     <ShoppingBag size={20} />
                   </div>
                   <div className="mobile-nav-item-text">
-                    <span className="mobile-nav-title">Hire Shop</span>
+                    <span className="mobile-nav-title">Hiring</span>
                     <span className="mobile-nav-desc">Browse commercial equipment catalog</span>
                   </div>
                 </div>
                 <div className="mobile-nav-item-right">
                   <span className="mobile-nav-pill-badge">All Gear</span>
+                  <ChevronRight size={18} className="mobile-nav-chevron" />
+                </div>
+              </button>
+
+              {/* Decorations */}
+              <button
+                type="button"
+                className="mobile-pure-nav-item"
+                onClick={() => {
+                  onClose();
+                  onNavigateCatalog?.('backdrops');
+                }}
+              >
+                <div className="mobile-nav-item-left">
+                  <div className="mobile-nav-icon-wrap">
+                    <ShoppingBag size={20} />
+                  </div>
+                  <div className="mobile-nav-item-text">
+                    <span className="mobile-nav-title">Decorations</span>
+                    <span className="mobile-nav-desc">Backdrops, flower walls & plinths</span>
+                  </div>
+                </div>
+                <div className="mobile-nav-item-right">
+                  <ChevronRight size={18} className="mobile-nav-chevron" />
+                </div>
+              </button>
+
+              {/* Balloons */}
+              <button
+                type="button"
+                className="mobile-pure-nav-item"
+                onClick={() => {
+                  onClose();
+                  onNavigateCatalog?.('balloons');
+                }}
+              >
+                <div className="mobile-nav-item-left">
+                  <div className="mobile-nav-icon-wrap">
+                    <ShoppingBag size={20} />
+                  </div>
+                  <div className="mobile-nav-item-text">
+                    <span className="mobile-nav-title">Balloons</span>
+                    <span className="mobile-nav-desc">Custom organic balloon garlands</span>
+                  </div>
+                </div>
+                <div className="mobile-nav-item-right">
                   <ChevronRight size={18} className="mobile-nav-chevron" />
                 </div>
               </button>

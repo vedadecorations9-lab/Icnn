@@ -80,6 +80,7 @@ export default function AdminPanel({
   bookings: propBookings,
   onUpdateBookingStatus: propUpdateBookingStatus,
   onAddBooking: propAddBooking,
+  onDeleteBooking: propDeleteBooking,
   isRealtime = false,
   onAddProduct,
   onUpdateProduct,
@@ -318,9 +319,37 @@ export default function AdminPanel({
     }
   });
 
-  const bookings = propBookings && propBookings.length >= 0 ? propBookings : localBookings;
+  const rawBookings = propBookings && propBookings.length >= 0 ? propBookings : localBookings;
+  const bookings = useMemo(
+    () => rawBookings.filter(b => (b.status || '').toLowerCase() !== 'rejected'),
+    [rawBookings]
+  );
   const [bookingFilter, setBookingFilter] = useState('all');
   const [isCreateBookingModalOpen, setIsCreateBookingModalOpen] = useState(false);
+  const [deletingBookingId, setDeletingBookingId] = useState(null);
+
+  const handleConfirmDeleteBooking = () => {
+    if (!deletingBookingId) return;
+    if (propDeleteBooking) {
+      propDeleteBooking(deletingBookingId);
+    } else {
+      setLocalBookings(prev => {
+        const updated = prev.map(b =>
+          b.id === deletingBookingId || b._id === deletingBookingId
+            ? { ...b, status: 'Rejected' }
+            : b
+        );
+        try {
+          localStorage.setItem('icon_event_bookings', JSON.stringify(updated));
+        } catch (e) {
+          console.error(e);
+        }
+        return updated;
+      });
+      onToast?.(`Order #${deletingBookingId} deleted & customer notified of rejection by Owner`, 'gold');
+    }
+    setDeletingBookingId(null);
+  };
 
   // Booking Form State for Manual Admin Order Initiation
   const initialBookingFormState = {
@@ -2020,16 +2049,27 @@ export default function AdminPanel({
                               <div className="text-subtle-xs">{booking.paymentStatus}</div>
                             </td>
                             <td>
-                              <select
-                                value={booking.status}
-                                onChange={(e) => handleBookingStatusChange(booking.id, e.target.value)}
-                                className={`status-select-pill status-${booking.status.toLowerCase()}`}
-                              >
-                                <option value="Confirmed">Confirmed</option>
-                                <option value="Dispatched">Dispatched</option>
-                                <option value="Delivered">Delivered</option>
-                                <option value="Returned">Returned</option>
-                              </select>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <select
+                                  value={booking.status}
+                                  onChange={(e) => handleBookingStatusChange(booking.id, e.target.value)}
+                                  className={`status-select-pill status-${booking.status.toLowerCase()}`}
+                                >
+                                  <option value="Confirmed">Confirmed</option>
+                                  <option value="Dispatched">Dispatched</option>
+                                  <option value="Delivered">Delivered</option>
+                                  <option value="Returned">Returned</option>
+                                </select>
+                                <button
+                                  type="button"
+                                  className="action-btn delete-btn"
+                                  onClick={() => setDeletingBookingId(booking.id || booking._id)}
+                                  title="Reject & Delete Order"
+                                  aria-label={`Delete order ${booking.id}`}
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -2046,16 +2086,27 @@ export default function AdminPanel({
                     <div key={booking.id} className="admin-mobile-booking-card">
                       <div className="mobile-booking-header">
                         <span className="booking-ref-badge">{booking.id}</span>
-                        <select
-                          value={booking.status}
-                          onChange={(e) => handleBookingStatusChange(booking.id, e.target.value)}
-                          className={`status-select-pill status-${booking.status.toLowerCase()}`}
-                        >
-                          <option value="Confirmed">Confirmed</option>
-                          <option value="Dispatched">Dispatched</option>
-                          <option value="Delivered">Delivered</option>
-                          <option value="Returned">Returned</option>
-                        </select>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <select
+                            value={booking.status}
+                            onChange={(e) => handleBookingStatusChange(booking.id, e.target.value)}
+                            className={`status-select-pill status-${booking.status.toLowerCase()}`}
+                          >
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Dispatched">Dispatched</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Returned">Returned</option>
+                          </select>
+                          <button
+                            type="button"
+                            className="action-btn delete-btn"
+                            onClick={() => setDeletingBookingId(booking.id || booking._id)}
+                            title="Reject & Delete Order"
+                            aria-label={`Delete order ${booking.id}`}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
                       </div>
 
                       <div className="mobile-booking-customer">
@@ -2748,6 +2799,40 @@ export default function AdminPanel({
 
             </form>
 
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+         4B. CONFIRM DELETE / REJECT BOOKING ORDER MODAL
+         ===================================================================== */}
+      {deletingBookingId && (
+        <div className="admin-modal-backdrop" onClick={() => setDeletingBookingId(null)}>
+          <div className="admin-confirm-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-icon-bubble">
+              <AlertTriangle size={28} className="text-red-500" />
+            </div>
+            <h3 className="confirm-title">Reject &amp; Delete Customer Order?</h3>
+            <p className="confirm-desc">
+              Are you sure you want to delete order <strong>#{deletingBookingId}</strong>?
+              This order will be removed from your active bookings and the customer will be notified that their order was <strong>rejected by the Owner</strong>.
+            </p>
+            <div className="confirm-actions">
+              <button
+                type="button"
+                className="btn-outline-cancel"
+                onClick={() => setDeletingBookingId(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-danger-confirm"
+                onClick={handleConfirmDeleteBooking}
+              >
+                Yes, Reject &amp; Delete Order
+              </button>
+            </div>
           </div>
         </div>
       )}

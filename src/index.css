@@ -6905,6 +6905,146 @@ ul, ol {
   color: #F7D1BA;
 }
 
+.clean-contact-phone-row {
+  flex-wrap: wrap;
+}
+
+.clean-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: 0 3px 10px rgba(37, 211, 102, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clean-whatsapp-btn:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 14px rgba(37, 211, 102, 0.4);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   LUXURY SERVICE REGIONS SHOWCASE BANNER (BOTTOM OF HOME PAGE)
+   ========================================================================== */
+.service-regions-showcase {
+  padding: 20px 0 64px 0;
+}
+
+.service-regions-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: 44px 32px;
+  text-align: center;
+  background: linear-gradient(135deg, #1B061A 0%, #2D0B2B 52%, #1B061A 100%);
+  border: 1.5px solid rgba(216, 27, 96, 0.35);
+  box-shadow: 0 24px 60px -12px rgba(27, 6, 26, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+}
+
+.service-regions-glow {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(55px);
+}
+
+.service-glow-left {
+  top: -80px;
+  left: -60px;
+  background: radial-gradient(circle, rgba(216, 27, 96, 0.35) 0%, transparent 70%);
+}
+
+.service-glow-right {
+  bottom: -80px;
+  right: -60px;
+  background: radial-gradient(circle, rgba(212, 139, 112, 0.32) 0%, transparent 70%);
+}
+
+.service-regions-kicker {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  padding: 5px 16px;
+  border-radius: 9999px;
+  background: rgba(216, 27, 96, 0.18);
+  border: 1px solid rgba(247, 209, 186, 0.3);
+  color: #F7D1BA;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.service-regions-heading {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-serif);
+  font-size: clamp(1.45rem, 2.8vw, 2.35rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #FFFFFF;
+  max-width: 920px;
+  margin: 0 auto 22px auto;
+  letter-spacing: -0.01em;
+}
+
+.service-region-highlight {
+  background: linear-gradient(120deg, #F7D1BA 0%, #E03E8A 55%, #FBBF24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
+}
+
+.service-regions-pills {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.service-region-pill {
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.service-region-dot {
+  color: #D81B60;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .service-regions-showcase {
+    padding: 12px 0 40px 0;
+  }
+  .service-regions-card {
+    padding: 28px 18px;
+    border-radius: 22px;
+  }
+  .service-region-dot {
+    display: none;
+  }
+}
+
 .clean-footer-bottom {
   display: flex;
   align-items: center;
@@ -9245,8 +9385,8 @@ html.lenis, html.lenis body {
 
 .shop-main-grid-wrapper {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 32px;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
   align-items: start;
 }
 
@@ -9727,18 +9867,18 @@ html.lenis, html.lenis body {
   transform: translateY(-2px);
 }
 
-/* 7. Product Cards Grid (3 Columns Matching Reference Image) */
+/* 7. Product Cards Grid (4 Columns Compact Layout) */
 .shop-cards-deck {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .shop-product-card {
   background: #FFFFFF;
   border: 1px solid #F1F5F9;
-  border-radius: 20px;
-  padding: 10px 10px 16px 10px;
+  border-radius: 16px;
+  padding: 8px 8px 12px 8px;
   display: flex;
   flex-direction: column;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -9856,27 +9996,27 @@ html.lenis, html.lenis body {
 
 /* Card Body */
 .shop-card-body {
-  padding: 14px 6px 2px 6px;
+  padding: 10px 4px 2px 4px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
 .shop-card-kicker {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 800;
   color: #D81B60;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .shop-card-title {
-  font-size: 1rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: #0F172A;
-  line-height: 1.35;
-  margin: 0 0 6px 0;
+  line-height: 1.3;
+  margin: 0 0 4px 0;
   cursor: pointer;
   transition: color 0.15s ease;
   display: -webkit-box;
@@ -9890,10 +10030,10 @@ html.lenis, html.lenis body {
 }
 
 .shop-card-spec-desc {
-  font-size: 0.8125rem;
+  font-size: 0.74rem;
   color: #64748B;
-  line-height: 1.45;
-  margin: 0 0 16px 0;
+  line-height: 1.4;
+  margin: 0 0 10px 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -9906,8 +10046,8 @@ html.lenis, html.lenis body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding-top: 12px;
+  gap: 8px;
+  padding-top: 8px;
   border-top: 1px solid #F1F5F9;
 }
 
@@ -9923,20 +10063,20 @@ html.lenis, html.lenis body {
 }
 
 .price-main-figure {
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #0F172A;
   letter-spacing: -0.01em;
 }
 
 .price-term-tag {
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #64748B;
 }
 
 .price-bond-sub {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   color: #94A3B8;
   font-weight: 600;
 }
@@ -9944,13 +10084,13 @@ html.lenis, html.lenis body {
 .shop-card-actions-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* Wink Reference Matched Action Buttons */
 .shop-card-heart-btn {
-  width: 36px;
-  height: 36px;
+  width: 31px;
+  height: 31px;
   border-radius: 50%;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
@@ -9977,8 +10117,8 @@ html.lenis, html.lenis body {
 }
 
 .shop-card-bag-btn {
-  width: 36px;
-  height: 36px;
+  width: 31px;
+  height: 31px;
   border-radius: 50%;
   background: #FFFFFF;
   border: 1px solid #0F172A;
@@ -10151,14 +10291,21 @@ html.lenis, html.lenis body {
 }
 
 /* 9. Responsive Adjustments */
-@media (max-width: 1024px) {
+@media (max-width: 1180px) {
   .shop-main-grid-wrapper {
-    grid-template-columns: 240px 1fr;
-    gap: 24px;
+    grid-template-columns: 210px 1fr;
+    gap: 20px;
   }
   .shop-cards-deck {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (max-width: 920px) {
+  .shop-cards-deck {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
   }
 }
 

@@ -652,7 +652,7 @@ export const BRISBANE_STORE_INFO = {
   country: 'Australia',
   phone: '0439 592 472',
   mobile: '0439 592 472',
-  email: 'bookings@iconpartyhire.com.au',
+  email: 'info@iconpartyhire.com.au',
   showroomHours: 'Mon – Sat: 8:00 am – 6:00 pm AEST | Sun: Event Pickups & Returns 9:00 am – 2:00 pm',
   deliveryRegions: 'Greater Brisbane, Moreton Bay, Logan, Ipswich, Gold Coast & Sunshine Coast',
   dispatchFleet: ['Icon Mercedes Sprinter Van 1 (Brisbane North & Central)', 'Icon Renault Master Van 2 (Gold Coast / South)', 'Icon Tail-Lift Truck 3 (Marquees & Furniture)'],

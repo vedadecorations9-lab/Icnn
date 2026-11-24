@@ -87,7 +87,7 @@ export default function BentoPromos({ onSelectCategory }) {
             </h2>
           </div>
           <p className="bento-header-sub">
-            From DIY commercial marquee hire to full luxury backdrop styling and organic balloon architecture.
+            From DIY commercial Gazebo hire to full luxury backdrop styling and organic balloon architecture.
           </p>
         </div>
 

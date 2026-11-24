@@ -69,8 +69,54 @@ function AppContent({
   const {
     bookings,
     handleUpdateBookingStatus,
-    handleAddBooking
+    handleAddBooking,
+    handleDeleteBooking
   } = bookingsStore;
+
+  const [rejectedOrderAlert, setRejectedOrderAlert] = useState(null);
+
+  // Real-time detection when an order placed by this user is deleted/rejected by the Owner
+  useEffect(() => {
+    try {
+      const myOrderIds = JSON.parse(localStorage.getItem('icon_my_order_ids') || '[]');
+      const dismissedIds = JSON.parse(localStorage.getItem('icon_dismissed_rejected_orders') || '[]');
+      const localNotices = JSON.parse(localStorage.getItem('icon_rejected_order_notices') || '[]');
+      const userEmail = authUser?.primaryEmailAddress?.emailAddress?.toLowerCase() || '';
+
+      // Find any booking belonging to this user that has status === 'Rejected'
+      const rejectedFromBookings = (bookings || []).find((b) => {
+        if ((b.status || '').toLowerCase() !== 'rejected') return false;
+        if (dismissedIds.includes(b.id)) return false;
+        const isMyId = myOrderIds.includes(b.id);
+        const isMyEmail = userEmail && b.email && b.email.toLowerCase() === userEmail;
+        return isMyId || isMyEmail;
+      });
+
+      const rejectedFromLocalNotice = localNotices.find((n) => {
+        if (dismissedIds.includes(n.id)) return false;
+        const isMyId = myOrderIds.includes(n.id);
+        const isMyEmail = userEmail && n.email && n.email.toLowerCase() === userEmail;
+        return isMyId || isMyEmail;
+      });
+
+      const found = rejectedFromBookings || rejectedFromLocalNotice;
+      if (found && (!rejectedOrderAlert || rejectedOrderAlert.id !== found.id)) {
+        setRejectedOrderAlert(found);
+        addToast?.(`Notice: Your order #${found.id} was rejected by the Owner.`, 'warning');
+      }
+    } catch {}
+  }, [bookings, authUser]);
+
+  const handleDismissRejectedOrder = (orderId) => {
+    try {
+      const dismissedIds = JSON.parse(localStorage.getItem('icon_dismissed_rejected_orders') || '[]');
+      if (!dismissedIds.includes(orderId)) {
+        dismissedIds.push(orderId);
+        localStorage.setItem('icon_dismissed_rejected_orders', JSON.stringify(dismissedIds));
+      }
+    } catch {}
+    setRejectedOrderAlert(null);
+  };
 
   // Navigation View: 'home', 'catalog', 'sign-in', 'sign-up'
   const [currentView, setCurrentView] = useState(() => {
@@ -241,14 +287,23 @@ function AppContent({
   };
 
   const handleCompleteOrder = (orderData) => {
-    const totalAUD = cart.reduce((sum, item) => sum + (Number(item.product?.priceAUD) || 0) * (item.quantity || 1), 0);
-    const itemNames = cart.map(item => `${item.product?.name || 'Equipment'} (x${item.quantity || 1})`);
+    const totalAUD = cart.reduce((sum, item) => {
+      const prod = item.product || products.find(p => p.id === item.productId);
+      const qty = item.quantity || item.qty || 1;
+      return sum + (Number(prod?.priceAUD) || 0) * qty;
+    }, 0);
+    const itemNames = cart.map(item => {
+      const prod = item.product || products.find(p => p.id === item.productId);
+      const qty = item.quantity || item.qty || 1;
+      return `${prod?.name || 'Equipment'} (x${qty})`;
+    });
+    const userEmail = authUser?.primaryEmailAddress?.emailAddress || orderData?.email || 'customer@eventhire.com.au';
 
     const newBooking = {
       id: orderData?.id || `IPH-AU-${Math.floor(10000 + Math.random() * 90000)}`,
       customerName: orderData?.customerName || 'Customer Reservation',
       phone: orderData?.phone || '+61 400 000 000',
-      email: orderData?.email || 'customer@eventhire.com.au',
+      email: userEmail,
       city: orderData?.city || 'Brisbane QLD',
       eventDate: orderData?.eventDate || 'Upcoming Weekend',
       eventType: orderData?.eventType || 'Party & Event Celebration',
@@ -260,6 +315,14 @@ function AppContent({
       date: 'Just now',
       paymentStatus: 'Paid ($100 Bond Held)'
     };
+
+    try {
+      const myOrderIds = JSON.parse(localStorage.getItem('icon_my_order_ids') || '[]');
+      if (!myOrderIds.includes(newBooking.id)) {
+        myOrderIds.push(newBooking.id);
+        localStorage.setItem('icon_my_order_ids', JSON.stringify(myOrderIds));
+      }
+    } catch {}
 
     handleAddBooking(newBooking);
     setCart([]);
@@ -408,6 +471,7 @@ function AppContent({
             bookings={bookings}
             onUpdateBookingStatus={handleUpdateBookingStatus}
             onAddBooking={handleAddBooking}
+            onDeleteBooking={handleDeleteBooking}
             isRealtime={isRealtime}
             onAddProduct={handleAdd}
             onUpdateProduct={handleUpdate}
@@ -489,6 +553,29 @@ function AppContent({
             <HowItWorks
               onExploreCatalog={() => handleNavigateCatalog('all')}
             />
+
+            {/* Luxury Service Regions Showcase Banner */}
+            <section className="service-regions-showcase" aria-label="South East Queensland Service Areas">
+              <div className="container">
+                <div className="service-regions-card">
+                  <div className="service-regions-glow service-glow-left" aria-hidden="true" />
+                  <div className="service-regions-glow service-glow-right" aria-hidden="true" />
+                  <span className="service-regions-kicker">South East Queensland Event Dispatch</span>
+                  <h2 className="service-regions-heading">
+                    We Service <span className="service-region-highlight">Brisbane</span> – <span className="service-region-highlight">Sunshine Coast</span> – <span className="service-region-highlight">Gold Coast</span> &amp; Surroundings
+                  </h2>
+                  <div className="service-regions-pills">
+                    <span className="service-region-pill">Brisbane Metro</span>
+                    <span className="service-region-dot">✦</span>
+                    <span className="service-region-pill">Sunshine Coast</span>
+                    <span className="service-region-dot">✦</span>
+                    <span className="service-region-pill">Gold Coast</span>
+                    <span className="service-region-dot">✦</span>
+                    <span className="service-region-pill">&amp; Surroundings</span>
+                  </div>
+                </div>
+              </div>
+            </section>
           </>
         ) : (
           /* =================================================================
@@ -601,7 +688,110 @@ function AppContent({
         isOpen={isTrackOrderOpen}
         onClose={() => setIsTrackOrderOpen(false)}
         onToast={addToast}
+        bookings={bookings}
       />
+
+      {/* User Order Rejected by Owner Notification Modal */}
+      {rejectedOrderAlert && (
+        <>
+          <div
+            className="modal-backdrop active"
+            onClick={() => handleDismissRejectedOrder(rejectedOrderAlert.id)}
+          />
+          <div className="center-modal active" role="dialog" aria-modal="true" aria-label="Order Rejected Notification">
+            <button
+              type="button"
+              className="modal-close-corner-btn"
+              onClick={() => handleDismissRejectedOrder(rejectedOrderAlert.id)}
+              aria-label="Close notification"
+            >
+              ✕
+            </button>
+            <div style={{ padding: '36px 28px', textAlign: 'center' }}>
+              <div
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: '50%',
+                  background: '#FEF2F2',
+                  border: '2px solid #FECACA',
+                  color: '#DC2626',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 18px auto',
+                  fontSize: '1.75rem',
+                  fontWeight: 800
+                }}
+              >
+                !
+              </div>
+              <span
+                style={{
+                  display: 'inline-block',
+                  padding: '4px 12px',
+                  borderRadius: '9999px',
+                  background: '#FEF2F2',
+                  color: '#DC2626',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  marginBottom: '10px'
+                }}
+              >
+                Booking Status Update
+              </span>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '1.65rem',
+                  fontWeight: 700,
+                  color: '#1B061A',
+                  margin: '0 0 10px 0'
+                }}
+              >
+                Your Order Was Rejected by the Owner
+              </h3>
+              <p
+                style={{
+                  fontSize: '0.92rem',
+                  lineHeight: 1.6,
+                  color: '#475569',
+                  maxWidth: 440,
+                  margin: '0 auto 18px auto'
+                }}
+              >
+                Your event hire order <strong>#{rejectedOrderAlert.id}</strong>
+                {rejectedOrderAlert.eventDate ? ` scheduled for ${rejectedOrderAlert.eventDate}` : ''} has been rejected and removed by the Owner.
+              </p>
+              {Array.isArray(rejectedOrderAlert.items) && rejectedOrderAlert.items.length > 0 && (
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '12px',
+                    padding: '12px 16px',
+                    fontSize: '0.82rem',
+                    color: '#334155',
+                    marginBottom: '22px'
+                  }}
+                >
+                  <strong>Items:</strong> {rejectedOrderAlert.items.join(', ')}
+                </div>
+              )}
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ minWidth: 220, justifyContent: 'center' }}
+                onClick={() => handleDismissRejectedOrder(rejectedOrderAlert.id)}
+              >
+                Acknowledge &amp; Close
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       <ReviewModal
         isOpen={isReviewOpen}

@@ -28,7 +28,8 @@ export const add = mutation({
     paymentStatus: v.optional(v.string())
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert('bookings', args);
+    const { _id, _creationTime, ...cleanArgs } = args;
+    return await ctx.db.insert('bookings', cleanArgs);
   }
 });
 
@@ -36,10 +37,16 @@ export const add = mutation({
 export const updateStatus = mutation({
   args: { id: v.string(), status: v.string() },
   handler: async (ctx, args) => {
-    const existing = await ctx.db
+    let existing = await ctx.db
       .query('bookings')
       .filter((q) => q.eq(q.field('id'), args.id))
       .first();
+
+    if (!existing) {
+      try {
+        existing = await ctx.db.get(args.id);
+      } catch {}
+    }
 
     if (existing) {
       await ctx.db.patch(existing._id, { status: args.status });
@@ -47,18 +54,41 @@ export const updateStatus = mutation({
   }
 });
 
-// 4. Seed initial bookings
+// 4. Reject & remove booking (marks status as Rejected so customer is notified in real-time while hiding from admin)
+export const remove = mutation({
+  args: { id: v.string() },
+  handler: async (ctx, args) => {
+    let existing = await ctx.db
+      .query('bookings')
+      .filter((q) => q.eq(q.field('id'), args.id))
+      .first();
+
+    if (!existing) {
+      try {
+        existing = await ctx.db.get(args.id);
+      } catch {}
+    }
+
+    if (existing) {
+      await ctx.db.patch(existing._id, { status: 'Rejected' });
+      return { success: true, id: existing.id };
+    }
+    return { success: false };
+  }
+});
+
+// 5. Seed initial bookings
 export const seedInitial = mutation({
   args: { initialBookings: v.any() },
   handler: async (ctx, args) => {
     const count = (await ctx.db.query('bookings').collect()).length;
     if (count === 0 && Array.isArray(args.initialBookings)) {
       for (const b of args.initialBookings) {
-        await ctx.db.insert('bookings', b);
+        const { _id, _creationTime, ...cleanBooking } = b;
+        await ctx.db.insert('bookings', cleanBooking);
       }
       return { seeded: args.initialBookings.length };
     }
     return { seeded: 0, existing: count };
   }
 });
-

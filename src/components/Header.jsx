@@ -179,41 +179,50 @@ export default function Header({
             />
           </div>
 
-          {/* CENTER ZONE: Essential 3 Subpages (Uncongested, Breathing) */}
+          {/* CENTER ZONE: Essential 3 Pillars (Hiring, Decorations, Balloons) */}
           <nav className="nav-zone-center hide-mobile" aria-label="Main Navigation">
             <ul className="nav-menu-list">
               
-              {/* 1. Dedicated Hire Shop Link */}
+              {/* 1. Hiring Link */}
               <li className="nav-menu-item">
                 <button
                   type="button"
-                  className={`nav-link-btn ${currentView === 'catalog' ? 'active' : ''}`}
+                  className={`nav-link-btn ${currentView === 'catalog' && activeCategory === 'all' ? 'active' : ''}`}
                   onClick={() => {
                     onSelectCategory?.('all');
                     onNavigateCatalog?.('all');
                   }}
                 >
-                  <span>Hire shop</span>
+                  <span>Hiring</span>
                 </button>
               </li>
 
-              {/* 2. How It Works Link */}
+              {/* 2. Decorations Link */}
               <li className="nav-menu-item">
-                <a
-                  href="#how-it-works"
-                  className="nav-link-btn"
-                  onClick={(e) => {
-                    if (window.location.hash !== '#how-it-works') {
-                      onNavigateHome?.();
-                    }
-                    setTimeout(() => {
-                      const el = document.getElementById('how-it-works');
-                      if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    }, 50);
+                <button
+                  type="button"
+                  className={`nav-link-btn ${currentView === 'catalog' && activeCategory === 'backdrops' ? 'active' : ''}`}
+                  onClick={() => {
+                    onSelectCategory?.('backdrops');
+                    onNavigateCatalog?.('backdrops');
                   }}
                 >
-                  <span>How it works</span>
-                </a>
+                  <span>Decorations</span>
+                </button>
+              </li>
+
+              {/* 3. Balloons Link */}
+              <li className="nav-menu-item">
+                <button
+                  type="button"
+                  className={`nav-link-btn ${currentView === 'catalog' && activeCategory === 'balloons' ? 'active' : ''}`}
+                  onClick={() => {
+                    onSelectCategory?.('balloons');
+                    onNavigateCatalog?.('balloons');
+                  }}
+                >
+                  <span>Balloons</span>
+                </button>
               </li>
             </ul>
           </nav>
