@@ -219,23 +219,8 @@ function AppContent({
     return `${curr.symbol}${converted.toLocaleString()}`;
   };
 
-  // Cart Operations — Protected by User Authentication
+  // Cart Operations — Open to all visitors; sign-in required only when proceeding to checkout
   const handleAddToCart = (productId, qty = 1) => {
-    // A user cannot buy or add items to cart before creating an account or signing in
-    if (PUBLISHABLE_KEY && !isSignedIn) {
-      addToast('Please sign in or create an account to hire equipment', 'warning');
-      if (typeof openSignIn === 'function') {
-        try {
-          openSignIn();
-        } catch {
-          handleNavigateAuth('sign-in');
-        }
-      } else {
-        handleNavigateAuth('sign-in');
-      }
-      return;
-    }
-
     setCart(prev => {
       const existing = prev.find(item => item.productId === productId);
       if (existing) {
@@ -245,8 +230,8 @@ function AppContent({
       }
       return [...prev, { productId, qty }];
     });
-    const prod = products.find(p => p.id === productId);
-    addToast(`Added "${prod?.name || 'Equipment'}" to your hire bag`, 'success');
+    const prod = products.find(p => p.id === productId || p._id === productId);
+    addToast(`Added "${prod?.name || 'Equipment'}" to your Cart`, 'success');
   };
 
   const handleProceedToCheckout = () => {
@@ -283,7 +268,7 @@ function AppContent({
 
   const handleRemoveFromCart = (productId) => {
     setCart(prev => prev.filter(item => item.productId !== productId));
-    addToast('Item removed from hire bag', 'info');
+    addToast('Item removed from Cart', 'info');
   };
 
   const handleCompleteOrder = (orderData) => {
@@ -433,8 +418,11 @@ function AppContent({
     window.scrollTo(0, 0);
   };
 
-  const quickViewProduct = quickViewId ? products.find(p => p.id === quickViewId) : null;
-  const totalCartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  const quickViewProduct = quickViewId ? products.find(p => p.id === quickViewId || p._id === quickViewId) : null;
+  const totalCartCount = cart.reduce((sum, item) => {
+    const exists = products.some(p => p.id === item.productId || p._id === item.productId);
+    return exists ? sum + (Number(item.qty) || 1) : sum;
+  }, 0);
 
   // Pause Lenis smooth scroll while Admin Operations Portal is open to ensure 100% native mouse wheel scrolling
   useEffect(() => {
@@ -549,29 +537,80 @@ function AppContent({
               onSelectCategory={(catId) => handleNavigateCatalog(catId)}
             />
 
-            {/* How It Works: 3-Step Simple Process */}
-            <HowItWorks
-              onExploreCatalog={() => handleNavigateCatalog('all')}
-            />
-
-            {/* Luxury Service Regions Showcase Banner */}
-            <section className="service-regions-showcase" aria-label="South East Queensland Service Areas">
+            {/* South East Queensland Event Dispatch (Replaces How It Works) */}
+            <section id="how-it-works" className="seq-dispatch-section" aria-label="South East Queensland Event Dispatch">
               <div className="container">
-                <div className="service-regions-card">
-                  <div className="service-regions-glow service-glow-left" aria-hidden="true" />
-                  <div className="service-regions-glow service-glow-right" aria-hidden="true" />
-                  <span className="service-regions-kicker">South East Queensland Event Dispatch</span>
-                  <h2 className="service-regions-heading">
-                    We Service <span className="service-region-highlight">Brisbane</span> – <span className="service-region-highlight">Sunshine Coast</span> – <span className="service-region-highlight">Gold Coast</span> &amp; Surroundings
-                  </h2>
-                  <div className="service-regions-pills">
-                    <span className="service-region-pill">Brisbane Metro</span>
-                    <span className="service-region-dot">✦</span>
-                    <span className="service-region-pill">Sunshine Coast</span>
-                    <span className="service-region-dot">✦</span>
-                    <span className="service-region-pill">Gold Coast</span>
-                    <span className="service-region-dot">✦</span>
-                    <span className="service-region-pill">&amp; Surroundings</span>
+                <div className="seq-dispatch-shell">
+                  <div className="seq-dispatch-core">
+                    <div className="seq-dispatch-header">
+                      <span className="seq-dispatch-eyebrow">South East Queensland Event Dispatch</span>
+                      <h2 className="seq-dispatch-title">
+                        We Service Brisbane – Sunshine Coast – Gold Coast &amp; Surroundings
+                      </h2>
+                      <p className="seq-dispatch-lead">
+                        Direct dispatch from our Murrumba Downs warehouse hub with flexible 1–4 day weekend hire, professional venue delivery, and on-site setup across South East Queensland.
+                      </p>
+                    </div>
+
+                    <div className="seq-dispatch-grid">
+                      <div className="seq-region-card">
+                        <div className="seq-region-top">
+                          <span className="seq-region-index">01</span>
+                          <span className="seq-region-tag">Primary Hub</span>
+                        </div>
+                        <h3 className="seq-region-name">Brisbane Metro</h3>
+                        <p className="seq-region-desc">
+                          Northside, Southside, Brisbane CBD, New Farm &amp; Bayside venues with same-day and weekend delivery or free warehouse pickup.
+                        </p>
+                      </div>
+
+                      <div className="seq-region-card">
+                        <div className="seq-region-top">
+                          <span className="seq-region-index">02</span>
+                          <span className="seq-region-tag">Coastal Runs</span>
+                        </div>
+                        <h3 className="seq-region-name">Sunshine Coast</h3>
+                        <p className="seq-region-desc">
+                          Caloundra, Maroochydore, Mooloolaba, Noosa &amp; Sunshine Coast Hinterland estates for weekend weddings and private celebrations.
+                        </p>
+                      </div>
+
+                      <div className="seq-region-card">
+                        <div className="seq-region-top">
+                          <span className="seq-region-index">03</span>
+                          <span className="seq-region-tag">South Corridor</span>
+                        </div>
+                        <h3 className="seq-region-name">Gold Coast</h3>
+                        <p className="seq-region-desc">
+                          Sanctuary Cove, Surfers Paradise, Broadbeach, Burleigh Heads &amp; Gold Coast Hinterland event spaces and private residences.
+                        </p>
+                      </div>
+
+                      <div className="seq-region-card">
+                        <div className="seq-region-top">
+                          <span className="seq-region-index">04</span>
+                          <span className="seq-region-tag">Regional SEQ</span>
+                        </div>
+                        <h3 className="seq-region-name">&amp; Surroundings</h3>
+                        <p className="seq-region-desc">
+                          Moreton Bay, Redcliffe, Logan, Ipswich, Redlands &amp; Scenic Rim properties with full commercial gazebo and backdrop setup.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="seq-dispatch-footer">
+                      <span className="seq-dispatch-hub-note">
+                        Warehouse Dispatch Base: Murrumba Downs, Brisbane QLD 4503
+                      </span>
+                      <button
+                        type="button"
+                        className="seq-dispatch-cta"
+                        onClick={() => handleNavigateCatalog('all')}
+                      >
+                        <span>Explore Hire Catalog</span>
+                        <span className="seq-dispatch-cta-icon" aria-hidden="true">→</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -618,6 +657,7 @@ function AppContent({
         onUpdateQty={handleUpdateCartQty}
         onRemoveItem={handleRemoveFromCart}
         onCheckout={handleProceedToCheckout}
+        onExploreCatalog={() => handleNavigateCatalog('all')}
         formatPrice={formatPrice}
         isSignedIn={isSignedIn}
         onToast={addToast}

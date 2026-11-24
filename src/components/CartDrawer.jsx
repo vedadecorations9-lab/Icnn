@@ -12,12 +12,13 @@ import {
 export default function CartDrawer({
   isOpen,
   onClose,
-  cart,
-  products,
+  cart = [],
+  products = [],
   onUpdateQty,
   onRemoveItem,
   onCheckout,
-  formatPrice,
+  onExploreCatalog,
+  formatPrice = (v) => `$${v}`,
   isSignedIn = true
 }) {
   if (!isOpen) return null;
@@ -26,17 +27,24 @@ export default function CartDrawer({
   let rawSubtotalAUD = 0;
   let totalBondAUD = 0;
 
-  const cartItemsWithDetails = cart.map(item => {
-    const prod = products.find(p => p.id === item.productId);
-    if (!prod) return null;
-    const price = prod.priceAUD || prod.priceINR || 0;
-    const itemTotal = price * item.qty;
-    rawSubtotalAUD += itemTotal;
-    totalBondAUD += (prod.bondAUD || 30) * item.qty;
-    return { ...prod, qty: item.qty, calculatedPrice: price };
-  }).filter(Boolean);
+  const cartItemsWithDetails = (Array.isArray(cart) ? cart : [])
+    .map((item) => {
+      const prod = (Array.isArray(products) ? products : []).find(
+        (p) => p.id === item.productId || p._id === item.productId
+      );
+      if (!prod) return null;
+      const price = Number(prod.priceAUD || prod.priceINR || 0);
+      const qty = Number(item.qty || item.quantity || 1);
+      const itemTotal = price * qty;
+      rawSubtotalAUD += itemTotal;
+      totalBondAUD += Number(prod.bondAUD || 30) * qty;
+      return { ...prod, cartItemId: item.productId, qty, calculatedPrice: price };
+    })
+    .filter(Boolean);
 
-  const deliveryAUD = cart.length > 0 ? 35 : 0;
+  const thresholdAUD = 250;
+  const isFreeDelivery = rawSubtotalAUD >= thresholdAUD;
+  const deliveryAUD = cartItemsWithDetails.length > 0 ? (isFreeDelivery ? 0 : 35) : 0;
   const grandTotalAUD = Math.max(0, rawSubtotalAUD + deliveryAUD);
 
   return (
@@ -45,34 +53,34 @@ export default function CartDrawer({
       <div className="modal-backdrop active cart-drawer-backdrop" onClick={onClose} />
 
       {/* Slide Drawer from Right (sits safely above the floating navbar at z-index 2600) */}
-      <aside className="slide-drawer active cart-drawer-shell" aria-label="Event Hire Bag">
+      <aside className="slide-drawer active cart-drawer-shell" aria-label="Shopping Cart">
         
         {/* Minimal Luxury Drawer Header */}
         <div className="cart-minimal-header">
           <div className="cart-minimal-title-group">
-            <h3 className="cart-minimal-title">Hire Bag</h3>
+            <h3 className="cart-minimal-title">Cart</h3>
             <span className="cart-minimal-count-pill">{cartItemsWithDetails.length}</span>
           </div>
           <button
             type="button"
             className="cart-minimal-close-btn"
             onClick={onClose}
-            aria-label="Close Hire Bag"
+            aria-label="Close Cart"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* Minimal Delivery Banner (Compact 1-line whisper) */}
+        {/* Minimal Delivery Banner */}
         {cartItemsWithDetails.length > 0 && (
           <div className="cart-minimal-delivery-bar">
             {isFreeDelivery ? (
               <span className="cart-delivery-unlocked-text">
-                ✨ Free Greater Brisbane delivery unlocked
+                Free Greater Brisbane delivery unlocked
               </span>
             ) : (
               <span className="cart-delivery-tier-text">
-                Add <strong>{formatPrice(thresholdAUD - rawSubtotalAUD)}</strong> for free Brisbane delivery ($250+)
+                Add <strong>{formatPrice(Math.max(0, thresholdAUD - rawSubtotalAUD))}</strong> for free Brisbane delivery ($250+)
               </span>
             )}
           </div>
@@ -82,8 +90,8 @@ export default function CartDrawer({
         <div className="cart-items-scrollable-body">
           {cartItemsWithDetails.length > 0 ? (
             <div className="cart-items-minimal-deck">
-              {cartItemsWithDetails.map(item => (
-                <div key={item.id} className="cart-item-minimal-card">
+              {cartItemsWithDetails.map((item) => (
+                <div key={item.cartItemId || item.id} className="cart-item-minimal-card">
                   {/* Media Thumbnail */}
                   <div className="cart-item-minimal-thumb">
                     <img
@@ -102,7 +110,7 @@ export default function CartDrawer({
                       <button
                         type="button"
                         className="cart-item-minimal-del"
-                        onClick={() => onRemoveItem(item.id)}
+                        onClick={() => onRemoveItem?.(item.cartItemId || item.id)}
                         aria-label={`Remove ${item.name}`}
                         title="Remove item"
                       >
@@ -120,7 +128,7 @@ export default function CartDrawer({
                         <button
                           type="button"
                           className="cart-stepper-btn minus"
-                          onClick={() => onUpdateQty(item.id, -1)}
+                          onClick={() => onUpdateQty?.(item.cartItemId || item.id, -1)}
                           aria-label="Decrease quantity"
                         >
                           <Minus size={11} />
@@ -129,7 +137,7 @@ export default function CartDrawer({
                         <button
                           type="button"
                           className="cart-stepper-btn plus"
-                          onClick={() => onUpdateQty(item.id, 1)}
+                          onClick={() => onUpdateQty?.(item.cartItemId || item.id, 1)}
                           aria-label="Increase quantity"
                         >
                           <Plus size={11} />
@@ -150,14 +158,17 @@ export default function CartDrawer({
               <div className="cart-empty-icon-wrap">
                 <ShoppingBag size={32} />
               </div>
-              <h4>Your Hire Bag is Empty</h4>
-              <p>Explore commercial marquees, flower walls, cocktail bar tables, plinths, and party effects.</p>
+              <h4>Your Cart is Empty</h4>
+              <p>Explore commercial gazebos, flower walls, cocktail bar tables, plinths, and party effects.</p>
               <button
                 type="button"
                 className="cart-empty-explore-btn"
-                onClick={onClose}
+                onClick={() => {
+                  onClose?.();
+                  onExploreCatalog?.();
+                }}
               >
-                <span>Browse Hire Equipment</span>
+                <span>Browse Equipment</span>
                 <ArrowRight size={15} />
               </button>
             </div>
@@ -173,14 +184,12 @@ export default function CartDrawer({
                 <span className="cart-summary-num">{formatPrice(rawSubtotalAUD)}</span>
               </div>
               <div className="cart-summary-line">
-                <span>Brisbane Delivery & Setup</span>
+                <span>Brisbane Delivery &amp; Setup</span>
                 <span className={`cart-summary-num ${isFreeDelivery ? 'free' : ''}`}>
                   {isFreeDelivery ? 'FREE' : formatPrice(deliveryAUD)}
                 </span>
-                <span className="cart-summary-num">{formatPrice(deliveryAUD)}</span>
               </div>
               <div className="cart-summary-line subtle">
-                <span>Refundable Bond (Held on Card)</span>
                 <span>Refundable Security Bond</span>
                 <span className="cart-summary-num">${totalBondAUD} AUD</span>
               </div>

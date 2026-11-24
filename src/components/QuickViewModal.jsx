@@ -60,7 +60,7 @@ export default function QuickViewModal({
                   onClose();
                 }}
               >
-                Add to hire bag · {formatPrice(priceVal)}
+                Add to Cart · {formatPrice(priceVal)}
               </button>
               <button
                 className="btn-secondary"

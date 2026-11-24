@@ -253,7 +253,7 @@ export default function CategoriesDrawer({
                 </div>
               </button>
 
-              {/* Hire Bag */}
+              {/* Cart */}
               <button
                 type="button"
                 className="mobile-pure-nav-item"
@@ -267,8 +267,8 @@ export default function CategoriesDrawer({
                     <ShoppingBag size={20} />
                   </div>
                   <div className="mobile-nav-item-text">
-                    <span className="mobile-nav-title">Hire Bag</span>
-                    <span className="mobile-nav-desc">Review selected gear & checkout</span>
+                    <span className="mobile-nav-title">Cart</span>
+                    <span className="mobile-nav-desc">Review selected gear &amp; checkout</span>
                   </div>
                 </div>
                 <div className="mobile-nav-item-right">

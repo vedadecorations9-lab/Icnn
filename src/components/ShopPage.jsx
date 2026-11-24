@@ -690,8 +690,8 @@ export default function ShopPage({
                                   e.stopPropagation();
                                   handleAddWithFeedback(product.id);
                                 }}
-                                aria-label={`Add ${product.name} to hire bag`}
-                                title="Add to hire bag"
+                                aria-label={`Add ${product.name} to Cart`}
+                                title="Add to Cart"
                               >
                                 {isJustAdded ? (
                                   <Check size={14} strokeWidth={2.5} />

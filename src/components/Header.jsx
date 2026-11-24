@@ -299,12 +299,12 @@ export default function Header({
               <AuthControls onNavigateAuth={onNavigateAuth} />
             </div>
 
-            {/* Shopping Bag / Cart */}
+            {/* Shopping Cart */}
             <button
               type="button"
               className="nav-cart-btn"
               onClick={onOpenCart}
-              title="View hire bag"
+              title="View Cart"
               aria-label={`Cart with ${cartCount} items`}
             >
               <div className="cart-icon-wrapper">
@@ -315,7 +315,7 @@ export default function Header({
                 </svg>
                 <span className="cart-badge-number">{cartCount}</span>
               </div>
-              <span className="cart-btn-label hide-mobile">Hire bag</span>
+              <span className="cart-btn-label hide-mobile">Cart</span>
             </button>
 
           </div>
