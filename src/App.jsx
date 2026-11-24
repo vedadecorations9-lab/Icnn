@@ -537,81 +537,13 @@ function AppContent({
               onSelectCategory={(catId) => handleNavigateCatalog(catId)}
             />
 
-            {/* South East Queensland Event Dispatch (Replaces How It Works) */}
-            <section id="how-it-works" className="seq-dispatch-section" aria-label="South East Queensland Event Dispatch">
+            {/* Service Regions Banner (Replaces How It Works) */}
+            <section id="how-it-works" className="seq-dispatch-section" aria-label="Service Regions">
               <div className="container">
-                <div className="seq-dispatch-shell">
-                  <div className="seq-dispatch-core">
-                    <div className="seq-dispatch-header">
-                      <span className="seq-dispatch-eyebrow">South East Queensland Event Dispatch</span>
-                      <h2 className="seq-dispatch-title">
-                        We Service Brisbane – Sunshine Coast – Gold Coast &amp; Surroundings
-                      </h2>
-                      <p className="seq-dispatch-lead">
-                        Direct dispatch from our Murrumba Downs warehouse hub with flexible 1–4 day weekend hire, professional venue delivery, and on-site setup across South East Queensland.
-                      </p>
-                    </div>
-
-                    <div className="seq-dispatch-grid">
-                      <div className="seq-region-card">
-                        <div className="seq-region-top">
-                          <span className="seq-region-index">01</span>
-                          <span className="seq-region-tag">Primary Hub</span>
-                        </div>
-                        <h3 className="seq-region-name">Brisbane Metro</h3>
-                        <p className="seq-region-desc">
-                          Northside, Southside, Brisbane CBD, New Farm &amp; Bayside venues with same-day and weekend delivery or free warehouse pickup.
-                        </p>
-                      </div>
-
-                      <div className="seq-region-card">
-                        <div className="seq-region-top">
-                          <span className="seq-region-index">02</span>
-                          <span className="seq-region-tag">Coastal Runs</span>
-                        </div>
-                        <h3 className="seq-region-name">Sunshine Coast</h3>
-                        <p className="seq-region-desc">
-                          Caloundra, Maroochydore, Mooloolaba, Noosa &amp; Sunshine Coast Hinterland estates for weekend weddings and private celebrations.
-                        </p>
-                      </div>
-
-                      <div className="seq-region-card">
-                        <div className="seq-region-top">
-                          <span className="seq-region-index">03</span>
-                          <span className="seq-region-tag">South Corridor</span>
-                        </div>
-                        <h3 className="seq-region-name">Gold Coast</h3>
-                        <p className="seq-region-desc">
-                          Sanctuary Cove, Surfers Paradise, Broadbeach, Burleigh Heads &amp; Gold Coast Hinterland event spaces and private residences.
-                        </p>
-                      </div>
-
-                      <div className="seq-region-card">
-                        <div className="seq-region-top">
-                          <span className="seq-region-index">04</span>
-                          <span className="seq-region-tag">Regional SEQ</span>
-                        </div>
-                        <h3 className="seq-region-name">&amp; Surroundings</h3>
-                        <p className="seq-region-desc">
-                          Moreton Bay, Redcliffe, Logan, Ipswich, Redlands &amp; Scenic Rim properties with full commercial gazebo and backdrop setup.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="seq-dispatch-footer">
-                      <span className="seq-dispatch-hub-note">
-                        Warehouse Dispatch Base: Murrumba Downs, Brisbane QLD 4503
-                      </span>
-                      <button
-                        type="button"
-                        className="seq-dispatch-cta"
-                        onClick={() => handleNavigateCatalog('all')}
-                      >
-                        <span>Explore Hire Catalog</span>
-                        <span className="seq-dispatch-cta-icon" aria-hidden="true">→</span>
-                      </button>
-                    </div>
-                  </div>
+                <div className="seq-dispatch-banner">
+                  <h2 className="seq-dispatch-title">
+                    We Service Brisbane – Sunshine Coast – Gold Coast &amp; Surroundings
+                  </h2>
                 </div>
               </div>
             </section>
