@@ -82,9 +82,8 @@ export default function BentoPromos({ onSelectCategory }) {
         {/* Section Header */}
         <div className="bento-section-header">
           <div className="bento-header-copy">
-            <span className="bento-eyebrow">The Icon Experience</span>
             <h2 className="bento-main-title">
-              Three Pillars of <span className="hero-fancy-text">Celebration</span>
+              Your Party <span className="hero-fancy-text">Starts Here</span>
             </h2>
           </div>
           <p className="bento-header-sub">
