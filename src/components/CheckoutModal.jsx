@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
-import { Truck, MapPin, Check, Sparkles, Calendar, Clock } from 'lucide-react';
+import { Truck, MapPin, Check, Sparkles } from 'lucide-react';
+
+const TIME_SLOTS = [
+  '07:00 AM',
+  '08:00 AM',
+  '09:00 AM',
+  '10:00 AM',
+  '11:00 AM',
+  '12:00 PM',
+  '01:00 PM',
+  '02:00 PM',
+  '03:00 PM',
+  '04:00 PM',
+  '05:00 PM',
+  '06:00 PM',
+  '07:00 PM'
+];
 
 export default function CheckoutModal({
   isOpen,
@@ -12,13 +28,19 @@ export default function CheckoutModal({
   const [step, setStep] = useState(1);
   const [fulfillmentType, setFulfillmentType] = useState('delivery'); // 'delivery' | 'pickup'
   const [orderId, setOrderId] = useState('');
-  const [eventDate, setEventDate] = useState('This Saturday, 12:00 PM');
-  const [fullName, setFullName] = useState(user?.fullName || user?.firstName || 'Olivia Henderson');
-  const [phone, setPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || '+61 412 345 678');
+  const [hireDate, setHireDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    return d.toISOString().split('T')[0];
+  });
+  const [pickupTime, setPickupTime] = useState('09:00 AM');
+  const [dropoffTime, setDropoffTime] = useState('05:00 PM');
+  const [fullName, setFullName] = useState(user?.fullName || user?.firstName || '');
+  const [phone, setPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || '');
   const [eventType, setEventType] = useState('Birthday Celebration (21st / 30th / 50th)');
-  const [address, setAddress] = useState('Unit 14, 88 Macquarie Street');
-  const [suburb, setSuburb] = useState('New Farm, Brisbane');
-  const [postcode, setPostcode] = useState('QLD 4005');
+  const [address, setAddress] = useState('');
+  const [suburb, setSuburb] = useState('');
+  const [postcode, setPostcode] = useState('');
 
   if (!isOpen) return null;
 
@@ -75,6 +97,8 @@ export default function CheckoutModal({
     );
   }
 
+  const formattedEventSchedule = `${hireDate} · Pickup: ${pickupTime} | Drop-off: ${dropoffTime}`;
+
   const handleFinish = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     const generated = `IPH-AU-${Math.floor(10000 + Math.random() * 90000)}`;
@@ -83,10 +107,12 @@ export default function CheckoutModal({
       id: generated,
       customerName: fullName || 'Customer Reservation',
       phone: phone || '+61 400 000 000',
-      city: `${suburb || 'Brisbane'}, ${postcode || 'QLD'}`,
-      eventDate: eventDate || 'Upcoming Weekend',
+      city: fulfillmentType === 'delivery'
+        ? `${suburb || 'Brisbane'}, ${postcode || 'QLD'}`
+        : 'Murrumba Downs Pickup (4503)',
+      eventDate: formattedEventSchedule,
       eventType: eventType || 'Party & Event Celebration',
-      carrier: fulfillmentType === 'delivery' ? 'Icon Van 1 (Brisbane Delivery)' : 'Customer Pickup (Murrumba Downs Warehouse)',
+      carrier: fulfillmentType === 'delivery' ? 'Icon Van 1 (Delivery)' : 'Customer Pickup (Murrumba Downs Warehouse)',
       status: 'Confirmed'
     });
     setStep(2);
@@ -115,7 +141,7 @@ export default function CheckoutModal({
           <div className="checkout-steps-nav">
             <div className={`step-indicator ${step === 1 ? 'active' : ''}`}>
               <span className="step-num">1</span>
-              <span>Event & Logistics</span>
+              <span>Booking Details</span>
             </div>
             <div className={`step-indicator ${step === 2 ? 'active' : ''}`}>
               <span className="step-num">2</span>
@@ -123,7 +149,7 @@ export default function CheckoutModal({
             </div>
           </div>
 
-          {/* Step 1: Event & Delivery Details */}
+          {/* Step 1: Booking Details */}
           {step === 1 && (
             <form onSubmit={handleFinish} className="checkout-step-pane active">
               <div style={{ marginBottom: '14px' }}>
@@ -139,23 +165,25 @@ export default function CheckoutModal({
                   marginBottom: '4px'
                 }}>
                   <Sparkles size={12} />
-                  <span>Reserve Equipment · 1–4 Days Hire</span>
+                  <span>1–3 Days Hire</span>
                 </span>
                 <h3 style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '1.45rem',
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: '1.5rem',
+                  fontWeight: 700,
+                  textTransform: 'none',
                   lineHeight: 1.25,
                   margin: '4px 0 6px 0',
-                  color: 'var(--color-primary)'
+                  color: '#1B061A'
                 }}>
-                  Event Logistics & Contact Details
+                  Booking Details
                 </h3>
                 <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', margin: 0 }}>
-                  Choose delivery across Greater Brisbane or warehouse pickup at Murrumba Downs.
+                  Choose delivery across Greater Brisbane or pickup at Murrumba Downs.
                 </p>
               </div>
 
-              {/* Delivery vs Pickup Selector */}
+              {/* 3. Delivery vs 4. Pickup (Free) Selector */}
               <div className="fulfillment-toggle-group">
                 <button
                   type="button"
@@ -166,8 +194,8 @@ export default function CheckoutModal({
                     <Truck size={18} />
                   </div>
                   <div className="fulfillment-copy">
-                    <span className="fulfillment-title">Brisbane Delivery & Setup</span>
-                    <span className="fulfillment-sub">Delivered & collected at your venue</span>
+                    <span className="fulfillment-title">Delivery</span>
+                    <span className="fulfillment-sub">Delivered &amp; collected at your venue</span>
                   </div>
                   <div className="fulfillment-radio-dot">
                     {fulfillmentType === 'delivery' && <span className="dot-inner" />}
@@ -183,7 +211,7 @@ export default function CheckoutModal({
                     <MapPin size={18} />
                   </div>
                   <div className="fulfillment-copy">
-                    <span className="fulfillment-title">Warehouse Pickup (Free)</span>
+                    <span className="fulfillment-title">Pickup (Free)</span>
                     <span className="fulfillment-sub">Murrumba Downs Dispatch Bay 4503</span>
                   </div>
                   <div className="fulfillment-radio-dot">
@@ -202,7 +230,7 @@ export default function CheckoutModal({
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
-                    placeholder="e.g. Olivia Henderson"
+                    placeholder="Enter your full name"
                   />
                 </div>
                 <div className="form-field">
@@ -218,17 +246,16 @@ export default function CheckoutModal({
                 </div>
               </div>
 
-              {/* Date & Event Type */}
+              {/* 5. Customer Pickup & Drop-off Time + Hire Date */}
               <div className="form-grid-2">
                 <div className="form-field">
-                  <label className="form-label">Event Date & Target Time</label>
+                  <label className="form-label">Hire Date</label>
                   <input
-                    type="text"
+                    type="date"
                     className="form-input"
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
+                    value={hireDate}
+                    onChange={(e) => setHireDate(e.target.value)}
                     required
-                    placeholder="e.g. Saturday 12:00 PM"
                   />
                 </div>
                 <div className="form-field">
@@ -243,7 +270,40 @@ export default function CheckoutModal({
                     <option>Engagement / Bridal High Tea</option>
                     <option>Baby Shower / Christening</option>
                     <option>Corporate Gala / Product Launch</option>
-                    <option>Backyard & Garden Party</option>
+                    <option>Backyard &amp; Garden Party</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-field">
+                  <label className="form-label">Pickup Time</label>
+                  <select
+                    className="form-input"
+                    value={pickupTime}
+                    onChange={(e) => setPickupTime(e.target.value)}
+                    required
+                  >
+                    {TIME_SLOTS.map((slot) => (
+                      <option key={`pickup-${slot}`} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-field">
+                  <label className="form-label">Drop-off Time</label>
+                  <select
+                    className="form-input"
+                    value={dropoffTime}
+                    onChange={(e) => setDropoffTime(e.target.value)}
+                    required
+                  >
+                    {TIME_SLOTS.map((slot) => (
+                      <option key={`dropoff-${slot}`} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -252,7 +312,7 @@ export default function CheckoutModal({
               {fulfillmentType === 'delivery' ? (
                 <>
                   <div className="form-field">
-                    <label className="form-label">Street Address & Venue Name</label>
+                    <label className="form-label">Street Address &amp; Venue Name</label>
                     <input
                       type="text"
                       className="form-input"
@@ -276,7 +336,7 @@ export default function CheckoutModal({
                       />
                     </div>
                     <div className="form-field">
-                      <label className="form-label">State & Postcode</label>
+                      <label className="form-label">State &amp; Postcode</label>
                       <input
                         type="text"
                         className="form-input"
@@ -293,7 +353,7 @@ export default function CheckoutModal({
                   <MapPin size={18} className="text-pink-600" />
                   <div>
                     <strong>Collection Location:</strong>
-                    <p>Icon Party Hire Dispatch Bay, Murrumba Downs QLD 4503. Loading bay access and vehicle loading window coordinated directly with host.</p>
+                    <p>Icon Party Hire Dispatch Bay, Murrumba Downs QLD 4503. Selected Pickup: {pickupTime} · Drop-off: {dropoffTime}.</p>
                   </div>
                 </div>
               )}
@@ -327,8 +387,9 @@ export default function CheckoutModal({
                   <Check size={36} strokeWidth={2.6} />
                 </div>
                 <h2 style={{
-                  fontFamily: 'var(--font-serif)',
+                  fontFamily: "'Playfair Display', Georgia, serif",
                   fontSize: '1.85rem',
+                  textTransform: 'none',
                   lineHeight: 1.25,
                   color: 'var(--color-primary)',
                   marginBottom: '10px'
@@ -345,19 +406,28 @@ export default function CheckoutModal({
 
                 <div className="order-summary-pill-row">
                   <span className="order-type-tag">
-                    {fulfillmentType === 'delivery' ? 'Brisbane Venue Delivery' : 'Murrumba Downs Pickup'}
+                    {fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup (Free)'}
                   </span>
-                  <span className="order-period-tag">1–4 Days Event Hire</span>
+                  <span className="order-period-tag">1–3 Days Hire</span>
                 </div>
+
+                <p style={{
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  color: '#1B061A',
+                  margin: '8px auto 4px auto'
+                }}>
+                  {formattedEventSchedule}
+                </p>
 
                 <p style={{
                   fontSize: '0.88rem',
                   lineHeight: 1.6,
                   color: 'var(--color-text-muted)',
                   maxWidth: '460px',
-                  margin: '12px auto 20px auto'
+                  margin: '8px auto 20px auto'
                 }}>
-                  Your event equipment reservation has been placed. Our team will contact you directly to confirm event logistics, arrival times, and finalize your booking.
+                  Your event equipment reservation has been placed. Our team will contact you directly to confirm your booking details.
                 </p>
                 <button
                   type="button"

@@ -23,7 +23,7 @@ export default function CartDrawer({
 }) {
   if (!isOpen) return null;
 
-  // Calculate pricing in AUD
+  // Calculate pricing in AUD (no free delivery promotions)
   let rawSubtotalAUD = 0;
   let totalBondAUD = 0;
 
@@ -42,10 +42,7 @@ export default function CartDrawer({
     })
     .filter(Boolean);
 
-  const thresholdAUD = 250;
-  const isFreeDelivery = rawSubtotalAUD >= thresholdAUD;
-  const deliveryAUD = cartItemsWithDetails.length > 0 ? (isFreeDelivery ? 0 : 35) : 0;
-  const grandTotalAUD = Math.max(0, rawSubtotalAUD + deliveryAUD);
+  const grandTotalAUD = Math.max(0, rawSubtotalAUD);
 
   return (
     <>
@@ -70,21 +67,6 @@ export default function CartDrawer({
             <X size={18} />
           </button>
         </div>
-
-        {/* Minimal Delivery Banner */}
-        {cartItemsWithDetails.length > 0 && (
-          <div className="cart-minimal-delivery-bar">
-            {isFreeDelivery ? (
-              <span className="cart-delivery-unlocked-text">
-                Free Greater Brisbane delivery unlocked
-              </span>
-            ) : (
-              <span className="cart-delivery-tier-text">
-                Add <strong>{formatPrice(Math.max(0, thresholdAUD - rawSubtotalAUD))}</strong> for free Brisbane delivery ($250+)
-              </span>
-            )}
-          </div>
-        )}
 
         {/* Scrollable Cart Items List */}
         <div className="cart-items-scrollable-body">
@@ -119,7 +101,7 @@ export default function CartDrawer({
                     </div>
 
                     <div className="cart-item-minimal-meta">
-                      <span className="cart-item-minimal-rate">{formatPrice(item.calculatedPrice)} / 1–4 days</span>
+                      <span className="cart-item-minimal-rate">{formatPrice(item.calculatedPrice)} / 1–3 days</span>
                     </div>
 
                     <div className="cart-item-minimal-bottom-row">
@@ -182,12 +164,6 @@ export default function CartDrawer({
               <div className="cart-summary-line">
                 <span>Equipment Subtotal</span>
                 <span className="cart-summary-num">{formatPrice(rawSubtotalAUD)}</span>
-              </div>
-              <div className="cart-summary-line">
-                <span>Brisbane Delivery &amp; Setup</span>
-                <span className={`cart-summary-num ${isFreeDelivery ? 'free' : ''}`}>
-                  {isFreeDelivery ? 'FREE' : formatPrice(deliveryAUD)}
-                </span>
               </div>
               <div className="cart-summary-line subtle">
                 <span>Refundable Security Bond</span>

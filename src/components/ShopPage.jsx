@@ -332,7 +332,7 @@ export default function ShopPage({
                 {/* Filter Group: Price Range Slider */}
                 <div className="filter-group-block">
                   <div className="filter-group-header-between">
-                    <h4 className="filter-group-heading">Hire Rate (1–4 Days)</h4>
+                    <h4 className="filter-group-heading">Hire Rate (1–3 Days)</h4>
                     <span className="price-range-indicator">Up to ${priceMax} AUD</span>
                   </div>
 
@@ -653,7 +653,7 @@ export default function ShopPage({
                                 <span className="price-main-figure">
                                   {formatPrice ? formatPrice(product.priceAUD) : `$${product.priceAUD}`}
                                 </span>
-                                <span className="price-term-tag">/ 1–4 days</span>
+                                <span className="price-term-tag">/ 1–3 days</span>
                               </div>
                               {product.bondAUD && (
                                 <span className="price-bond-sub">
@@ -778,7 +778,7 @@ export default function ShopPage({
               {/* Price Range */}
               <div className="drawer-section">
                 <div className="filter-group-header-between">
-                  <h4>Rate Limit (1–4 Days)</h4>
+                  <h4>Rate Limit (1–3 Days)</h4>
                   <span className="price-range-indicator">Up to ${priceMax} AUD</span>
                 </div>
                 <input
