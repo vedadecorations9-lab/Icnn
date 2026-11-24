@@ -2104,6 +2104,7 @@ ul, ol {
 
 .bento-card.bento-card-image-only {
   padding: 0 !important;
+  min-height: 0 !important;
   background: transparent !important;
   border: none !important;
   aspect-ratio: 1 / 1 !important;
@@ -11082,29 +11083,21 @@ html.lenis, html.lenis body {
     animation: bentoProgressFill 3.5s linear forwards !important;
   }
 
-  /* Bento Grid Mobile Horizontal Snap Track */
+  /* Bento Grid Mobile Stack */
   .bento-grid {
-    display: flex !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
-    scroll-behavior: smooth !important;
-    -webkit-overflow-scrolling: touch !important;
-    gap: 12px !important;
-    padding: 6px 16px 16px 16px !important;
-    scrollbar-width: none !important;
-  }
-
-  .bento-grid::-webkit-scrollbar {
-    display: none !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    overflow-x: visible !important;
+    gap: 16px !important;
+    padding: 4px 0 12px 0 !important;
   }
 
   .bento-card {
-    flex: 0 0 84vw !important;
-    max-width: 325px !important;
-    min-width: 260px !important;
-    scroll-snap-align: center !important;
-    min-height: 220px !important;
-    padding: 22px 18px 20px 18px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
     border-radius: 20px !important;
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
   }
