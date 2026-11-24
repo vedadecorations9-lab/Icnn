@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Sparkles, Tent, PartyPopper, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,38 +9,23 @@ const PILLARS = [
   {
     id: 'hiring',
     category: 'all',
-    tint: 'tint-rose',
-    tag: 'Equipment & Furniture',
-    icon: Tent,
     title: 'ICON HIRING',
-    desc: 'Commercial 6x3m gazebos, white Tiffany chairs, cocktail tables, plinths & catering warmers for Brisbane events.',
-    cta: 'Browse hire catalog',
-    image: '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp',
-    alt: 'Icon Hiring Equipment'
+    image: '/assets/images/pillars/icon-hiring.jpg',
+    alt: 'Icon Hiring'
   },
   {
-    id: 'events',
+    id: 'decorations',
     category: 'backdrops',
-    tint: 'tint-blush',
-    tag: 'Event Styling & FX',
-    icon: Sparkles,
-    title: 'ICON EVENTS',
-    desc: 'Statement ripple wave backdrops, 3D silk flower walls, cake plinth clusters & dramatic cold spark fountain FX.',
-    cta: 'Explore event styling',
-    image: '/assets/images/items/Three pink arches for hire-1-1024x1024.webp',
-    alt: 'Icon Events Styling'
+    title: 'ICON DECORATIONS',
+    image: '/assets/images/pillars/icon-decorations.jpg',
+    alt: 'Icon Decorations'
   },
   {
     id: 'balloons',
     category: 'balloons',
-    tint: 'tint-gold',
-    tag: 'Bespoke Balloon Art',
-    icon: PartyPopper,
     title: 'ICON BALLOONS',
-    desc: 'Luxury organic balloon garlands, photo-op backdrop arches, milestone displays & custom celebration color themes.',
-    cta: 'View balloon styling',
-    image: '/assets/images/items/Three blue arches for party hire-3-1024x1024.webp',
-    alt: 'Icon Balloons Styling'
+    image: '/assets/images/pillars/icon-balloons.jpg',
+    alt: 'Icon Balloons'
   }
 ];
 
@@ -137,11 +122,13 @@ export default function BentoPromos({ onSelectCategory }) {
     setActivePillar((prev) => (prev + 1) % PILLARS.length);
   };
 
-  // Clicking a flanking card promotes it to the center apex
-  const handleCardClick = (idx, e) => {
-    if (idx !== activePillar) {
+  // Clicking a flanking card promotes it to the center apex; clicking active card opens category
+  const handleCardClick = (idx, pillar, e) => {
+    if (window.innerWidth > 768 && idx !== activePillar) {
       e.preventDefault();
       handleUserInteraction(idx);
+    } else {
+      onSelectCategory?.(pillar.category);
     }
   };
 
@@ -252,43 +239,20 @@ export default function BentoPromos({ onSelectCategory }) {
             onTouchStart={() => handleUserInteraction()}
           >
             {PILLARS.map((pillar, idx) => {
-              const IconComponent = pillar.icon;
               const slotClass = getSlotClass(idx, activePillar);
               const isCenter = activePillar === idx;
               return (
                 <article
                   key={pillar.id}
-                  className={`bento-card ${pillar.tint} ${slotClass} ${isCenter ? 'bento-card-active' : ''}`}
-                  onClick={(e) => handleCardClick(idx, e)}
+                  className={`bento-card bento-card-image-only ${slotClass} ${isCenter ? 'bento-card-active' : ''}`}
+                  onClick={(e) => handleCardClick(idx, pillar, e)}
                 >
-                  <div className="bento-card-glow" />
-                  <div className="bento-header">
-                    <div className="bento-tag">
-                      <IconComponent size={13} />
-                      <span>{pillar.tag}</span>
-                    </div>
-                    <h3 className="bento-title">{pillar.title}</h3>
-                    <p className="bento-desc">{pillar.desc}</p>
-                    <button
-                      type="button"
-                      className="bento-cta"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectCategory(pillar.category);
-                      }}
-                    >
-                      <span>{pillar.cta}</span>
-                      <ArrowRight size={14} />
-                    </button>
-                  </div>
-                  <div className="bento-art-container">
-                    <img
-                      src={pillar.image}
-                      alt={pillar.alt}
-                      loading="lazy"
-                      className="bento-art-asset"
-                    />
-                  </div>
+                  <img
+                    src={pillar.image}
+                    alt={pillar.alt}
+                    loading="lazy"
+                    className="bento-full-image"
+                  />
                 </article>
               );
             })}
