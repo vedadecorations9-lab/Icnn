@@ -273,12 +273,17 @@ function AppContent({
 
   const handleCompleteOrder = (orderData) => {
     const totalAUD = cart.reduce((sum, item) => {
-      const prod = item.product || products.find(p => p.id === item.productId);
+      const prod = item.product || products.find(p => p.id === item.productId || p._id === item.productId);
       const qty = item.quantity || item.qty || 1;
       return sum + (Number(prod?.priceAUD) || 0) * qty;
     }, 0);
+    const totalBondAUD = cart.reduce((sum, item) => {
+      const prod = item.product || products.find(p => p.id === item.productId || p._id === item.productId);
+      const qty = item.quantity || item.qty || 1;
+      return sum + (Number(prod?.bondAUD) || 30) * qty;
+    }, 0);
     const itemNames = cart.map(item => {
-      const prod = item.product || products.find(p => p.id === item.productId);
+      const prod = item.product || products.find(p => p.id === item.productId || p._id === item.productId);
       const qty = item.quantity || item.qty || 1;
       return `${prod?.name || 'Equipment'} (x${qty})`;
     });
@@ -291,14 +296,14 @@ function AppContent({
       email: userEmail,
       city: orderData?.city || 'Brisbane QLD',
       eventDate: orderData?.eventDate || 'Upcoming Weekend',
-      eventType: orderData?.eventType || 'Party & Event Celebration',
+      eventType: orderData?.eventType || 'Delivery Hire (1–3 Days)',
       items: itemNames.length > 0 ? itemNames : ['Event Equipment Hire Package'],
-      totalAUD: totalAUD > 0 ? totalAUD : 350,
+      totalAUD: totalAUD > 0 ? totalAUD : 85,
       status: 'Confirmed',
-      carrier: orderData?.carrier || 'Icon Van 1 (Brisbane Delivery)',
+      carrier: orderData?.carrier || 'Icon Van 1 (Delivery)',
       tracking: `IPH-DEL-${Math.floor(10000 + Math.random() * 90000)}`,
       date: 'Just now',
-      paymentStatus: 'Paid ($100 Bond Held)'
+      paymentStatus: `Paid ($${totalBondAUD > 0 ? totalBondAUD : 50} Bond Held)`
     };
 
     try {
@@ -315,7 +320,7 @@ function AppContent({
 
   // Wishlist Operations
   const handleToggleWishlist = (productId) => {
-    const prod = products.find(p => p.id === productId);
+    const prod = products.find(p => p.id === productId || p._id === productId);
     if (wishlist.includes(productId)) {
       setWishlist(prev => prev.filter(id => id !== productId));
       addToast(`Removed from saved equipment`, 'info');
@@ -632,7 +637,7 @@ function AppContent({
         onClose={() => setQuickViewId(null)}
         onAddToCart={handleAddToCart}
         onToggleWishlist={handleToggleWishlist}
-        isWishlisted={quickViewProduct ? wishlist.includes(quickViewProduct.id) : false}
+        isWishlisted={quickViewProduct ? wishlist.includes(quickViewProduct.id || quickViewProduct._id) : false}
         formatPrice={formatPrice}
       />
 

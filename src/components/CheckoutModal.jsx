@@ -37,7 +37,6 @@ export default function CheckoutModal({
   const [dropoffTime, setDropoffTime] = useState('05:00 PM');
   const [fullName, setFullName] = useState(user?.fullName || user?.firstName || '');
   const [phone, setPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || '');
-  const [eventType, setEventType] = useState('Birthday Celebration (21st / 30th / 50th)');
   const [address, setAddress] = useState('');
   const [suburb, setSuburb] = useState('');
   const [postcode, setPostcode] = useState('');
@@ -103,15 +102,19 @@ export default function CheckoutModal({
     if (e && e.preventDefault) e.preventDefault();
     const generated = `IPH-AU-${Math.floor(10000 + Math.random() * 90000)}`;
     setOrderId(generated);
+    const fullDeliveryLocation = [address.trim(), suburb.trim(), postcode.trim()]
+      .filter(Boolean)
+      .join(', ');
+
     onCompleteOrder?.({
       id: generated,
-      customerName: fullName || 'Customer Reservation',
-      phone: phone || '+61 400 000 000',
+      customerName: fullName.trim() || 'Customer Reservation',
+      phone: phone.trim() || '+61 400 000 000',
       city: fulfillmentType === 'delivery'
-        ? `${suburb || 'Brisbane'}, ${postcode || 'QLD'}`
+        ? (fullDeliveryLocation || 'Greater Brisbane Delivery')
         : 'Murrumba Downs Pickup (4503)',
       eventDate: formattedEventSchedule,
-      eventType: eventType || 'Party & Event Celebration',
+      eventType: fulfillmentType === 'delivery' ? 'Delivery Hire (1–3 Days)' : 'Pickup (Free) · 1–3 Days',
       carrier: fulfillmentType === 'delivery' ? 'Icon Van 1 (Delivery)' : 'Customer Pickup (Murrumba Downs Warehouse)',
       status: 'Confirmed'
     });
@@ -220,7 +223,7 @@ export default function CheckoutModal({
                 </button>
               </div>
 
-              {/* Host & Mobile Row */}
+              {/* Host & Mobile Number Row */}
               <div className="form-grid-2">
                 <div className="form-field">
                   <label className="form-label">Full Name / Event Host</label>
@@ -234,7 +237,7 @@ export default function CheckoutModal({
                   />
                 </div>
                 <div className="form-field">
-                  <label className="form-label">Australian Mobile Number</label>
+                  <label className="form-label">Mobile Number</label>
                   <input
                     type="tel"
                     className="form-input"
@@ -246,33 +249,16 @@ export default function CheckoutModal({
                 </div>
               </div>
 
-              {/* 5. Customer Pickup & Drop-off Time + Hire Date */}
-              <div className="form-grid-2">
-                <div className="form-field">
-                  <label className="form-label">Hire Date</label>
-                  <input
-                    type="date"
-                    className="form-input"
-                    value={hireDate}
-                    onChange={(e) => setHireDate(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label className="form-label">Event Type</label>
-                  <select
-                    className="form-input"
-                    value={eventType}
-                    onChange={(e) => setEventType(e.target.value)}
-                  >
-                    <option>Birthday Celebration (21st / 30th / 50th)</option>
-                    <option>Wedding Reception / Ceremony</option>
-                    <option>Engagement / Bridal High Tea</option>
-                    <option>Baby Shower / Christening</option>
-                    <option>Corporate Gala / Product Launch</option>
-                    <option>Backyard &amp; Garden Party</option>
-                  </select>
-                </div>
+              {/* 5. Hire Date + Customer Pickup & Drop-off Time */}
+              <div className="form-field">
+                <label className="form-label">Hire Date</label>
+                <input
+                  type="date"
+                  className="form-input"
+                  value={hireDate}
+                  onChange={(e) => setHireDate(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="form-grid-2">

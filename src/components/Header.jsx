@@ -247,13 +247,19 @@ export default function Header({
               </svg>
             </button>
 
-            {/* Inline Search Bar (No popup modal) */}
+            {/* Inline Search Bar with Live Dropdown Results */}
             <form
               className="nav-search-form hide-mobile"
+              style={{ position: 'relative' }}
               onSubmit={(e) => {
                 e.preventDefault();
-                onSelectCategory?.('all');
-                onNavigateCatalog?.('all');
+                if (searchResults.length > 0) {
+                  onOpenQuickView?.(searchResults[0].id || searchResults[0]._id);
+                  setSearchVal('');
+                } else {
+                  onSelectCategory?.('all');
+                  onNavigateCatalog?.('all');
+                }
               }}
               role="search"
             >
@@ -267,14 +273,64 @@ export default function Header({
                 placeholder="Search equipment..."
                 value={searchVal}
                 onChange={(e) => setSearchVal(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    onSelectCategory?.('all');
-                    onNavigateCatalog?.('all');
-                  }
-                }}
                 aria-label="Search equipment catalog"
               />
+              {searchResults.length > 0 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)',
+                    right: 0,
+                    width: 310,
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(27, 6, 26, 0.1)',
+                    borderRadius: 16,
+                    boxShadow: '0 18px 40px rgba(27, 6, 26, 0.16)',
+                    padding: 6,
+                    zIndex: 2500
+                  }}
+                >
+                  {searchResults.map((item) => {
+                    const itemId = item.id || item._id;
+                    return (
+                      <button
+                        key={itemId}
+                        type="button"
+                        onClick={() => {
+                          onOpenQuickView?.(itemId);
+                          setSearchVal('');
+                        }}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          padding: '8px 10px',
+                          borderRadius: 10,
+                          textAlign: 'left',
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          style={{ width: 38, height: 38, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
+                        />
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#1B061A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {item.name}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#D81B60', fontWeight: 600 }}>
+                            {formatPrice ? formatPrice(item.priceAUD) : `$${item.priceAUD}`} / 1–3 days
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </form>
 
             {/* Wishlist */}

@@ -66,8 +66,16 @@ export default function ShopPage({
       return {
         id: 'all',
         label: 'All Equipment',
-        description: 'Complete Brisbane commercial event hire inventory. Heavy-duty marquees, photo backdrops, seating, catering, and party effects.',
+        description: 'Complete Brisbane commercial event hire inventory. Heavy-duty gazebos, photo backdrops, seating, catering, and party effects.',
         image: '/assets/images/items/Icon 6x3 m Gazebo Hire-2-1024x1024.webp'
+      };
+    }
+    if (selectedCat === 'balloons') {
+      return {
+        id: 'balloons',
+        label: 'Icon Balloons',
+        description: 'Bespoke organic balloon garlands, custom celebration arches, and milestone balloon installations.',
+        image: '/assets/images/pillars/icon-balloons.jpg'
       };
     }
     return (
@@ -544,39 +552,73 @@ export default function ShopPage({
 
               {/* Product Cards Grid (Matching Reference Design) */}
               {filteredProducts.length === 0 ? (
-                /* Empty Search State */
-                <div className="shop-empty-state-card">
-                  <div className="empty-state-icon-wrap">
-                    <Search size={32} />
+                selectedCat === 'balloons' && searchQuery.trim() === '' ? (
+                  /* Dedicated Coming Soon State for Icon Balloons */
+                  <div className="shop-empty-state-card">
+                    <div className="empty-state-icon-wrap" style={{ background: '#FDF2F8', color: '#D81B60' }}>
+                      <Sparkles size={32} />
+                    </div>
+                    <h3 className="empty-state-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", textTransform: 'none', fontSize: '1.5rem' }}>
+                      Icon Balloons — Coming Soon
+                    </h3>
+                    <p className="empty-state-desc">
+                      Our bespoke balloon garlands, organic backdrop arches, and custom colour packages are launching soon. Need balloon styling for an upcoming event? Reach out directly via WhatsApp or explore our backdrops and hire equipment.
+                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        className="shop-empty-reset-btn"
+                        onClick={() => handleCategoryChange('backdrops')}
+                      >
+                        <span>Explore Decorations &amp; Backdrops</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="shop-empty-reset-btn"
+                        style={{ background: '#FFFFFF', color: '#1B061A', border: '1.5px solid rgba(27,6,26,0.16)' }}
+                        onClick={handleResetFilters}
+                      >
+                        <RotateCcw size={14} />
+                        <span>View All Equipment ({products.length})</span>
+                      </button>
+                    </div>
                   </div>
-                  <h3 className="empty-state-title">No equipment found matching criteria</h3>
-                  <p className="empty-state-desc">
-                    We couldn't find any party equipment matching your current filters or search query. Try broadening your criteria or reset filters.
-                  </p>
-                  <button
-                    type="button"
-                    className="shop-empty-reset-btn"
-                    onClick={handleResetFilters}
-                  >
-                    <RotateCcw size={14} />
-                    <span>View All {products.length} Equipment Items</span>
-                  </button>
-                </div>
+                ) : (
+                  /* Empty Search State */
+                  <div className="shop-empty-state-card">
+                    <div className="empty-state-icon-wrap">
+                      <Search size={32} />
+                    </div>
+                    <h3 className="empty-state-title">No equipment found matching criteria</h3>
+                    <p className="empty-state-desc">
+                      We couldn't find any party equipment matching your current filters or search query. Try broadening your criteria or reset filters.
+                    </p>
+                    <button
+                      type="button"
+                      className="shop-empty-reset-btn"
+                      onClick={handleResetFilters}
+                    >
+                      <RotateCcw size={14} />
+                      <span>View All {products.length} Equipment Items</span>
+                    </button>
+                  </div>
+                )
               ) : (
-                /* 3-Column Product Grid Matching Reference Image */
+                /* 4-Column Product Grid */
                 <div className="shop-cards-deck">
                   {filteredProducts.map(product => {
-                    const isWish = wishlist.includes(product.id);
-                    const isJustAdded = addedId === product.id;
+                    const prodId = product.id || product._id;
+                    const isWish = wishlist.includes(prodId);
+                    const isJustAdded = addedId === prodId;
                     const pills = getProductPills(product);
 
                     return (
-                      <article key={product.id} className="shop-product-card">
+                      <article key={prodId} className="shop-product-card">
                         
                         {/* 1. Media Image Container */}
                         <div
                           className="shop-card-media-stage"
-                          onClick={() => onOpenQuickView?.(product.id)}
+                          onClick={() => onOpenQuickView?.(prodId)}
                           role="button"
                           tabIndex={0}
                           aria-label={`Quick view ${product.name}`}
@@ -609,7 +651,7 @@ export default function ShopPage({
                             className={`shop-card-wishlist-btn ${isWish ? 'is-active' : ''}`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              onToggleWishlist?.(product.id);
+                              onToggleWishlist?.(prodId);
                             }}
                             title={isWish ? 'Remove from saved' : 'Save to wishlist'}
                             aria-label={`Save ${product.name} to wishlist`}
@@ -633,7 +675,7 @@ export default function ShopPage({
                           {/* Product Title */}
                           <h2
                             className="shop-card-title"
-                            onClick={() => onOpenQuickView?.(product.id)}
+                            onClick={() => onOpenQuickView?.(prodId)}
                             title={product.name}
                           >
                             {product.name}
@@ -670,7 +712,7 @@ export default function ShopPage({
                                 className={`shop-card-heart-btn hide-mobile ${isWish ? 'is-active' : ''}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  onToggleWishlist?.(product.id);
+                                  onToggleWishlist?.(prodId);
                                 }}
                                 title={isWish ? 'Remove from saved' : 'Save to wishlist'}
                                 aria-label={`Save ${product.name} to wishlist`}
@@ -688,7 +730,7 @@ export default function ShopPage({
                                 className={`shop-card-bag-btn ${isJustAdded ? 'is-added' : ''}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleAddWithFeedback(product.id);
+                                  handleAddWithFeedback(prodId);
                                 }}
                                 aria-label={`Add ${product.name} to Cart`}
                                 title="Add to Cart"
