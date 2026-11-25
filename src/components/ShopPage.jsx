@@ -431,7 +431,7 @@ export default function ShopPage({
                   <Search size={16} className="shop-search-icon" />
                   <input
                     type="text"
-                    placeholder="Search equipment by name, SKU or spec..."
+                    placeholder="Search equipment by name or category..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="shop-search-input"

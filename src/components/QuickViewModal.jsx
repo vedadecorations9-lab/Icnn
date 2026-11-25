@@ -85,12 +85,9 @@ export default function QuickViewModal({
 
           {/* RIGHT COLUMN: Editorial Product Details, 2x2 Specs & Action Dock */}
           <div className="qv-details-col">
-            {/* Top Kicker Row: Category Pill + SKU */}
+            {/* Top Kicker Row: Category Pill */}
             <div className="qv-kicker-row">
               <span className="qv-category-pill">{product.categoryLabel || 'Event Hire'}</span>
-              {product.sku && (
-                <span className="qv-sku-tag">SKU: {product.sku}</span>
-              )}
             </div>
 
             {/* Mixed-Case Editorial Title */}
