@@ -3,7 +3,6 @@ import {
   X,
   ShoppingBag,
   Heart,
-  ShieldCheck,
   Clock,
   Layers,
   Maximize2,
@@ -30,7 +29,6 @@ export default function QuickViewModal({
   if (!product) return null;
 
   const priceVal = Number(product.priceAUD || product.priceINR || 0);
-  const bondVal = Number(product.bondAUD || 50);
 
   return (
     <>
@@ -83,7 +81,7 @@ export default function QuickViewModal({
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Editorial Product Details, 2x2 Specs & Action Dock */}
+          {/* RIGHT COLUMN: Editorial Product Details, Specs & Action Dock */}
           <div className="qv-details-col">
             {/* Top Kicker Row: Category Pill */}
             <div className="qv-kicker-row">
@@ -93,7 +91,7 @@ export default function QuickViewModal({
             {/* Mixed-Case Editorial Title */}
             <h2 className="qv-title">{product.name}</h2>
 
-            {/* Pricing & Bond Strip */}
+            {/* Pricing Strip (No per-item bond) */}
             <div className="qv-price-card">
               <div className="qv-price-main">
                 <span className="qv-price-amount">{formatPrice(priceVal)}</span>
@@ -102,16 +100,12 @@ export default function QuickViewModal({
                   <span className="qv-price-original">${product.originalAUD} AUD</span>
                 )}
               </div>
-              <div className="qv-bond-pill">
-                <ShieldCheck size={13} />
-                <span>+${bondVal} AUD Refundable Bond</span>
-              </div>
             </div>
 
             {/* Product Description */}
             <p className="qv-description">{product.description}</p>
 
-            {/* 2x2 Architectural Specifications Grid */}
+            {/* Architectural Specifications Grid (No per-item security bond) */}
             <div className="qv-specs-grid">
               <div className="qv-spec-box">
                 <div className="qv-spec-header">
@@ -123,21 +117,13 @@ export default function QuickViewModal({
 
               <div className="qv-spec-box">
                 <div className="qv-spec-header">
-                  <ShieldCheck size={13} className="qv-spec-icon" />
-                  <span className="qv-spec-label">Security Bond</span>
-                </div>
-                <div className="qv-spec-value">${bondVal} AUD (Refundable)</div>
-              </div>
-
-              <div className="qv-spec-box">
-                <div className="qv-spec-header">
                   <Maximize2 size={13} className="qv-spec-icon" />
                   <span className="qv-spec-label">Dimensions / Size</span>
                 </div>
                 <div className="qv-spec-value">{product.dimensions || 'Standard Event Specification'}</div>
               </div>
 
-              <div className="qv-spec-box">
+              <div className="qv-spec-box" style={{ gridColumn: '1 / -1' }}>
                 <div className="qv-spec-header">
                   <Layers size={13} className="qv-spec-icon" />
                   <span className="qv-spec-label">Construction</span>
@@ -172,7 +158,7 @@ export default function QuickViewModal({
                 type="button"
                 className="qv-add-cart-btn"
                 onClick={() => {
-                  onAddToCart?.(product.id, qty);
+                  onAddToCart?.(product.id || product._id, qty);
                   onClose?.();
                 }}
               >
@@ -183,7 +169,7 @@ export default function QuickViewModal({
               <button
                 type="button"
                 className={`qv-wishlist-btn ${isWishlisted ? 'is-saved' : ''}`}
-                onClick={() => onToggleWishlist?.(product.id)}
+                onClick={() => onToggleWishlist?.(product.id || product._id)}
                 title={isWishlisted ? 'Saved to wishlist' : 'Save to wishlist'}
                 aria-label={isWishlisted ? 'Saved to wishlist' : 'Save to wishlist'}
               >

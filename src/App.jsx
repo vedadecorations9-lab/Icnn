@@ -277,11 +277,8 @@ function AppContent({
       const qty = item.quantity || item.qty || 1;
       return sum + (Number(prod?.priceAUD) || 0) * qty;
     }, 0);
-    const totalBondAUD = cart.reduce((sum, item) => {
-      const prod = item.product || products.find(p => p.id === item.productId || p._id === item.productId);
-      const qty = item.quantity || item.qty || 1;
-      return sum + (Number(prod?.bondAUD) || 30) * qty;
-    }, 0);
+    // Order-level bond only: $50 for orders under $500, $100 for orders over $500
+    const totalBondAUD = totalAUD > 500 ? 100 : 50;
     const itemNames = cart.map(item => {
       const prod = item.product || products.find(p => p.id === item.productId || p._id === item.productId);
       const qty = item.quantity || item.qty || 1;
@@ -303,7 +300,7 @@ function AppContent({
       carrier: orderData?.carrier || 'Icon Van 1 (Delivery)',
       tracking: `IPH-DEL-${Math.floor(10000 + Math.random() * 90000)}`,
       date: 'Just now',
-      paymentStatus: `Paid ($${totalBondAUD > 0 ? totalBondAUD : 50} Bond Held)`
+      paymentStatus: `Paid ($${totalBondAUD} Bond Held)`
     };
 
     try {
@@ -645,6 +642,9 @@ function AppContent({
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         onCompleteOrder={handleCompleteOrder}
+        cart={cart}
+        products={products}
+        formatPrice={formatPrice}
         isSignedIn={isSignedIn}
         user={authUser}
         onRequireAuth={() => {

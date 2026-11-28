@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Truck, MapPin, Check, Sparkles } from 'lucide-react';
+import { Truck, MapPin, Check, Sparkles, ShieldCheck } from 'lucide-react';
 
 const TIME_SLOTS = [
   '07:00 AM',
@@ -21,6 +21,9 @@ export default function CheckoutModal({
   isOpen,
   onClose,
   onCompleteOrder,
+  cart = [],
+  products = [],
+  formatPrice = (v) => `$${v}`,
   isSignedIn = true,
   user = null,
   onRequireAuth
@@ -40,8 +43,21 @@ export default function CheckoutModal({
   const [address, setAddress] = useState('');
   const [suburb, setSuburb] = useState('');
   const [postcode, setPostcode] = useState('');
+  const [confirmedTotals, setConfirmedTotals] = useState({ subtotal: 0, bond: 50, total: 50 });
 
   if (!isOpen) return null;
+
+  // Calculate order-level subtotal & bond ($50 if subtotal <= $500, $100 if subtotal > $500)
+  const subtotalAUD = (Array.isArray(cart) ? cart : []).reduce((sum, item) => {
+    const prod = item.product || (Array.isArray(products) ? products : []).find(
+      (p) => p.id === item.productId || p._id === item.productId
+    );
+    const qty = Number(item.quantity || item.qty || 1);
+    return sum + (Number(prod?.priceAUD || prod?.priceINR || 0) * qty);
+  }, 0);
+
+  const orderBondAUD = subtotalAUD > 500 ? 100 : 50;
+  const grandTotalAUD = subtotalAUD + orderBondAUD;
 
   // Strict check: if not signed in, show Auth Gate
   if (!isSignedIn) {
@@ -102,6 +118,7 @@ export default function CheckoutModal({
     if (e && e.preventDefault) e.preventDefault();
     const generated = `IPH-AU-${Math.floor(10000 + Math.random() * 90000)}`;
     setOrderId(generated);
+    setConfirmedTotals({ subtotal: subtotalAUD, bond: orderBondAUD, total: grandTotalAUD });
     const fullDeliveryLocation = [address.trim(), suburb.trim(), postcode.trim()]
       .filter(Boolean)
       .join(', ');
@@ -116,7 +133,8 @@ export default function CheckoutModal({
       eventDate: formattedEventSchedule,
       eventType: fulfillmentType === 'delivery' ? 'Delivery Hire (1–3 Days)' : 'Pickup (Free) · 1–3 Days',
       carrier: fulfillmentType === 'delivery' ? 'Icon Van 1 (Delivery)' : 'Customer Pickup (Murrumba Downs Warehouse)',
-      status: 'Confirmed'
+      status: 'Confirmed',
+      bondAUD: orderBondAUD
     });
     setStep(2);
   };
@@ -344,19 +362,60 @@ export default function CheckoutModal({
                 </div>
               )}
 
+              {/* Order Total & Tiered Security Bond Breakdown at Checkout */}
+              <div
+                style={{
+                  background: '#FAF7F9',
+                  border: '1px solid rgba(27, 6, 26, 0.08)',
+                  borderRadius: '14px',
+                  padding: '12px 16px',
+                  marginTop: '10px',
+                  marginBottom: '6px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#59505B' }}>
+                  <span>Equipment Hire Subtotal</span>
+                  <strong style={{ color: '#1B061A' }}>{formatPrice(subtotalAUD)}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', color: '#59505B' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <ShieldCheck size={14} style={{ color: '#D81B60' }} />
+                    <span>Refundable Order Bond ({subtotalAUD > 500 ? 'Order over $500' : 'Order under $500'})</span>
+                  </span>
+                  <strong style={{ color: '#D81B60' }}>{formatPrice(orderBondAUD)}</strong>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    paddingTop: '6px',
+                    borderTop: '1px solid rgba(27, 6, 26, 0.08)',
+                    fontSize: '0.92rem',
+                    fontWeight: 800,
+                    color: '#1B061A'
+                  }}
+                >
+                  <span>Total Order (incl. Refundable Bond)</span>
+                  <span>{formatPrice(grandTotalAUD)}</span>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 className="btn-primary"
                 style={{
                   width: '100%',
                   justifyContent: 'center',
-                  marginTop: '10px',
+                  marginTop: '8px',
                   padding: '13px 20px',
                   fontSize: '0.95rem',
                   fontWeight: 700
                 }}
               >
-                Confirm Event Reservation
+                Confirm Event Reservation · {formatPrice(grandTotalAUD)}
               </button>
             </form>
           )}
@@ -395,6 +454,9 @@ export default function CheckoutModal({
                     {fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup (Free)'}
                   </span>
                   <span className="order-period-tag">1–3 Days Hire</span>
+                  <span className="order-period-tag">
+                    +{formatPrice(confirmedTotals.bond)} Refundable Bond
+                  </span>
                 </div>
 
                 <p style={{

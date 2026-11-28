@@ -697,11 +697,6 @@ export default function ShopPage({
                                 </span>
                                 <span className="price-term-tag">/ 1–3 days</span>
                               </div>
-                              {product.bondAUD && (
-                                <span className="price-bond-sub">
-                                  +${product.bondAUD} bond
-                                </span>
-                              )}
                             </div>
 
                             {/* Actions Group: Heart Wishlist + Add to Bag (Matching Reference Mockup) */}

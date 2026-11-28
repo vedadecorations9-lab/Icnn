@@ -23,9 +23,8 @@ export default function CartDrawer({
 }) {
   if (!isOpen) return null;
 
-  // Calculate pricing in AUD (no free delivery promotions)
+  // Calculate pricing in AUD (Order-level bond: $50 under $500, $100 over $500)
   let rawSubtotalAUD = 0;
-  let totalBondAUD = 0;
 
   const cartItemsWithDetails = (Array.isArray(cart) ? cart : [])
     .map((item) => {
@@ -37,12 +36,12 @@ export default function CartDrawer({
       const qty = Number(item.qty || item.quantity || 1);
       const itemTotal = price * qty;
       rawSubtotalAUD += itemTotal;
-      totalBondAUD += Number(prod.bondAUD || 30) * qty;
       return { ...prod, cartItemId: item.productId, qty, calculatedPrice: price };
     })
     .filter(Boolean);
 
-  const grandTotalAUD = Math.max(0, rawSubtotalAUD);
+  const totalBondAUD = cartItemsWithDetails.length > 0 ? (rawSubtotalAUD > 500 ? 100 : 50) : 0;
+  const grandTotalAUD = Math.max(0, rawSubtotalAUD + totalBondAUD);
 
   return (
     <>
@@ -166,16 +165,16 @@ export default function CartDrawer({
                 <span className="cart-summary-num">{formatPrice(rawSubtotalAUD)}</span>
               </div>
               <div className="cart-summary-line subtle">
-                <span>Refundable Security Bond</span>
-                <span className="cart-summary-num">${totalBondAUD} AUD</span>
+                <span>Order Security Bond ({rawSubtotalAUD > 500 ? 'Over $500' : 'Under $500'})</span>
+                <span className="cart-summary-num">{formatPrice(totalBondAUD)}</span>
               </div>
 
               <div className="cart-minimal-hairline" />
 
               <div className="cart-summary-total-line">
                 <div className="cart-total-title-block">
-                  <span className="cart-total-title">Total Estimate</span>
-                  <span className="cart-total-note">Bond released post-event</span>
+                  <span className="cart-total-title">Total (incl. Bond)</span>
+                  <span className="cart-total-note">Bond refunded post-event</span>
                 </div>
                 <span className="cart-total-figure">{formatPrice(grandTotalAUD)}</span>
               </div>
@@ -193,7 +192,7 @@ export default function CartDrawer({
 
             <div className="cart-minimal-trust-note">
               <ShieldCheck size={13} />
-              <span>100% Bond Security · Verified Brisbane Hire Booking</span>
+              <span>$50 bond under $500 · $100 bond over $500 (Refundable)</span>
             </div>
           </div>
         )}
